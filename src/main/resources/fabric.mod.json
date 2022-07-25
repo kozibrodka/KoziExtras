@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "extra",
+  "version": "${version}",
+
+  "name": "Kozibrodka mod",
+  "description": "Na ten moment jest to testowy mod",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://glass-launcher.net/",
+    "sources": "https://github.com/calmilamsy/BIN-fabric-example-mod"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/extra/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "stationapi:event_bus": [
+      "net.kozibrodka.extra.events.BlockListener",
+      "net.kozibrodka.extra.events.RecipeListener",
+      "net.kozibrodka.extra.events.ColorListener"
+    ],
+    "stationapi:event_bus_client": [
+
+    ],
+    "stationapi:event_bus_server": [
+
+    ],
+    "gcapi": [
+
+    ]
+  },
+  "mixins": [
+    "kozibrodka.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "1.0.0-beta.7.3"
+  }
+}

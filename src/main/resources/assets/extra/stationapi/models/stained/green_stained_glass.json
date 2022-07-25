@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "extra:glass/green_stained_glass"
+    }
+}

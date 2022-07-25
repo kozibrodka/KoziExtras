@@ -1,0 +1,19 @@
+
+{
+  "variants": {
+    "wzrost=0": { "model": "extra:block/sten_0" },
+    "wzrost=1": { "model": "extra:block/sten_1" },
+    "wzrost=2": { "model": "extra:block/sten_2" },
+    "wzrost=3": { "model": "extra:block/sten_3" },
+    "wzrost=4": { "model": "extra:block/sten_4" },
+    "wzrost=5": { "model": "extra:block/sten_5" },
+    "wzrost=6": { "model": "extra:block/sten_6" },
+    "wzrost=7": { "model": "extra:block/sten_7" },
+    "wzrost=8": { "model": "extra:block/sten_8" },
+    "wzrost=9": { "model": "extra:block/sten_8", "y": 90 },
+    "wzrost=10": { "model": "extra:block/sten_8", "y": 180  },
+    "wzrost=11": { "model": "extra:block/sten_8", "y": 270  }
+
+
+  }
+}

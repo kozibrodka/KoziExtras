@@ -1,0 +1,7 @@
+{
+  "parent": "extra:block/sten_base",
+  "textures": {
+    "stem": "extra:block/sten_side",
+    "upperstem": "extra:block/sten_connect"
+  }
+}

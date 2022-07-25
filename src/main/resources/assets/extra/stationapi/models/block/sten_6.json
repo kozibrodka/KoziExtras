@@ -1,0 +1,6 @@
+{
+  "parent": "extra:block/cross_sten",
+  "textures": {
+    "cross": "extra:block/sten_6"
+  }
+}

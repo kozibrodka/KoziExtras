@@ -1,0 +1,8 @@
+
+{
+  "variants": {
+    "rotacja=0": {"model": "extra:block/junglewood"},
+    "rotacja=2": { "model": "extra:block/junglewood", "x": 90 },
+    "rotacja=1": { "model": "extra:block/junglewood", "x": 90, "y": 90 }
+  }
+}

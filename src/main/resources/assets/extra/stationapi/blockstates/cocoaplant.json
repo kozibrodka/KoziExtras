@@ -1,0 +1,17 @@
+
+{
+  "variants": {
+    "wzrost=0,side=0": { "model": "extra:block/cocoa_0","y": 90},
+    "wzrost=0,side=1": { "model": "extra:block/cocoa_0","y": 270},
+    "wzrost=0,side=2": { "model": "extra:block/cocoa_0"},
+    "wzrost=0,side=3": { "model": "extra:block/cocoa_0","y": 180},
+    "wzrost=1,side=0": { "model": "extra:block/cocoa_1","y": 90},
+    "wzrost=1,side=1": { "model": "extra:block/cocoa_1","y": 270},
+    "wzrost=1,side=2": { "model": "extra:block/cocoa_1"},
+    "wzrost=1,side=3": { "model": "extra:block/cocoa_1","y": 180},
+    "wzrost=2,side=0": { "model": "extra:block/cocoa_2","y": 90},
+    "wzrost=2,side=1": { "model": "extra:block/cocoa_2","y": 270},
+    "wzrost=2,side=2": { "model": "extra:block/cocoa_2"},
+    "wzrost=2,side=3": { "model": "extra:block/cocoa_2","y": 180}
+  }
+}

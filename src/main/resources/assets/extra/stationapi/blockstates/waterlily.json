@@ -1,0 +1,9 @@
+
+{
+  "variants": {
+    "side=0": { "model": "extra:block/waterlily","y": 270},
+    "side=1": { "model": "extra:block/waterlily","y": 0},
+    "side=2": { "model": "extra:block/waterlily","y": 90},
+    "side=3": { "model": "extra:block/waterlily","y": 180}
+  }
+}

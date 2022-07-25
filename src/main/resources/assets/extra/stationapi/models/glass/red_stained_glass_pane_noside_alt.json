@@ -1,0 +1,6 @@
+{
+    "parent": "extra:block/template_glass_pane_noside_alt",
+    "textures": {
+        "pane": "extra:glass/red_stained_glass"
+    }
+}

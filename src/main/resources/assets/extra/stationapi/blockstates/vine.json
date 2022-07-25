@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "side=0,double=0": { "model": "extra:block/vine_1","y": 90},
+    "side=0,double=1": { "model": "extra:block/vine_1u","y": 90},
+    "side=1,double=0": { "model": "extra:block/vine_1","y": 270},
+    "side=1,double=1": { "model": "extra:block/vine_1u","y": 270},
+    "side=2,double=0": { "model": "extra:block/vine_1","y": 0},
+    "side=2,double=1": { "model": "extra:block/vine_1u","y": 0},
+    "side=3,double=0": { "model": "extra:block/vine_1","y": 180},
+    "side=3,double=1": { "model": "extra:block/vine_1u","y": 180}
+  }
+}

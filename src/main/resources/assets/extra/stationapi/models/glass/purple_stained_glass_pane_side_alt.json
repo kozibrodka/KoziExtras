@@ -1,0 +1,7 @@
+{
+    "parent": "extra:block/template_glass_pane_side_alt",
+    "textures": {
+        "edge": "extra:glass/purple_stained_glass_pane_top",
+        "pane": "extra:glass/purple_stained_glass"
+    }
+}

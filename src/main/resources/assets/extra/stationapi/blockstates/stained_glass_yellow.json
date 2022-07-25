@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "":
+    [
+      { "model": "extra:stained/yellow_stained_glass" }
+    ]
+  }
+}
