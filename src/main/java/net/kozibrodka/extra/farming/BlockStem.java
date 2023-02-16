@@ -14,12 +14,11 @@ import net.minecraft.level.Level;
 import net.minecraft.util.maths.MathHelper;
 import net.minecraft.util.maths.TilePos;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.client.colour.block.BlockColorProvider;
-import net.modificationstation.stationapi.api.level.BlockStateView;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
 import net.modificationstation.stationapi.api.template.block.TemplatePlant;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -56,31 +55,32 @@ public class BlockStem extends TemplatePlant
         {
             return;
         }
-        int stanik = ((BlockStateView)world).getBlockState(x, y, z).get(WZROST);
+        BlockState currentState = world.getBlockState(x, y, z);
+        int stanik = currentState.get(WZROST);
         if(stanik > 7)
         {
             if(stanik == 8){
                 if (world.getTileId(x, y, z + 1) != this.fruitType.id)
                 {
-                    ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, 7));
+                    world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
             if(stanik == 9){
                 if (world.getTileId(x - 1, y, z) != this.fruitType.id)
                 {
-                    ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, 7));
+                    world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
             if(stanik == 10){
                 if (world.getTileId(x , y, z - 1) != this.fruitType.id)
                 {
-                    ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, 7));
+                    world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
             if(stanik == 11){
                 if (world.getTileId(x + 1, y, z) != this.fruitType.id)
                 {
-                    ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, 7));
+                    world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
         }
@@ -89,7 +89,8 @@ public class BlockStem extends TemplatePlant
     public void fertilizeStem(Level world, int x, int y, int z)
     {
         int a = random.nextInt(2,5);
-        int fert = ((BlockStateView)world).getBlockState(x, y, z).get(WZROST);
+        BlockState currentState = world.getBlockState(x, y, z);
+        int fert = currentState.get(WZROST);
         int e = fert + a;
         if(fert >= 7)
         {
@@ -98,10 +99,10 @@ public class BlockStem extends TemplatePlant
         if(fert < 7)
         {
             if(e <= 7){
-                ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, e));
+                world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,e));
             }
             if(e > 7) {
-                ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, 7));
+                world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
             }
         }
     }
@@ -131,12 +132,13 @@ public class BlockStem extends TemplatePlant
 
             if (random.nextInt((int)(25.0F / var6) + 1) == 0)
             {
-                int var7 = ((BlockStateView)world).getBlockState(x, y, z).get(WZROST);
+                BlockState currentState = world.getBlockState(x, y, z);
+                int var7 = currentState.get(WZROST);
 
                 if (var7 < 7)
                 {
                     ++var7;
-                    ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, var7));
+                    world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,var7));
                 }
                 else
                 {
@@ -199,26 +201,27 @@ public class BlockStem extends TemplatePlant
 
     public void wybierzRotacje(int melonX, int melonZ, int stenX, int stenZ, int stenY, Level level)
     {
+        BlockState currentState = level.getBlockState(stenX, stenY, stenZ);
         if(melonX == stenX)
         {
             if(melonZ > stenZ)
             {
-                ((BlockStateView)level).setBlockStateWithNotify(stenX, stenY, stenZ, getDefaultState().with(WZROST, 8));
+                level.setBlockStateWithNotify(stenX, stenY, stenZ, currentState.with(WZROST,8));
             }
             if(melonZ < stenZ)
             {
-                ((BlockStateView)level).setBlockStateWithNotify(stenX, stenY, stenZ, getDefaultState().with(WZROST, 10));
+                level.setBlockStateWithNotify(stenX, stenY, stenZ, currentState.with(WZROST,10));
             }
         }
         if(melonZ == stenZ)
         {
             if(melonX > stenX)
             {
-                ((BlockStateView)level).setBlockStateWithNotify(stenX, stenY, stenZ, getDefaultState().with(WZROST, 11));
+                level.setBlockStateWithNotify(stenX, stenY, stenZ, currentState.with(WZROST,11));
             }
             if(melonX < stenX)
             {
-                ((BlockStateView)level).setBlockStateWithNotify(stenX, stenY, stenZ, getDefaultState().with(WZROST, 9));
+                level.setBlockStateWithNotify(stenX, stenY, stenZ, currentState.with(WZROST,9));
             }
         }
     }

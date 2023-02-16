@@ -7,7 +7,6 @@ import net.kozibrodka.extra.farming.BlockVine;
 import net.minecraft.block.BlockBase;
 import net.minecraft.level.Level;
 import net.minecraft.level.structure.Structure;
-import net.modificationstation.stationapi.api.level.BlockStateView;
 
 import java.util.Random;
 

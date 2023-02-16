@@ -31,13 +31,13 @@ public class LivingMixin extends EntityBase {
     }
 
 
-    @Inject(method = "method_932", at = @At("RETURN"), cancellable = true)
-    private void injected(CallbackInfoReturnable cir) {
-        int var1 = MathHelper.floor(this.x);
-        int var2 = MathHelper.floor(this.boundingBox.minY);
-        int var3 = MathHelper.floor(this.z);
-        cir.setReturnValue(this.level.getTileId(var1, var2, var3) == BlockBase.LADDER.id || this.level.getTileId(var1, var2, var3) == BlockListener.vine.id);
-    }
+//    @Inject(method = "method_932", at = @At("RETURN"), cancellable = true)
+//    private void injected(CallbackInfoReturnable cir) {
+//        int var1 = MathHelper.floor(this.x);
+//        int var2 = MathHelper.floor(this.boundingBox.minY);
+//        int var3 = MathHelper.floor(this.z);
+//        cir.setReturnValue(this.level.getTileId(var1, var2, var3) == BlockBase.LADDER.id || this.level.getTileId(var1, var2, var3) == BlockListener.vine.id);
+//    }
 
 
 }

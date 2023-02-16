@@ -1,0 +1,8 @@
+//TODO:
+-Add all Stairs
+-Stairs lightinng bugs (smmoth lightning and non smooth lightinng bugs)
+-Should stairs drop normal drops?
+-add all slabs
+-size of floating item slab.
+-maybe try doing better slab code for new slabs (make registering like stairs...)
+-try to remove overritng in mixins where possible

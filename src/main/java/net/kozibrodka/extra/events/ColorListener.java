@@ -7,13 +7,9 @@ import net.minecraft.client.render.block.GrassColour;
 import net.minecraft.level.BlockView;
 import net.minecraft.util.maths.TilePos;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.client.colour.block.BlockColorProvider;
-import net.modificationstation.stationapi.api.client.colour.world.BiomeColors;
-import net.modificationstation.stationapi.api.client.event.colour.block.BlockColorsRegisterEvent;
-import net.modificationstation.stationapi.api.client.event.colour.item.ItemColorsRegisterEvent;
-import net.modificationstation.stationapi.api.client.event.render.model.LoadUnbakedModelEvent;
-import net.modificationstation.stationapi.api.client.level.ColorResolver;
-import net.modificationstation.stationapi.api.level.BlockStateView;
+import net.modificationstation.stationapi.api.client.color.world.BiomeColors;
+import net.modificationstation.stationapi.api.client.event.color.block.BlockColorsRegisterEvent;
+import net.modificationstation.stationapi.api.client.event.color.item.ItemColorsRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
 import net.modificationstation.stationapi.api.registry.ModID;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
@@ -70,10 +66,10 @@ public class ColorListener {
                 BlockListener.jungleleaves, BlockListener.vine
         );
 
-        event.blockColors.registerColorProvider(
-                (state, world, pos, tintIndex) -> world == null || pos == null ? -1 : BiomeColors.getWaterColor(world, pos),
-                BlockBase.FLOWING_WATER, BlockBase.STILL_WATER
-        );
+//        event.blockColors.registerColorProvider(
+//                (state, world, pos, tintIndex) -> world == null || pos == null ? -1 : BiomeColors.getWaterColor(world, pos),
+//                BlockBase.FLOWING_WATER, BlockBase.STILL_WATER
+//        );
 
     }
 

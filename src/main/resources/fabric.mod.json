@@ -19,6 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "stationapi:event_bus": [
+      "net.kozibrodka.extra.events.TextureListener",
       "net.kozibrodka.extra.events.BlockListener",
       "net.kozibrodka.extra.events.RecipeListener",
       "net.kozibrodka.extra.events.ColorListener"
@@ -34,7 +35,7 @@
     ]
   },
   "mixins": [
-    "kozibrodka.mixins.json"
+    "extra.mixins.json"
   ],
   "depends": {
     "minecraft": "1.0.0-beta.7.3"

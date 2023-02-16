@@ -16,7 +16,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.maths.Box;
 import net.minecraft.util.maths.MathHelper;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.level.BlockStateView;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
@@ -57,17 +56,18 @@ public class BlockLilyPad extends TemplatePlant {
 
     public void afterPlaced(Level arg, int i, int j, int k, Living arg2) {
         int var6 = MathHelper.floor((double)(arg2.yaw * 4.0F / 360.0F) + 0.5D) & 3;
+        BlockState currentState = arg.getBlockState(i, j, k);
         if(var6 == 0) {
-            ((BlockStateView)arg).setBlockStateWithNotify(i, j, k, getDefaultState().with(SIDE, 0));
+            arg.setBlockStateWithNotify(i,j,k, currentState.with(SIDE,0));
         }
         if(var6 == 1) {
-            ((BlockStateView)arg).setBlockStateWithNotify(i, j, k, getDefaultState().with(SIDE, 1));
+            arg.setBlockStateWithNotify(i,j,k, currentState.with(SIDE,1));
         }
         if(var6 == 2) {
-            ((BlockStateView)arg).setBlockStateWithNotify(i, j, k, getDefaultState().with(SIDE, 2));
+            arg.setBlockStateWithNotify(i,j,k, currentState.with(SIDE,2));
         }
         if(var6 == 3) {
-            ((BlockStateView)arg).setBlockStateWithNotify(i, j, k, getDefaultState().with(SIDE, 3));
+            arg.setBlockStateWithNotify(i,j,k, currentState.with(SIDE,3));
         }
 
     }

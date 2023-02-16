@@ -27,9 +27,10 @@ public class DyeMixin extends ItemBase {
         this.setDurability(0);
     }
 
-    @Inject(method = "useOnTile", at = @At("HEAD"))
+    @Inject(method = "useOnTile", at = @At("HEAD"), cancellable = true)
     private void injected(ItemInstance arg, PlayerBase arg2, Level arg3, int i, int j, int k, int l, CallbackInfoReturnable<Boolean> cir) {
-        useOnTile2(arg, arg2, arg3, i, j, k, l);
+        if(useOnTile2(arg, arg2, arg3, i, j, k, l))
+            cir.setReturnValue(true);
     }
 
     public boolean useOnTile2(ItemInstance arg, PlayerBase arg2, Level arg3, int i, int j, int k, int l)

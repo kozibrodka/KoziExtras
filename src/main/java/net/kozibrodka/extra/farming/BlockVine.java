@@ -12,12 +12,12 @@ import net.minecraft.level.Level;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.maths.Box;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.level.BlockStateView;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
 import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
 import net.modificationstation.stationapi.api.template.block.TemplatePlant;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 
 import java.util.Random;
 
@@ -141,16 +141,17 @@ public class BlockVine extends TemplateBlockBase {
 
     public void onAdjacentBlockUpdate(Level level, int x, int y, int z, int par5)
     {
-        int a = ((BlockStateView)level).getBlockState(x, y, z).get(DOUBLE);
-        int b = ((BlockStateView)level).getBlockState(x, y, z).get(SIDE);
+        BlockState currentState = level.getBlockState(x, y, z);
+        int a = currentState.get(DOUBLE);
+        int b = currentState.get(SIDE);
 
         if(a == 0 && level.getTileId(x,y+1,z) != 0 && canBePlacedOn(level.getTileId(x,y+1,z)))
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y , z, getDefaultState().with(DOUBLE, 1).with(SIDE, b));
+            level.setBlockStateWithNotify(x, y , z, currentState.with(DOUBLE, 1).with(SIDE, b));
         }
         if(a == 1 && (level.getTileId(x,y+1,z) == 0 || !canBePlacedOn(level.getTileId(x,y+1,z))))
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y , z, getDefaultState().with(DOUBLE, 0).with(SIDE, b));
+            level.setBlockStateWithNotify(x, y , z, currentState.with(DOUBLE, 0).with(SIDE, b));
         }
         breakIfIncorrect(level, x, y, z);
     }
@@ -169,9 +170,10 @@ public class BlockVine extends TemplateBlockBase {
         if(level.getTileId(x, y - 1 , z) == 0 && level.placeTile(x, y, z) >= 9 && random.nextInt(32) == 0)
         {
             try{
-                a = ((BlockStateView)level).getBlockState(x, y, z).get(SIDE);
+                BlockState currentState = level.getBlockState(x, y, z);
+                a = currentState.get(SIDE);
                 level.setTile(x,y - 1, z, this.id);
-                ((BlockStateView)level).setBlockStateWithNotify(x, y - 1, z, getDefaultState().with(SIDE, a));
+                level.setBlockStateWithNotify(x, y - 1, z, currentState.with(SIDE, a));
 
             }catch (Exception e){}
         }
@@ -188,13 +190,13 @@ public class BlockVine extends TemplateBlockBase {
             dach = level.getTileId(x, y + 1, z);
             if(dach == BlockListener.vine.id)
             {
-                if(((BlockStateView)level).getBlockState(x, y + 1, z).get(SIDE) != ((BlockStateView)level).getBlockState(x, y, z).get(SIDE))
+                if(level.getBlockState(x, y + 1, z).get(SIDE) != level.getBlockState(x, y, z).get(SIDE))
                 {
                     return false;
                 }
             }else
             {
-                var5 = ((BlockStateView)level).getBlockState(x, y, z).get(SIDE);
+                var5 = level.getBlockState(x, y, z).get(SIDE);
 
                 if(var5 == 0)
                 {
@@ -238,21 +240,22 @@ public class BlockVine extends TemplateBlockBase {
 
     public void onBlockPlaced(Level level, int x, int y, int z, int side)
     {
+        BlockState currentState = level.getBlockState(x, y, z);
         if(side == 2)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 0));
+            level.setBlockStateWithNotify(x, y, z, currentState.with(SIDE, 0));
         }
         if(side == 3)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 1));
+            level.setBlockStateWithNotify(x, y, z, currentState.with(SIDE, 1));
         }
         if(side == 4)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 2));
+            level.setBlockStateWithNotify(x, y, z, currentState.with(SIDE, 2));
         }
         if(side == 5)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 3));
+            level.setBlockStateWithNotify(x, y, z, currentState.with(SIDE, 3));
         }
         this.onAdjacentBlockUpdate(level,x,y,z,side);  ///DAJ POTEM!!!!!
     }

@@ -1,6 +1,0 @@
-{
-  "parent": "block/log",
-  "textures": {
-    "side": "block/oak_log"
-  }
-}

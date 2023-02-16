@@ -6,7 +6,6 @@ import net.minecraft.entity.Living;
 import net.minecraft.level.Level;
 import net.minecraft.util.maths.MathHelper;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.level.BlockStateView;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
@@ -54,17 +53,18 @@ public class BlockTreeJungle extends TemplateBlockBase {
 
 //        int korzen = level.getTileMeta(x,y,z);
 //        System.out.println(korzen);
+        BlockState currentState = level.getBlockState(x, y, z);
         if(side == 1 || side == 0)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(ROTACJA, 0));
+            level.setBlockStateWithNotify(x,y,z,currentState.with(ROTACJA,0));
         }
         if(side == 4 || side == 5)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(ROTACJA, 1));
+            level.setBlockStateWithNotify(x,y,z,currentState.with(ROTACJA,1));
         }
         if(side == 2 || side == 3)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(ROTACJA, 2));
+            level.setBlockStateWithNotify(x,y,z,currentState.with(ROTACJA,2));
         }
     }
 

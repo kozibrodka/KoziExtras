@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.kozibrodka.extra.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BlockFenceMixin",
+    "BlockSlabMixin",
+    "BlockStairsMixin",
+    "BlockTrapdoorMixin",
+    "DyeMixin",
+    "ItemSlabMixin",
+    "LivingMixin",
+    "LogMixin",
+    "MinecraftAccessor",
+    "RecipeRegistryMixin",
+    "RenderBlockAccessor",
+    "RenderBlocksMixin",
+    "TallGrassMixin"
+  ],
+  "server": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

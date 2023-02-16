@@ -1,9 +1,12 @@
 package net.kozibrodka.extra.mixin;
 
+import net.kozibrodka.extra.utils.BlockStairsInterface;
+import net.kozibrodka.extra.utils.KoziUtils;
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.Stairs;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Living;
+import net.minecraft.level.BlockView;
 import net.minecraft.level.Level;
 import net.minecraft.util.maths.Box;
 import net.minecraft.util.maths.MathHelper;
@@ -14,59 +17,73 @@ import java.util.ArrayList;
 
 
 @Mixin(Stairs.class)
-public class BlockStairsMixin extends BlockBase {
-
+public class BlockStairsMixin extends BlockBase implements BlockStairsInterface {
 
     protected BlockStairsMixin(int i, Material arg) {
         super(i, arg);
     }
 
-    @Override
-    public void onBlockPlaced(Level var1, int var2, int var3, int var4, int var5) {
-        if(var5 == 0) {
-            int var6 = var1.getTileMeta(var2, var3, var4);
-            var1.setTileMeta(var2, var3, var4, var6 | 4);
-        }
-    }
 
     @Override
-    public void doesBoxCollide(Level arg, int i, int j, int k, Box arg2, ArrayList arraylist) {
-        int var7 = arg.getTileMeta(i, j, k);
-        int var8 = var7 & 3;
-        float var9 = 0.0F;
-        float var10 = 0.5F;
-        float var11 = 0.5F;
-        float var12 = 1.0F;
-        if((var7 & 4) != 0) {
-            var9 = 0.5F;
-            var10 = 1.0F;
-            var11 = 0.0F;
-            var12 = 0.5F;
-        }
+    public void doesBoxCollide(Level world, int i, int j, int k, Box box, ArrayList list)
+    {
+        this.updateBoundingBox1(world, i, j, k);
+        super.doesBoxCollide(world, i, j, k, box, list);
 
-        this.setBoundingBox(0.0F, var9, 0.0F, 1.0F, var10, 1.0F);
-        super.doesBoxCollide(arg, i, j, k, arg2, arraylist);
-        if(var8 == 0) {
-            this.setBoundingBox(0.5F, var11, 0.0F, 1.0F, var12, 1.0F);
-            super.doesBoxCollide(arg, i, j, k, arg2, arraylist);
-        } else if(var8 == 1) {
-            this.setBoundingBox(0.0F, var11, 0.0F, 0.5F, var12, 1.0F);
-            super.doesBoxCollide(arg, i, j, k, arg2, arraylist);
-        } else if(var8 == 2) {
-            this.setBoundingBox(0.0F, var11, 0.5F, 1.0F, var12, 1.0F);
-            super.doesBoxCollide(arg, i, j, k, arg2, arraylist);
-        } else if(var8 == 3) {
-            this.setBoundingBox(0.0F, var11, 0.0F, 1.0F, var12, 0.5F);
-            super.doesBoxCollide(arg, i, j, k, arg2, arraylist);
+        boolean var8 = this.doesStairsCollide1(world, i, j, k);
+        super.doesBoxCollide(world, i, j, k, box, list);
+
+        if (var8 && this.doesStairsCollide2(world, i, j, k))
+        {
+            super.doesBoxCollide(world, i, j, k, box, list);
         }
 
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+
+
+//        this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+//        super.doesBoxCollide(world, par2, par3, par4, box, list);
+//        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 0.5F);
+//        super.doesBoxCollide(world, par2, par3, par4, box, list);
     }
+
+//    @Override
+//    public void updateBoundingBox(BlockView arg, int i, int j, int k) {
+////        int meta = arg.getTileMeta(i, j, k);
+////        if ((meta & 4) != 0)
+////        {
+////            this.setBoundingBox(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
+////        }
+////        else
+////        {
+////            this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+////        }
+//
+//
+//        this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+////        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 1.0F);
+//    }
+
+    public void updateBoundingBox1(BlockView arg, int i, int j, int k){
+                int meta = arg.getTileMeta(i, j, k);
+        if ((meta & 4) != 0)
+        {
+            this.setBoundingBox(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
+        }
+        else
+        {
+            this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+        }
+    }
+
 
     @Override
     public void afterPlaced(Level arg, int i, int j, int k, Living arg2) {
         int var6 = MathHelper.floor((double)(arg2.yaw * 4.0F / 360.0F) + 0.5D) & 3;
         int var7 = arg.getTileMeta(i, j, k) & 4;
+//        System.out.println(arg.getTileMeta(i, j, k));
+//        System.out.println(var7);
+//        System.out.println("XD");
         if(var6 == 0) {
             arg.setTileMeta(i, j, k, 2 | var7);
         }
@@ -76,7 +93,7 @@ public class BlockStairsMixin extends BlockBase {
         }
 
         if(var6 == 2) {
-
+            arg.setTileMeta(i, j, k, 3 | var7);
         }
 
         if(var6 == 3) {
@@ -84,4 +101,272 @@ public class BlockStairsMixin extends BlockBase {
         }
 
     }
+
+    public void onBlockPlaced(Level var1, int i, int j, int k, int l){
+        if(l == 0) {
+            int var6 = var1.getTileMeta(i, j, k);
+            var1.setTileMeta(i, j, k, var6 | 4);
+        }else if(l != 1){
+            KoziUtils kozi = new KoziUtils();
+            float a = kozi.giveCursorHeigh(i,j,k);
+            if((double)a >= 0.5D){
+                int var6 = var1.getTileMeta(i, j, k);
+                var1.setTileMeta(i, j, k, var6 | 4);
+            }
+        }
+    }
+
+    private boolean isStairsConnected(BlockView blockviev, int x, int y, int z, int par5)
+    {
+        int var6 = blockviev.getTileId(x, y, z);
+        return isBlockStairsID(var6) && blockviev.getTileMeta(x, y, z) == par5;
+    }
+
+    public boolean isBlockStairsID(int par0)
+    {
+        return par0 > 0 && BlockBase.BY_ID[par0] instanceof Stairs;
+    }
+
+    @Override
+    public boolean doesStairsCollide1(BlockView par1IBlockAccess, int par2, int par3, int par4)
+    {
+        int var5 = par1IBlockAccess.getTileMeta(par2, par3, par4);
+        int var6 = var5 & 3;
+        float var7 = 0.5F;
+        float var8 = 1.0F;
+
+        if ((var5 & 4) != 0)
+        {
+            var7 = 0.0F;
+            var8 = 0.5F;
+        }
+
+        float var9 = 0.0F;
+        float var10 = 1.0F;
+        float var11 = 0.0F;
+        float var12 = 0.5F;
+        boolean var13 = true;
+        int var14;
+        int var15;
+        int var16;
+
+        if (var6 == 0)
+        {
+            var9 = 0.5F;
+            var12 = 1.0F;
+            var14 = par1IBlockAccess.getTileId(par2 + 1, par3, par4);
+            var15 = par1IBlockAccess.getTileMeta(par2 + 1, par3, par4);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var16 = var15 & 3;
+
+                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                {
+                    var12 = 0.5F;
+                    var13 = false;
+                }
+                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                {
+                    var11 = 0.5F;
+                    var13 = false;
+                }
+            }
+        }
+        else if (var6 == 1)
+        {
+            var10 = 0.5F;
+            var12 = 1.0F;
+            var14 = par1IBlockAccess.getTileId(par2 - 1, par3, par4);
+            var15 = par1IBlockAccess.getTileMeta(par2 - 1, par3, par4);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var16 = var15 & 3;
+
+                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                {
+                    var12 = 0.5F;
+                    var13 = false;
+                }
+                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                {
+                    var11 = 0.5F;
+                    var13 = false;
+                }
+            }
+        }
+        else if (var6 == 2)
+        {
+            var11 = 0.5F;
+            var12 = 1.0F;
+            var14 = par1IBlockAccess.getTileId(par2, par3, par4 + 1);
+            var15 = par1IBlockAccess.getTileMeta(par2, par3, par4 + 1);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var16 = var15 & 3;
+
+                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                {
+                    var10 = 0.5F;
+                    var13 = false;
+                }
+                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                {
+                    var9 = 0.5F;
+                    var13 = false;
+                }
+            }
+        }
+        else if (var6 == 3)
+        {
+            var14 = par1IBlockAccess.getTileId(par2, par3, par4 - 1);
+            var15 = par1IBlockAccess.getTileMeta(par2, par3, par4 - 1);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var16 = var15 & 3;
+
+                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                {
+                    var10 = 0.5F;
+                    var13 = false;
+                }
+                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                {
+                    var9 = 0.5F;
+                    var13 = false;
+                }
+            }
+        }
+
+        this.setBoundingBox(var9, var7, var11, var10, var8, var12);
+        return var13;
+    }
+
+    @Override
+    public boolean doesStairsCollide2(BlockView par1IBlockAccess, int par2, int par3, int par4)
+    {
+        int var5 = par1IBlockAccess.getTileMeta(par2, par3, par4);
+        int var6 = var5 & 3;
+        float var7 = 0.5F;
+        float var8 = 1.0F;
+
+        if ((var5 & 4) != 0)
+        {
+            var7 = 0.0F;
+            var8 = 0.5F;
+        }
+
+        float var9 = 0.0F;
+        float var10 = 0.5F;
+        float var11 = 0.5F;
+        float var12 = 1.0F;
+        boolean var13 = false;
+        int var14;
+        int var15;
+        int var16;
+
+        if (var6 == 0)
+        {
+            var14 = par1IBlockAccess.getTileId(par2 - 1, par3, par4);
+            var15 = par1IBlockAccess.getTileMeta(par2 - 1, par3, par4);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var16 = var15 & 3;
+
+                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                {
+                    var11 = 0.0F;
+                    var12 = 0.5F;
+                    var13 = true;
+                }
+                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                {
+                    var11 = 0.5F;
+                    var12 = 1.0F;
+                    var13 = true;
+                }
+            }
+        }
+        else if (var6 == 1)
+        {
+            var14 = par1IBlockAccess.getTileId(par2 + 1, par3, par4);
+            var15 = par1IBlockAccess.getTileMeta(par2 + 1, par3, par4);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var9 = 0.5F;
+                var10 = 1.0F;
+                var16 = var15 & 3;
+
+                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                {
+                    var11 = 0.0F;
+                    var12 = 0.5F;
+                    var13 = true;
+                }
+                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                {
+                    var11 = 0.5F;
+                    var12 = 1.0F;
+                    var13 = true;
+                }
+            }
+        }
+        else if (var6 == 2)
+        {
+            var14 = par1IBlockAccess.getTileId(par2, par3, par4 - 1);
+            var15 = par1IBlockAccess.getTileMeta(par2, par3, par4 - 1);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var11 = 0.0F;
+                var12 = 0.5F;
+                var16 = var15 & 3;
+
+                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                {
+                    var13 = true;
+                }
+                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                {
+                    var9 = 0.5F;
+                    var10 = 1.0F;
+                    var13 = true;
+                }
+            }
+        }
+        else if (var6 == 3)
+        {
+            var14 = par1IBlockAccess.getTileId(par2, par3, par4 + 1);
+            var15 = par1IBlockAccess.getTileMeta(par2, par3, par4 + 1);
+
+            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            {
+                var16 = var15 & 3;
+
+                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                {
+                    var13 = true;
+                }
+                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                {
+                    var9 = 0.5F;
+                    var10 = 1.0F;
+                    var13 = true;
+                }
+            }
+        }
+
+        if (var13)
+        {
+            this.setBoundingBox(var9, var7, var11, var10, var8, var12);
+        }
+
+        return var13;
+    }
+
 }

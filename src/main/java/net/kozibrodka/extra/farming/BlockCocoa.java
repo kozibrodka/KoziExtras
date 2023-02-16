@@ -10,11 +10,11 @@ import net.minecraft.level.BlockView;
 import net.minecraft.level.Level;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.block.DropListProvider;
-import net.modificationstation.stationapi.api.level.BlockStateView;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
 import net.modificationstation.stationapi.api.template.block.TemplatePlant;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 
 import java.util.List;
 import java.util.Random;
@@ -36,14 +36,12 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
         else if (level.rand.nextInt(5) == 0)
         {
-            int var6 = ((BlockStateView)level).getBlockState(x, y, z).get(WZROST);
-            int sidecz = ((BlockStateView)level).getBlockState(x, y, z).get(SIDE);
-            int var7 = var6;
-
+            BlockState currentState = level.getBlockState(x, y, z);
+            int var7 = currentState.get(WZROST);
             if (var7 < 2)
             {
                 ++var7;
-                ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, var7).with(SIDE, sidecz));
+                level.setBlockStateWithNotify(x,y,z, currentState.with(WZROST, var7));
             }
         }
     }
@@ -78,11 +76,11 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
 
     public void fertilizeCocoa(Level world, int x, int y, int z)
     {
-        int fert = ((BlockStateView)world).getBlockState(x, y, z).get(WZROST);
-        int sidecz = ((BlockStateView)world).getBlockState(x, y, z).get(SIDE);
+        BlockState currentState = world.getBlockState(x, y, z);
+        int fert = currentState.get(WZROST);
         if(fert < 2)
         {
-            ((BlockStateView)world).setBlockStateWithNotify(x, y, z, getDefaultState().with(WZROST, fert + 1).with(SIDE, sidecz));
+            world.setBlockStateWithNotify(x,y,z, currentState.with(WZROST, fert +1));
         }
     }
 
@@ -129,40 +127,42 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
     }
 
     public void onBlockPlaced(Level level, int x, int y, int z, int side) {
+        BlockState currentState = level.getBlockState(x, y, z);
         if(side == 2)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 0));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 0));
         }
         if(side == 3)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 1));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 1));
         }
         if(side == 4)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 2));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 2));
         }
         if(side == 5)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 3));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 3));
         }
     }
 
     public void onBlockPlaced2(Level level, int x, int y, int z, int side, int kokos) {
+        BlockState currentState = level.getBlockState(x, y, z);
         if(side == 2)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 0).with(WZROST, kokos));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 0).with(WZROST, kokos));
         }
         if(side == 3)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 1).with(WZROST, kokos));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 1).with(WZROST, kokos));
         }
         if(side == 4)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 2).with(WZROST, kokos));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 2).with(WZROST, kokos));
         }
         if(side == 5)
         {
-            ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, 3).with(WZROST, kokos));
+            level.setBlockStateWithNotify(x,y,z, currentState.with(SIDE, 3).with(WZROST, kokos));
         }
     }
 
@@ -171,7 +171,7 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
     int var5 = 0;
     int var6 = 0;
         try{
-            var5 = ((BlockStateView)level).getBlockState(x, y, z).get(SIDE);
+            var5 = level.getBlockState(x, y, z).get(SIDE);
 
             if(var5 == 0)
             {
