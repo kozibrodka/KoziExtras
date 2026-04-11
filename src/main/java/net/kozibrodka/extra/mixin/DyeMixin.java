@@ -4,42 +4,39 @@ import net.kozibrodka.extra.events.BlockListener;
 import net.kozibrodka.extra.farming.BlockCocoa;
 import net.kozibrodka.extra.farming.BlockJungleSapling;
 import net.kozibrodka.extra.farming.BlockStem;
-import net.minecraft.block.BlockBase;
-import net.minecraft.block.Crops;
-import net.minecraft.block.Sapling;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.Dye;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.level.Level;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Dye.class)
-public class DyeMixin extends ItemBase {
+@Mixin(DyeItem.class)
+public class DyeMixin extends Item {
 
     protected DyeMixin(int i) {
         super(i);
-        this.setHasSubItems(true);
-        this.setDurability(0);
+        this.setHasSubtypes(true);
+        this.setMaxDamage(0);
     }
 
     @Inject(method = "useOnTile", at = @At("HEAD"), cancellable = true)
-    private void injected(ItemInstance arg, PlayerBase arg2, Level arg3, int i, int j, int k, int l, CallbackInfoReturnable<Boolean> cir) {
+    private void injected(ItemStack arg, PlayerEntity arg2, World arg3, int i, int j, int k, int l, CallbackInfoReturnable<Boolean> cir) {
         if(useOnTile2(arg, arg2, arg3, i, j, k, l))
             cir.setReturnValue(true);
     }
 
-    public boolean useOnTile2(ItemInstance arg, PlayerBase arg2, Level arg3, int i, int j, int k, int l)
+    public boolean useOnTile2(ItemStack arg, PlayerEntity arg2, World arg3, int i, int j, int k, int l)
     {
         if (arg.getDamage() == 15) {
-            int var8 = arg3.getTileId(i, j, k);
+            int var8 = arg3.getBlockId(i, j, k);
 
             if (var8 == BlockListener.watermelonsten.id) {
-                if (!arg3.isServerSide) {
+                if (!arg3.isRemote) {
                     ((BlockStem)BlockListener.watermelonsten).fertilizeStem(arg3, i, j, k);
                     --arg.count;
                 }
@@ -47,7 +44,7 @@ public class DyeMixin extends ItemBase {
                 return true;
             }
             if (var8 == BlockListener.pumpkinsten.id) {
-                if (!arg3.isServerSide) {
+                if (!arg3.isRemote) {
                     ((BlockStem)BlockListener.pumpkinsten).fertilizeStem(arg3, i, j, k);
                     --arg.count;
                 }
@@ -55,7 +52,7 @@ public class DyeMixin extends ItemBase {
                 return true;
             }
             if (var8 == BlockListener.cocoaplant.id) {
-                if (!arg3.isServerSide) {
+                if (!arg3.isRemote) {
                     ((BlockCocoa)BlockListener.cocoaplant).fertilizeCocoa(arg3, i, j, k);
                     --arg.count;
                 }
@@ -64,8 +61,8 @@ public class DyeMixin extends ItemBase {
             }
 
             if (var8 == BlockListener.junglesapling.id) {
-                if (!arg3.isServerSide) {
-                    ((BlockJungleSapling)BlockListener.junglesapling).growTree(arg3, i, j, k, arg3.rand);
+                if (!arg3.isRemote) {
+                    ((BlockJungleSapling)BlockListener.junglesapling).growTree(arg3, i, j, k, arg3.random);
                     --arg.count;
                 }
 
@@ -75,7 +72,7 @@ public class DyeMixin extends ItemBase {
         }
         else if (arg.getDamage() == 3)
         {
-            int var11 = arg3.getTileId(i, j, k);
+            int var11 = arg3.getBlockId(i, j, k);
 
             if (var11 == BlockListener.junglewood.id)
             {
@@ -111,8 +108,8 @@ public class DyeMixin extends ItemBase {
 
                 if (arg3.isAir(i, j, k))
                 {
-                    arg3.setTile(i, j, k, BlockListener.cocoaplant.id);
-                    ((BlockCocoa)BlockListener.cocoaplant).onBlockPlaced(arg3, i, j, k, l);
+                    arg3.setBlock(i, j, k, BlockListener.cocoaplant.id);
+                    ((BlockCocoa)BlockListener.cocoaplant).onPlaced(arg3, i, j, k, l);
                     --arg.count;
                 }
 

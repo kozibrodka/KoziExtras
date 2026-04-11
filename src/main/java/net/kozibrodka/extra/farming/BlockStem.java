@@ -4,15 +4,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kozibrodka.extra.events.BlockListener;
 import net.kozibrodka.extra.events.ColorListener;
-import net.minecraft.block.BlockBase;
-import net.minecraft.client.render.block.FoliageColour;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.MathHelper;
-import net.minecraft.util.maths.TilePos;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
@@ -27,12 +23,12 @@ import java.util.Random;
 
 public class BlockStem extends TemplatePlant
 {
-    private final BlockBase fruitType;
+    private final Block fruitType;
 
-    public BlockStem(Identifier identifier, int texture, BlockBase par2Block) {
+    public BlockStem(Identifier identifier, int texture, Block par2Block) {
         super(identifier, texture);
         this.fruitType = par2Block;
-        this.setTicksRandomly(true);
+        this.setTickRandomly(true);
         float var3 = 0.125F;
         this.setBoundingBox(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, 0.25F, 0.5F + var3);
     }
@@ -49,9 +45,9 @@ public class BlockStem extends TemplatePlant
         this.setBoundingBox(0.5F - var5, 0.0F, 0.5F - var5, 0.5F + var5, (float)this.maxY, 0.5F + var5);
     }
 
-    public void onAdjacentBlockUpdate(Level world, int x, int y, int z, int l) {
-        super.onAdjacentBlockUpdate(world, x, y, z, l);
-        if(world.getTileId(x,y,z) != BlockListener.watermelonsten.id && world.getTileId(x,y,z) != BlockListener.pumpkinsten.id)
+    public void neighborUpdate(World world, int x, int y, int z, int l) {
+        super.neighborUpdate(world, x, y, z, l);
+        if(world.getBlockId(x,y,z) != BlockListener.watermelonsten.id && world.getBlockId(x,y,z) != BlockListener.pumpkinsten.id)
         {
             return;
         }
@@ -60,25 +56,25 @@ public class BlockStem extends TemplatePlant
         if(stanik > 7)
         {
             if(stanik == 8){
-                if (world.getTileId(x, y, z + 1) != this.fruitType.id)
+                if (world.getBlockId(x, y, z + 1) != this.fruitType.id)
                 {
                     world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
             if(stanik == 9){
-                if (world.getTileId(x - 1, y, z) != this.fruitType.id)
+                if (world.getBlockId(x - 1, y, z) != this.fruitType.id)
                 {
                     world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
             if(stanik == 10){
-                if (world.getTileId(x , y, z - 1) != this.fruitType.id)
+                if (world.getBlockId(x , y, z - 1) != this.fruitType.id)
                 {
                     world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
             }
             if(stanik == 11){
-                if (world.getTileId(x + 1, y, z) != this.fruitType.id)
+                if (world.getBlockId(x + 1, y, z) != this.fruitType.id)
                 {
                     world.setBlockStateWithNotify(x,y,z,currentState.with(WZROST,7));
                 }
@@ -86,7 +82,7 @@ public class BlockStem extends TemplatePlant
         }
     }
 
-    public void fertilizeStem(Level world, int x, int y, int z)
+    public void fertilizeStem(World world, int x, int y, int z)
     {
         int a = random.nextInt(2,5);
         BlockState currentState = world.getBlockState(x, y, z);
@@ -107,13 +103,13 @@ public class BlockStem extends TemplatePlant
         }
     }
 
-    protected boolean canPlantOnTopOf(int i) {
-        return i == BlockBase.FARMLAND.id;
+    protected boolean canPlantOnTop(int i) {
+        return i == Block.FARMLAND.id;
     }
 
     public static final IntProperty WZROST = IntProperty.of("wzrost", 0, 11);
 
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder){
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(WZROST);
         setDefaultState(WZROST, 0);
     }
@@ -122,11 +118,11 @@ public class BlockStem extends TemplatePlant
     }
 
 
-    public void onScheduledTick(Level world, int x, int y, int z, Random random)
+    public void onTick(World world, int x, int y, int z, Random random)
     {
-        super.onScheduledTick(world, x, y, z, random);
+        super.onTick(world, x, y, z, random);
 
-        if (world.placeTile(x, y + 1, z) >= 9)
+        if (world.getLightLevel(x, y + 1, z) >= 9)
         {
             float var6 = this.getGrowthModifier(world, x, y, z);
 
@@ -142,22 +138,22 @@ public class BlockStem extends TemplatePlant
                 }
                 else
                 {
-                    if (world.getTileId(x - 1, y, z) == this.fruitType.id)
+                    if (world.getBlockId(x - 1, y, z) == this.fruitType.id)
                     {
                         return;
                     }
 
-                    if (world.getTileId(x + 1, y, z) == this.fruitType.id)
+                    if (world.getBlockId(x + 1, y, z) == this.fruitType.id)
                     {
                         return;
                     }
 
-                    if (world.getTileId(x, y, z - 1) == this.fruitType.id)
+                    if (world.getBlockId(x, y, z - 1) == this.fruitType.id)
                     {
                         return;
                     }
 
-                    if (world.getTileId(x, y, z + 1) == this.fruitType.id)
+                    if (world.getBlockId(x, y, z + 1) == this.fruitType.id)
                     {
                         return;
                     }
@@ -186,11 +182,11 @@ public class BlockStem extends TemplatePlant
                         ++var10;
                     }
 
-                    int var11 = world.getTileId(var9, y - 1, var10);
+                    int var11 = world.getBlockId(var9, y - 1, var10);
 
-                    if (world.getTileId(var9, y, var10) == 0 && (var11 == BlockBase.FARMLAND.id || var11 == BlockBase.DIRT.id || var11 == BlockBase.GRASS.id))
+                    if (world.getBlockId(var9, y, var10) == 0 && (var11 == Block.FARMLAND.id || var11 == Block.DIRT.id || var11 == Block.GRASS_BLOCK.id))
                     {
-                        world.setTileInChunk(var9, y, var10, this.fruitType.id);
+                        world.setBlockWithoutNotifyingNeighbors(var9, y, var10, this.fruitType.id);
                         wybierzRotacje(var9, var10, x, z, y, world);
 
                     }
@@ -199,7 +195,7 @@ public class BlockStem extends TemplatePlant
         }
     }
 
-    public void wybierzRotacje(int melonX, int melonZ, int stenX, int stenZ, int stenY, Level level)
+    public void wybierzRotacje(int melonX, int melonZ, int stenX, int stenZ, int stenY, World level)
     {
         BlockState currentState = level.getBlockState(stenX, stenY, stenZ);
         if(melonX == stenX)
@@ -226,17 +222,17 @@ public class BlockStem extends TemplatePlant
         }
     }
 
-    private float getGrowthModifier(Level world, int x, int y, int z)
+    private float getGrowthModifier(World world, int x, int y, int z)
     {
         float var5 = 1.0F;
-        int var6 = world.getTileId(x, y, z - 1);
-        int var7 = world.getTileId(x, y, z + 1);
-        int var8 = world.getTileId(x - 1, y, z);
-        int var9 = world.getTileId(x + 1, y, z);
-        int var10 = world.getTileId(x - 1, y, z - 1);
-        int var11 = world.getTileId(x + 1, y, z - 1);
-        int var12 = world.getTileId(x + 1, y, z + 1);
-        int var13 = world.getTileId(x - 1, y, z + 1);
+        int var6 = world.getBlockId(x, y, z - 1);
+        int var7 = world.getBlockId(x, y, z + 1);
+        int var8 = world.getBlockId(x - 1, y, z);
+        int var9 = world.getBlockId(x + 1, y, z);
+        int var10 = world.getBlockId(x - 1, y, z - 1);
+        int var11 = world.getBlockId(x + 1, y, z - 1);
+        int var12 = world.getBlockId(x + 1, y, z + 1);
+        int var13 = world.getBlockId(x - 1, y, z + 1);
         boolean var14 = var8 == this.id || var9 == this.id;
         boolean var15 = var6 == this.id || var7 == this.id;
         boolean var16 = var10 == this.id || var11 == this.id || var12 == this.id || var13 == this.id;
@@ -245,14 +241,14 @@ public class BlockStem extends TemplatePlant
         {
             for (int var18 = z - 1; var18 <= z + 1; ++var18)
             {
-                int var19 = world.getTileId(var17, y - 1, var18);
+                int var19 = world.getBlockId(var17, y - 1, var18);
                 float var20 = 0.0F;
 
-                if (var19 == BlockBase.FARMLAND.id)
+                if (var19 == Block.FARMLAND.id)
                 {
                     var20 = 1.0F;
 
-                    if (world.getTileMeta(var17, y - 1, var18) > 0)
+                    if (world.getBlockMeta(var17, y - 1, var18) > 0)
                     {
                         var20 = 3.0F;
                     }
@@ -303,12 +299,12 @@ public class BlockStem extends TemplatePlant
 //        }
 //    }
 
-    public void dropWithChance(Level level, int i, int j, int k, BlockState state, int l, float f) {
-        if (!level.isServerSide)
+    public void dropWithChance(World level, int i, int j, int k, BlockState state, int l, float f) {
+        if (!level.isRemote)
         {
-            ItemBase var8 = null;
+            Item var8 = null;
             int par5 = state.get(WZROST);
-            if (this.fruitType == BlockBase.PUMPKIN)
+            if (this.fruitType == Block.PUMPKIN)
             {
                 var8 = BlockListener.pumpkinseeds;
             }
@@ -320,19 +316,19 @@ public class BlockStem extends TemplatePlant
 
             for (int var9 = 0; var9 < 3; ++var9)
             {
-                if (level.rand.nextInt(15) <= par5)
+                if (level.random.nextInt(15) <= par5)
                 {
-                    this.drop(level, i, j, k, new ItemInstance(var8));
+                    this.dropStack(level, i, j, k, new ItemStack(var8));
                 }
             }
         }
     }
 
-    public List<ItemInstance> getDropList(Level level, int x, int y, int z, BlockState blockState, int meta) {
+    public List<ItemStack> getDropList(World level, int x, int y, int z, BlockState blockState, int meta) {
 
-        ItemBase var8 = null;
+        Item var8 = null;
         int par5 = blockState.get(WZROST);
-        if (this.fruitType == BlockBase.PUMPKIN)
+        if (this.fruitType == Block.PUMPKIN)
         {
             var8 = BlockListener.pumpkinseeds;
         }
@@ -341,13 +337,13 @@ public class BlockStem extends TemplatePlant
             var8 = BlockListener.watermelonseeds;
         }
 
-        if (!level.isServerSide)
+        if (!level.isRemote)
         {
             for (int var9 = 0; var9 < 3; ++var9)
             {
-                if (level.rand.nextInt(15) <= par5)
+                if (level.random.nextInt(15) <= par5)
                 {
-                    this.drop(level, x, y, z, new ItemInstance(var8));
+                    this.dropStack(level, x, y, z, new ItemStack(var8));
                 }
             }
         }

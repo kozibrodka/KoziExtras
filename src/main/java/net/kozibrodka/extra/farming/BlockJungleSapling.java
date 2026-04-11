@@ -2,8 +2,9 @@ package net.kozibrodka.extra.farming;
 
 import net.kozibrodka.extra.generate.HugeJungleTree;
 import net.kozibrodka.extra.generate.JungleTree;
-import net.minecraft.level.Level;
 import net.minecraft.level.structure.*;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.Feature;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.template.block.TemplatePlant;
 
@@ -17,13 +18,13 @@ public class BlockJungleSapling extends TemplatePlant {
         this.setBoundingBox(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, var3 * 2.0F, 0.5F + var3);
     }
 
-    public void onScheduledTick(Level arg, int i, int j, int k, Random random) {
-        if (!arg.isServerSide) {
-            super.onScheduledTick(arg, i, j, k, random);
-            if (arg.placeTile(i, j + 1, k) >= 9 && random.nextInt(30) == 0) {
-                int var6 = arg.getTileMeta(i, j, k);
+    public void onTick(World arg, int i, int j, int k, Random random) {
+        if (!arg.isRemote) {
+            super.onTick(arg, i, j, k, random);
+            if (arg.getLightLevel(i, j + 1, k) >= 9 && random.nextInt(30) == 0) {
+                int var6 = arg.getBlockMeta(i, j, k);
                 if ((var6 & 8) == 0) {
-                    arg.setTileMeta(i, j, k, var6 | 8);
+                    arg.setBlockMeta(i, j, k, var6 | 8);
                 } else {
                     this.growTree(arg, i, j, k, random);
                 }
@@ -32,7 +33,7 @@ public class BlockJungleSapling extends TemplatePlant {
         }
     }
 
-    public void growTree(Level arg, int i, int j, int k, Random random) {
+    public void growTree(World arg, int i, int j, int k, Random random) {
 //        arg.setTileInChunk(i, j, k, 0);
         Object var7 = null;
         boolean var10 = false;
@@ -66,28 +67,28 @@ public class BlockJungleSapling extends TemplatePlant {
 
         if (var10)
         {
-            arg.setTile(i + var8, j, k + var9, 0);
-            arg.setTile(i + var8 + 1, j, k + var9, 0);
-            arg.setTile(i + var8, j, k + var9 + 1, 0);
-            arg.setTile(i + var8 + 1, j, k + var9 + 1, 0);
+            arg.setBlock(i + var8, j, k + var9, 0);
+            arg.setBlock(i + var8 + 1, j, k + var9, 0);
+            arg.setBlock(i + var8, j, k + var9 + 1, 0);
+            arg.setBlock(i + var8 + 1, j, k + var9 + 1, 0);
         }
         else
         {
-            arg.placeBlockWithMetaData(i, j, k, 0, 4);
+            arg.setBlock(i, j, k, 0, 4);
         }
 
-        if (!((Structure)var7).generate(arg, random, i + var8, j, k + var9))
+        if (!((Feature)var7).generate(arg, random, i + var8, j, k + var9))
         {
             if (var10)
             {
-                arg.setTile(i + var8, j, k + var9, this.id);
-                arg.setTile(i + var8 + 1, j, k + var9, this.id);
-                arg.setTile(i + var8, j, k + var9 + 1, this.id);
-                arg.setTile(i + var8 + 1, j, k + var9 + 1, this.id);
+                arg.setBlock(i + var8, j, k + var9, this.id);
+                arg.setBlock(i + var8 + 1, j, k + var9, this.id);
+                arg.setBlock(i + var8, j, k + var9 + 1, this.id);
+                arg.setBlock(i + var8 + 1, j, k + var9 + 1, this.id);
             }
             else
             {
-                arg.setTile(i, j, k, this.id);
+                arg.setBlock(i, j, k, this.id);
             }
         }
 //        if (!((Structure)var7).generate(arg, random, i, j, k)) {
@@ -95,15 +96,15 @@ public class BlockJungleSapling extends TemplatePlant {
 //        }
     }
 
-    public boolean isSameSapling(Level par1World, int par2, int par3, int par4)
+    public boolean isSameSapling(World par1World, int par2, int par3, int par4)
     {
 //        return par1World.getTileId(par2, par3, par4) == this.id && (par1World.getTileMeta(par2, par3, par4) & 3) == par5;
 //        System.out.println(par2 + " " +  par3 + " " + par4);
 //        System.out.println(par1World.getTileId(par2, par3, par4));
-        return par1World.getTileId(par2, par3, par4) == this.id;
+        return par1World.getBlockId(par2, par3, par4) == this.id;
     }
 
-    protected int droppedMeta(int i) {
+    protected int getDroppedItemMeta(int i) {
         return 0;
     }
 }

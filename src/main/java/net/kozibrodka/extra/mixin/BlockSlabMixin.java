@@ -2,13 +2,12 @@ package net.kozibrodka.extra.mixin;
 
 import net.kozibrodka.extra.utils.KoziFacing;
 import net.kozibrodka.extra.utils.KoziUtils;
-import net.minecraft.block.BlockBase;
-import net.minecraft.block.Stairs;
-import net.minecraft.block.StoneSlab;
+import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.Box;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 
-@Mixin(StoneSlab.class)
-public class BlockSlabMixin extends BlockBase {
+@Mixin(SlabBlock.class)
+public class BlockSlabMixin extends Block {
     protected BlockSlabMixin(int i, Material arg) {
         super(i, arg);
     }
@@ -26,21 +25,21 @@ public class BlockSlabMixin extends BlockBase {
     @Shadow private boolean field_2324;
 
     @Override
-    public void onBlockPlaced(Level arg, int i, int j, int k){
+    public void onPlaced(World arg, int i, int j, int k){
 
     }
 
     @Override
-    public void onBlockPlaced(Level var1, int i, int j, int k, int l){
+    public void onPlaced(World var1, int i, int j, int k, int l){
         if(l == 0) {
-            int var6 = var1.getTileMeta(i, j, k);
-            var1.setTileMeta(i, j, k, var6 | 4);
+            int var6 = var1.getBlockMeta(i, j, k);
+            var1.setBlockMeta(i, j, k, var6 | 4);
         }else if(l != 1){
             KoziUtils kozi = new KoziUtils();
             float a = kozi.giveCursorHeigh(i,j,k);
             if((double)a >= 0.5D){
-                int var6 = var1.getTileMeta(i, j, k);
-                var1.setTileMeta(i, j, k, var6 | 4);
+                int var6 = var1.getBlockMeta(i, j, k);
+                var1.setBlockMeta(i, j, k, var6 | 4);
             }
         }
     }
@@ -50,7 +49,7 @@ public class BlockSlabMixin extends BlockBase {
         if(field_2324){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
-            boolean flag = (arg.getTileMeta(i, j, k) & 4) != 0;
+            boolean flag = (arg.getBlockMeta(i, j, k) & 4) != 0;
 
             if (flag)
             {
@@ -64,7 +63,7 @@ public class BlockSlabMixin extends BlockBase {
     }
 
     @Override
-    public void method_1605() {
+    public void setupRenderBoundingBox() {
         if(field_2324){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
@@ -73,27 +72,27 @@ public class BlockSlabMixin extends BlockBase {
     }
 
     @Override
-    public boolean isSideRendered(BlockView arg, int i, int j, int k, int l)
+    public boolean isSideVisible(BlockView arg, int i, int j, int k, int l)
     {
         if(this.field_2324) {
-            super.isSideRendered(arg, i, j, k, l);
+            super.isSideVisible(arg, i, j, k, l);
         }
 
-        if(l != 1 && l != 0 && !super.isSideRendered(arg, i, j, k, l)) {
+        if(l != 1 && l != 0 && !super.isSideVisible(arg, i, j, k, l)) {
             return false;
         } else {
             int var6 = i + KoziFacing.offsetsXForSide[KoziFacing.faceToSide[l]];
             int var7 = j + KoziFacing.offsetsYForSide[KoziFacing.faceToSide[l]];
             int var8 = k + KoziFacing.offsetsZForSide[KoziFacing.faceToSide[l]];
-            boolean var9 = (arg.getTileMeta(var6, var7, var8) & 4) != 0;
-            return !var9 ? (l == 1 || (l == 0 && super.isSideRendered(arg, i, j, k, l) || arg.getTileId(i, j, k) != this.id || (arg.getTileMeta(i, j, k) & 4) != 0)) : (l == 0 || (l == 1 && super.isSideRendered(arg, i, j, k, l) || arg.getTileId(i, j, k) != this.id || (arg.getTileMeta(i, j, k) & 4) == 0));
+            boolean var9 = (arg.getBlockMeta(var6, var7, var8) & 4) != 0;
+            return !var9 ? (l == 1 || (l == 0 && super.isSideVisible(arg, i, j, k, l) || arg.getBlockId(i, j, k) != this.id || (arg.getBlockMeta(i, j, k) & 4) != 0)) : (l == 0 || (l == 1 && super.isSideVisible(arg, i, j, k, l) || arg.getBlockId(i, j, k) != this.id || (arg.getBlockMeta(i, j, k) & 4) == 0));
         }
     }
 
     @Override
-    public void doesBoxCollide(Level world, int i, int j, int k, Box box, ArrayList list) {
+    public void addIntersectingBoundingBox(World world, int i, int j, int k, Box box, ArrayList list) {
         this.updateBoundingBox(world, i, j, k);
-        super.doesBoxCollide(world, i, j, k, box, list);
+        super.addIntersectingBoundingBox(world, i, j, k, box, list);
     }
 
     @Inject(method = "droppedMeta", at = @At("HEAD"), cancellable = true)
@@ -108,7 +107,7 @@ public class BlockSlabMixin extends BlockBase {
     }
 
     @Override
-    public int getTextureForSide(int i, int j) {
+    public int getTexture(int i, int j) {
         if (j == 0 || j == 4) {
             return i <= 1 ? 6 : 5;
         } else if (j == 1 || j == 5) {

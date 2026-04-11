@@ -12,7 +12,7 @@ public class BlockJunglePlanks extends TemplateBlockBase {
     }
 
     @Override
-    public int getTextureForSide(int side) {
+    public int getTexture(int side) {
         return TextureListener.planks_jungle;
     }
 

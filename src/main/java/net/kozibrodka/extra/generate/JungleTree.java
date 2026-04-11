@@ -4,13 +4,12 @@ package net.kozibrodka.extra.generate;
 import net.kozibrodka.extra.events.BlockListener;
 import net.kozibrodka.extra.farming.BlockCocoa;
 import net.kozibrodka.extra.farming.BlockVine;
-import net.minecraft.block.BlockBase;
-import net.minecraft.level.Level;
-import net.minecraft.level.structure.Structure;
-
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.Feature;
 import java.util.Random;
 
-public class JungleTree extends Structure
+public class JungleTree extends Feature
 {
     /** The minimum height of a generated tree. */
     private final int minTreeHeight;
@@ -30,7 +29,7 @@ public class JungleTree extends Structure
         this.vinesGrow = par5;
     }
 
-    public boolean generate(Level level, Random random, int x, int y, int z)
+    public boolean generate(World level, Random random, int x, int y, int z)
     {
         int var6 = random.nextInt(3) + this.minTreeHeight;
         boolean var7 = true;
@@ -62,9 +61,9 @@ public class JungleTree extends Structure
                     {
                         if (var8 >= 0 && var8 < 256)
                         {
-                            var12 = level.getTileId(var10, var8, var11);
+                            var12 = level.getBlockId(var10, var8, var11);
 
-                            if (var12 != 0 && var12 != BlockBase.LEAVES.id && var12 != BlockBase.GRASS.id && var12 != BlockBase.DIRT.id && var12 != BlockBase.LOG.id && var12 != BlockListener.junglewood.id && var12 != BlockListener.jungleleaves.id)
+                            if (var12 != 0 && var12 != Block.LEAVES.id && var12 != Block.GRASS_BLOCK.id && var12 != Block.DIRT.id && var12 != Block.LOG.id && var12 != BlockListener.junglewood.id && var12 != BlockListener.jungleleaves.id)
                             {
                                 var7 = false;
                             }
@@ -83,11 +82,11 @@ public class JungleTree extends Structure
             }
             else
             {
-                var8 = level.getTileId(x, y - 1, z);
+                var8 = level.getBlockId(x, y - 1, z);
 
-                if ((var8 == BlockBase.GRASS.id || var8 == BlockBase.DIRT.id) && y < 256 - var6 - 1)
+                if ((var8 == Block.GRASS_BLOCK.id || var8 == Block.DIRT.id) && y < 256 - var6 - 1)
                 {
-                    level.setTileInChunk(x, y - 1, z, BlockBase.DIRT.id);
+                    level.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.DIRT.id);
                     var9 = 3;
                     byte var19 = 0;
                     int var13;
@@ -109,11 +108,11 @@ public class JungleTree extends Structure
 
                                 if (Math.abs(var15) != var13 || Math.abs(var17) != var13 || random.nextInt(2) != 0 && var12 != 0)
                                 {
-                                    int var18 = level.getTileId(var14, var11, var16);
+                                    int var18 = level.getBlockId(var14, var11, var16);
 
-                                    if (var18 == 0 || var18 == BlockBase.LEAVES.id || var18 == BlockListener.jungleleaves.id)
+                                    if (var18 == 0 || var18 == Block.LEAVES.id || var18 == BlockListener.jungleleaves.id)
                                     {
-                                        level.setTile(var14, var11, var16, BlockListener.jungleleaves.id);
+                                        level.setBlock(var14, var11, var16, BlockListener.jungleleaves.id);
                                     }
                                 }
                             }
@@ -122,11 +121,11 @@ public class JungleTree extends Structure
 
                     for (var11 = 0; var11 < var6; ++var11)
                     {
-                        var12 = level.getTileId(x, y + var11, z);
+                        var12 = level.getBlockId(x, y + var11, z);
 
                         if (var12 == 0 || var12 == BlockListener.jungleleaves.id) //if (var12 == 0 || var12 == BlockBase.LEAVES.id || var12 == BlockListener.jungleleaves.id)
                         {
-                            level.setTile(x, y + var11, z, BlockListener.junglewood.id);
+                            level.setBlock(x, y + var11, z, BlockListener.junglewood.id);
 
                             if (this.vinesGrow && var11 > 0)
                             {
@@ -168,24 +167,24 @@ public class JungleTree extends Structure
                             {
                                 for (var15 = z - var13; var15 <= z + var13; ++var15)
                                 {
-                                    if (level.getTileId(var14, var11, var15) == BlockListener.jungleleaves.id)
+                                    if (level.getBlockId(var14, var11, var15) == BlockListener.jungleleaves.id)
                                     {
-                                        if (random.nextInt(4) == 0 && level.getTileId(var14 - 1, var11, var15) == 0)
+                                        if (random.nextInt(4) == 0 && level.getBlockId(var14 - 1, var11, var15) == 0)
                                         {
                                             this.growVines(level, var14 - 1, var11, var15, 4);
                                         }
 
-                                        if (random.nextInt(4) == 0 && level.getTileId(var14 + 1, var11, var15) == 0)
+                                        if (random.nextInt(4) == 0 && level.getBlockId(var14 + 1, var11, var15) == 0)
                                         {
                                             this.growVines(level, var14 + 1, var11, var15, 5);
                                         }
 
-                                        if (random.nextInt(4) == 0 && level.getTileId(var14, var11, var15 - 1) == 0)
+                                        if (random.nextInt(4) == 0 && level.getBlockId(var14, var11, var15 - 1) == 0)
                                         {
                                             this.growVines(level, var14, var11, var15 - 1, 2);
                                         }
 
-                                        if (random.nextInt(4) == 0 && level.getTileId(var14, var11, var15 + 1) == 0)
+                                        if (random.nextInt(4) == 0 && level.getBlockId(var14, var11, var15 + 1) == 0)
                                         {
                                             this.growVines(level, var14, var11, var15 + 1, 3);
                                         }
@@ -207,25 +206,25 @@ public class JungleTree extends Structure
                                         if(var12 == 0)
                                         {
 //                                            z += 1;
-                                            level.setTile(x, y + var6 - 5 + var11, z + 1, BlockListener.cocoaplant.id);
+                                            level.setBlock(x, y + var6 - 5 + var11, z + 1, BlockListener.cocoaplant.id);
                                             ((BlockCocoa)BlockListener.cocoaplant).onTreeGrowth(level, x, y + var6 - 5 + var11, z + 1, 3, var13);
                                         }
                                         if(var12 == 2)
                                         {
 //                                            x += 1;
-                                            level.setTile(x + 1, y + var6 - 5 + var11, z, BlockListener.cocoaplant.id);
+                                            level.setBlock(x + 1, y + var6 - 5 + var11, z, BlockListener.cocoaplant.id);
                                             ((BlockCocoa)BlockListener.cocoaplant).onTreeGrowth(level, x + 1, y + var6 - 5 + var11, z, 5, var13);
                                         }
                                         if(var12 == 1)
                                         {
 //                                            z -= 1;
-                                            level.setTile(x, y + var6 - 5 + var11, z - 1, BlockListener.cocoaplant.id);
+                                            level.setBlock(x, y + var6 - 5 + var11, z - 1, BlockListener.cocoaplant.id);
                                             ((BlockCocoa)BlockListener.cocoaplant).onTreeGrowth(level, x, y + var6 - 5 + var11, z - 1, 2, var13);
                                         }
                                         if(var12 == 3)
                                         {
 //                                            x -= 1;
-                                            level.setTile(x - 1, y + var6 - 5 + var11, z, BlockListener.cocoaplant.id);
+                                            level.setBlock(x - 1, y + var6 - 5 + var11, z, BlockListener.cocoaplant.id);
                                             ((BlockCocoa)BlockListener.cocoaplant).onTreeGrowth(level, x - 1, y + var6 - 5 + var11, z, 4, var13);
                                         }
 //                                        level.setTile(level, x + Direction.offsetX[Direction.rotateOpposite[var12]], y + var6 - 5 + var11, z + Direction.offsetZ[Direction.rotateOpposite[var12]], Block.cocoaPlant.id, var13 << 2 | var12);
@@ -253,9 +252,9 @@ public class JungleTree extends Structure
     /**
      * Grows vines downward from the given block for a given length. Args: World, x, starty, z, vine-length
      */
-    private void growVines(Level level, int x, int y, int z, int meta)
+    private void growVines(World level, int x, int y, int z, int meta)
     {
-        level.setTile(x, y, z, BlockListener.vine.id);
+        level.setBlock(x, y, z, BlockListener.vine.id);
         ((BlockVine)BlockListener.vine).onTreeGrowth(level, x, y, z, meta);
         int var6 = 4;
 
@@ -263,20 +262,20 @@ public class JungleTree extends Structure
         {
             --y;
 
-            if (level.getTileId(x, y, z) != 0 || var6 <= 0)
+            if (level.getBlockId(x, y, z) != 0 || var6 <= 0)
             {
                 return;
             }
 
-            level.setTile(x, y, z, BlockListener.vine.id);
+            level.setBlock(x, y, z, BlockListener.vine.id);
             ((BlockVine)BlockListener.vine).onTreeGrowth(level, x, y, z, meta);
             --var6;
         }
     }
 
-    private void stawVines(Level level, int x, int y, int z, int meta)
+    private void stawVines(World level, int x, int y, int z, int meta)
     {
-        level.setTile(x, y, z, BlockListener.vine.id);
+        level.setBlock(x, y, z, BlockListener.vine.id);
         ((BlockVine)BlockListener.vine).onTreeGrowth(level, x, y, z, meta);
     }
 }

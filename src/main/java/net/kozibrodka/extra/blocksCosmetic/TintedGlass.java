@@ -11,12 +11,12 @@ public class TintedGlass extends TemplateBlockBase {
 
     }
 
-    public boolean isFullOpaque()
+    public boolean isOpaque()
     {
         return false;
     }
 
-    public int getRenderPass(){
+    public int getRenderLayer(){
         return 1;
     }
 

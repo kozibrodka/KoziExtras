@@ -4,14 +4,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kozibrodka.extra.events.TextureListener;
 import net.kozibrodka.extra.utils.KoziUtils;
-import net.minecraft.block.BlockBase;
-import net.minecraft.block.Log;
+import net.minecraft.block.Block;
+import net.minecraft.block.LogBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.render.block.BlockRenderer;
-import net.minecraft.entity.Living;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.MathHelper;
+import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.client.model.block.BlockWithWorldRenderer;
 import net.modificationstation.stationapi.api.state.StateManager;
@@ -23,20 +21,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Log.class)
-public class LogMixin extends BlockBase implements BlockWithWorldRenderer{
+@Mixin(LogBlock.class)
+public class LogMixin extends Block implements BlockWithWorldRenderer{
 
     protected LogMixin(int i, Material arg) {
         super(i, arg);
     }
 
     @Environment(EnvType.CLIENT)
-    public void method_1605() {
+    public void setupRenderBoundingBox() {
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
-    public int getTextureForSide(int i, int j) {
+    public int getTexture(int i, int j) {
         if(j == 0){
             return i <= 1 ? 21 : 20;
         }else if(j == 4){
@@ -71,8 +69,8 @@ public class LogMixin extends BlockBase implements BlockWithWorldRenderer{
         cir.setReturnValue(i & 3);
     }
 
-    public void onBlockPlaced(Level var1, int i, int j, int k, int l){
-        int var6 = var1.getTileMeta(i, j, k);
+    public void onPlaced(World var1, int i, int j, int k, int l){
+        int var6 = var1.getBlockMeta(i, j, k);
         int var10 = var6 & 3;
         byte var11 = 0;
         switch (l)
@@ -91,12 +89,12 @@ public class LogMixin extends BlockBase implements BlockWithWorldRenderer{
             case 5:
                 var11 = 4;
         }
-        var1.setTileMeta(i, j, k, var10 | var11);
+        var1.setBlockMeta(i, j, k, var10 | var11);
     }
 
-    public boolean renderWorld(BlockRenderer tileRenderer, BlockView tileView, int x, int y, int z) {
+    public boolean renderWorld(BlockRenderManager tileRenderer, BlockView tileView, int x, int y, int z) {
 
-        int var5 = tileView.getTileMeta(x, y, z);
+        int var5 = tileView.getBlockMeta(x, y, z);
         int var6 = var5 & 12;
 
         if (var6 == 4)
@@ -118,7 +116,7 @@ public class LogMixin extends BlockBase implements BlockWithWorldRenderer{
 //            this.northFaceRotation = 1;
         }
 
-        boolean var7 = tileRenderer.renderStandardBlock(this, x, y, z);
+        boolean var7 = tileRenderer.renderBlock(this, x, y, z);
         ((RenderBlockAccessor)tileRenderer).setEastFaceRotation(0);
         ((RenderBlockAccessor)tileRenderer).setWestFaceRotation(0);
         ((RenderBlockAccessor)tileRenderer).setTopFaceRotation(0);

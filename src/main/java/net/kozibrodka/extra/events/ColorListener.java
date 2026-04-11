@@ -1,11 +1,6 @@
 package net.kozibrodka.extra.events;
 
 import net.mine_diver.unsafeevents.listener.EventListener;
-import net.minecraft.block.BlockBase;
-import net.minecraft.client.render.block.FoliageColour;
-import net.minecraft.client.render.block.GrassColour;
-import net.minecraft.level.BlockView;
-import net.minecraft.util.maths.TilePos;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.client.color.world.BiomeColors;
 import net.modificationstation.stationapi.api.client.event.color.block.BlockColorsRegisterEvent;

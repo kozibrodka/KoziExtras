@@ -1,9 +1,8 @@
 package net.kozibrodka.extra.events;
 
 import net.mine_diver.unsafeevents.listener.EventListener;
-import net.minecraft.block.BlockBase;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.event.recipe.RecipeRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
 import net.modificationstation.stationapi.api.recipe.CraftingRegistry;
@@ -18,9 +17,9 @@ public class RecipeListener {
 
     @EventListener
     public void registerRecipes(RecipeRegisterEvent event) {
-        CraftingRegistry.addShapelessRecipe(new ItemInstance(BlockBase.WOOD, 4), new ItemInstance(BlockBase.LOG,1,0));
-        CraftingRegistry.addShapelessRecipe(new ItemInstance(BlockListener.spruceplanks, 4), new ItemInstance(BlockBase.LOG,1,1));
-        CraftingRegistry.addShapelessRecipe(new ItemInstance(BlockListener.birchplanks, 4), new ItemInstance(BlockBase.LOG,1,2));
-        CraftingRegistry.addShapelessRecipe(new ItemInstance(BlockListener.jungleplanks, 4), new ItemInstance(BlockBase.LOG,1,3));
+        CraftingRegistry.addShapelessRecipe(new ItemStack(Block.PLANKS, 4), new ItemStack(Block.LOG,1,0));
+        CraftingRegistry.addShapelessRecipe(new ItemStack(BlockListener.spruceplanks, 4), new ItemStack(Block.LOG,1,1));
+        CraftingRegistry.addShapelessRecipe(new ItemStack(BlockListener.birchplanks, 4), new ItemStack(Block.LOG,1,2));
+        CraftingRegistry.addShapelessRecipe(new ItemStack(BlockListener.jungleplanks, 4), new ItemStack(Block.LOG,1,3));
     }
 }

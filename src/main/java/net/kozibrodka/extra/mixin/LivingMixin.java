@@ -1,33 +1,31 @@
 package net.kozibrodka.extra.mixin;
 
 import net.kozibrodka.extra.events.BlockListener;
-import net.minecraft.block.BlockBase;
-import net.minecraft.entity.EntityBase;
-import net.minecraft.entity.Living;
-import net.minecraft.level.Level;
-import net.minecraft.util.io.CompoundTag;
-import net.minecraft.util.maths.MathHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Living.class)
-public class LivingMixin extends EntityBase {
+@Mixin(LivingEntity.class)
+public class LivingMixin extends Entity {
 
 
-    public LivingMixin(Level arg) {
+    public LivingMixin(World arg) {
         super(arg);
     }
 
     public void initDataTracker() {
     }
 
-    public void readCustomDataFromTag(CompoundTag arg) {
+    public void readNbt(NbtCompound arg) {
     }
 
-    public void writeCustomDataToTag(CompoundTag arg) {
+    public void writeNbt(NbtCompound arg) {
     }
 
 

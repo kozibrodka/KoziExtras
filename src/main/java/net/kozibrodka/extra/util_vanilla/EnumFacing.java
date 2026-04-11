@@ -8,9 +8,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.util.Vec3i;
-
-import net.minecraft.util.maths.MathHelper;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 
 enum EnumFacing implements IStringSerializable
 {

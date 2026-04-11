@@ -12,7 +12,7 @@ public class BlockNetherBricks extends TemplateBlockBase {
     }
 
     @Override
-    public int getTextureForSide(int side) {
+    public int getTexture(int side) {
         return TextureListener.nether_brick;
     }
 

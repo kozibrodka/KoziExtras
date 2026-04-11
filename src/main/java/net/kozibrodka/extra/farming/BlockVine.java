@@ -2,15 +2,15 @@ package net.kozibrodka.extra.farming;
 
 
 import net.kozibrodka.extra.events.BlockListener;
-import net.minecraft.block.BlockBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.maths.Box;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
@@ -25,12 +25,12 @@ public class BlockVine extends TemplateBlockBase {
 
     public BlockVine(Identifier identifier, Material material) {
         super(identifier, material);
-        this.setTicksRandomly(true);
+        this.setTickRandomly(true);
     }
 
     public void updateBoundingBox(BlockView blockviev, int x, int y, int z)
     {
-        if(blockviev.getTileId(x,y,z) == BlockListener.vine.id)
+        if(blockviev.getBlockId(x,y,z) == BlockListener.vine.id)
         {
             int sajd = ((BlockStateView)blockviev).getBlockState(x, y, z).get(SIDE);
 //            int dasz = ((BlockStateView)blockviev).getBlockState(x, y, z).get(DOUBLE);
@@ -97,29 +97,29 @@ public class BlockVine extends TemplateBlockBase {
         }
     }
 
-    public Box getCollisionShape(Level level, int par2, int par3, int par4)
+    public Box getCollisionShape(World level, int par2, int par3, int par4)
     {
         return null;
     }
 
-    public boolean canPlaceAt(Level par1World, int par2, int par3, int par4, int par5)
+    public boolean canPlaceAt(World par1World, int par2, int par3, int par4, int par5)
     {
         switch (par5)
         {
             case 1:
-                return this.canBePlacedOn(par1World.getTileId(par2, par3 + 1, par4));
+                return this.canBePlacedOn(par1World.getBlockId(par2, par3 + 1, par4));
 
             case 2:
-                return this.canBePlacedOn(par1World.getTileId(par2, par3, par4 + 1));
+                return this.canBePlacedOn(par1World.getBlockId(par2, par3, par4 + 1));
 
             case 3:
-                return this.canBePlacedOn(par1World.getTileId(par2, par3, par4 - 1));
+                return this.canBePlacedOn(par1World.getBlockId(par2, par3, par4 - 1));
 
             case 4:
-                return this.canBePlacedOn(par1World.getTileId(par2 + 1, par3, par4));
+                return this.canBePlacedOn(par1World.getBlockId(par2 + 1, par3, par4));
 
             case 5:
-                return this.canBePlacedOn(par1World.getTileId(par2 - 1, par3, par4));
+                return this.canBePlacedOn(par1World.getBlockId(par2 - 1, par3, par4));
 
             default:
                 return false;
@@ -134,45 +134,45 @@ public class BlockVine extends TemplateBlockBase {
         }
         else
         {
-            BlockBase var2 = BlockBase.BY_ID[par1];
+            Block var2 = Block.BLOCKS[par1];
             return var2.isFullCube() && var2.material.blocksMovement();
         }
     }
 
-    public void onAdjacentBlockUpdate(Level level, int x, int y, int z, int par5)
+    public void neighborUpdate(World level, int x, int y, int z, int par5)
     {
         BlockState currentState = level.getBlockState(x, y, z);
         int a = currentState.get(DOUBLE);
         int b = currentState.get(SIDE);
 
-        if(a == 0 && level.getTileId(x,y+1,z) != 0 && canBePlacedOn(level.getTileId(x,y+1,z)))
+        if(a == 0 && level.getBlockId(x,y+1,z) != 0 && canBePlacedOn(level.getBlockId(x,y+1,z)))
         {
             level.setBlockStateWithNotify(x, y , z, currentState.with(DOUBLE, 1).with(SIDE, b));
         }
-        if(a == 1 && (level.getTileId(x,y+1,z) == 0 || !canBePlacedOn(level.getTileId(x,y+1,z))))
+        if(a == 1 && (level.getBlockId(x,y+1,z) == 0 || !canBePlacedOn(level.getBlockId(x,y+1,z))))
         {
             level.setBlockStateWithNotify(x, y , z, currentState.with(DOUBLE, 0).with(SIDE, b));
         }
         breakIfIncorrect(level, x, y, z);
     }
 
-    protected final void breakIfIncorrect(Level arg, int i, int j, int k) {
+    protected final void breakIfIncorrect(World arg, int i, int j, int k) {
         if (!this.canVineStay(arg, i, j, k)) {
-            this.drop(arg, i, j, k, arg.getTileMeta(i, j, k));
-            arg.setTile(i, j, k, 0);
+            this.dropStacks(arg, i, j, k, arg.getBlockMeta(i, j, k));
+            arg.setBlock(i, j, k, 0);
         }
     }
 
 
-    public void onScheduledTick(Level level, int x, int y, int z, Random random)
+    public void onTick(World level, int x, int y, int z, Random random)
     {
         int a = 0;
-        if(level.getTileId(x, y - 1 , z) == 0 && level.placeTile(x, y, z) >= 9 && random.nextInt(32) == 0)
+        if(level.getBlockId(x, y - 1 , z) == 0 && level.getLightLevel(x, y, z) >= 9 && random.nextInt(32) == 0)
         {
             try{
                 BlockState currentState = level.getBlockState(x, y, z);
                 a = currentState.get(SIDE);
-                level.setTile(x,y - 1, z, this.id);
+                level.setBlock(x,y - 1, z, this.id);
                 level.setBlockStateWithNotify(x, y - 1, z, currentState.with(SIDE, a));
 
             }catch (Exception e){}
@@ -180,14 +180,14 @@ public class BlockVine extends TemplateBlockBase {
     }
 
 
-    public boolean canVineStay(Level level, int x, int y, int z)
+    public boolean canVineStay(World level, int x, int y, int z)
     {
         int var5 = 0;
         int var6 = 0;
         int dach = 0;
 
         try{
-            dach = level.getTileId(x, y + 1, z);
+            dach = level.getBlockId(x, y + 1, z);
             if(dach == BlockListener.vine.id)
             {
                 if(level.getBlockState(x, y + 1, z).get(SIDE) != level.getBlockState(x, y, z).get(SIDE))
@@ -201,22 +201,22 @@ public class BlockVine extends TemplateBlockBase {
                 if(var5 == 0)
                 {
                     z += 1;
-                    var6 = level.getTileId(x, y, z);
+                    var6 = level.getBlockId(x, y, z);
                 }
                 if(var5 == 2)
                 {
                     x += 1;
-                    var6 = level.getTileId(x, y, z);
+                    var6 = level.getBlockId(x, y, z);
                 }
                 if(var5 == 1)
                 {
                     z -= 1;
-                    var6 = level.getTileId(x, y, z);
+                    var6 = level.getBlockId(x, y, z);
                 }
                 if(var5 == 3)
                 {
                     x -= 1;
-                    var6 = level.getTileId(x, y, z);
+                    var6 = level.getBlockId(x, y, z);
                 }
                 return canBePlacedOn(var6);
             }
@@ -228,7 +228,7 @@ public class BlockVine extends TemplateBlockBase {
     public static final IntProperty DOUBLE = IntProperty.of("double", 0, 1);
     public static final IntProperty SIDE = IntProperty.of("side", 0, 3);
 
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder){
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(DOUBLE);
         setDefaultState(DOUBLE, 0);
         builder.add(SIDE);
@@ -238,7 +238,7 @@ public class BlockVine extends TemplateBlockBase {
     private void setDefaultState(IntProperty intprop, int i) {
     }
 
-    public void onBlockPlaced(Level level, int x, int y, int z, int side)
+    public void onPlaced(World level, int x, int y, int z, int side)
     {
         BlockState currentState = level.getBlockState(x, y, z);
         if(side == 2)
@@ -257,45 +257,45 @@ public class BlockVine extends TemplateBlockBase {
         {
             level.setBlockStateWithNotify(x, y, z, currentState.with(SIDE, 3));
         }
-        this.onAdjacentBlockUpdate(level,x,y,z,side);  ///DAJ POTEM!!!!!
+        this.neighborUpdate(level,x,y,z,side);  ///DAJ POTEM!!!!!
     }
 
-    public void onTreeGrowth(Level level, int x, int y, int z, int side)
+    public void onTreeGrowth(World level, int x, int y, int z, int side)
     {
-        if(level.getTileId(x,y,z) == this.id) {
-            this.onBlockPlaced(level, x, y, z, side);
+        if(level.getBlockId(x,y,z) == this.id) {
+            this.onPlaced(level, x, y, z, side);
         }
 //        ((BlockStateView)level).setBlockStateWithNotify(x, y, z, getDefaultState().with(SIDE, side));
 //        this.onAdjacentBlockUpdate(level,x,y,z,side);
     }
 
-    public void afterBreak(Level arg, PlayerBase arg2, int i, int j, int k, int l) {
-        if (!arg.isServerSide && arg2.getHeldItem() != null && arg2.getHeldItem().itemId == ItemBase.shears.id) {
-            arg2.increaseStat(Stats.mineBlock[this.id], 1);
-            this.drop(arg, i, j, k, new ItemInstance(BlockListener.vine.id, 1, 0));
+    public void afterBreak(World arg, PlayerEntity arg2, int i, int j, int k, int l) {
+        if (!arg.isRemote && arg2.getHand() != null && arg2.getHand().itemId == Item.SHEARS.id) {
+            arg2.increaseStat(Stats.MINE_BLOCK[this.id], 1);
+            this.dropStack(arg, i, j, k, new ItemStack(BlockListener.vine.id, 1, 0));
         } else {
             super.afterBreak(arg, arg2, i, j, k, l);
         }
 
     }
 
-    public int getDropId(int par1, Random par2Random)
+    public int getDroppedItemId(int par1, Random par2Random)
     {
         return 0;
     }
 
-    public int getDropCount(Random par1Random)
+    public int getDroppedItemCount(Random par1Random)
     {
         return 0;
     }
 
-    public void method_1605()
+    public void setupRenderBoundingBox()
     {
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
-    public boolean isFullOpaque()
+    public boolean isOpaque()
     {
         return false;
     }

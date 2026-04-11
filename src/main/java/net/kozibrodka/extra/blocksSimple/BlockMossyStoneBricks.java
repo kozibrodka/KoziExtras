@@ -12,7 +12,7 @@ public class BlockMossyStoneBricks extends TemplateBlockBase {
     }
 
     @Override
-    public int getTextureForSide(int side) {
+    public int getTexture(int side) {
         return TextureListener.stone_brick_mossy;
     }
 

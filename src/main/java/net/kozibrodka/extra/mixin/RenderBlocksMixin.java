@@ -3,9 +3,9 @@ package net.kozibrodka.extra.mixin;
 
 import net.kozibrodka.extra.utils.BlockFenceInterface;
 import net.kozibrodka.extra.utils.BlockStairsInterface;
-import net.minecraft.block.BlockBase;
-import net.minecraft.client.render.block.BlockRenderer;
-import net.minecraft.level.BlockView;
+import net.minecraft.block.Block;
+import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(BlockRenderer.class)
+@Mixin(BlockRenderManager.class)
 public abstract class RenderBlocksMixin {
 
     @Shadow
-    public boolean renderStandardBlock(BlockBase arg, int i, int j, int k) {
+    public boolean renderStandardBlock(Block arg, int i, int j, int k) {
         return false;
     }
     @Shadow
@@ -35,10 +35,10 @@ public abstract class RenderBlocksMixin {
     @Shadow
     private int bottomFaceRotation;
 
-    @Shadow public abstract boolean renderCactus(BlockBase arg, int i, int j, int k);
+    @Shadow public abstract boolean renderCactus(Block arg, int i, int j, int k);
 
     @Inject(method = "renderStairs", at = @At("HEAD"), cancellable = true)
-    private void injectedStairs(BlockBase arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
+    private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
         ((BlockStairsInterface)arg).updateBoundingBox1(blockView,i,j,k);
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
         this.renderStandardBlock(arg, i, j, k);
@@ -56,7 +56,7 @@ public abstract class RenderBlocksMixin {
     }
 
     @Inject(method = "renderFence", at = @At("HEAD"), cancellable = true)
-    private void injectedFence(BlockBase arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
+    private void injectedFence(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
         boolean var5 = false;
         float var6 = 0.375F;
         float var7 = 0.625F;

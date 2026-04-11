@@ -12,7 +12,7 @@ public class BlockQuartz extends TemplateBlockBase {
     }
 
     @Override
-    public int getTextureForSide(int side) {
+    public int getTexture(int side) {
         if(side == 0){
             return TextureListener.quartz_bottom;
         }else

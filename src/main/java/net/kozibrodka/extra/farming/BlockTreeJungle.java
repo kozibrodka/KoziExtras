@@ -1,10 +1,8 @@
 package net.kozibrodka.extra.farming;
 
-import net.minecraft.block.BlockBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Living;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.MathHelper;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
@@ -21,7 +19,7 @@ public class BlockTreeJungle extends TemplateBlockBase {
 
     public static final IntProperty ROTACJA = IntProperty.of("rotacja", 0, 2);
 
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder){
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(ROTACJA);
         setDefaultState(ROTACJA, 0);
     }
@@ -48,7 +46,7 @@ public class BlockTreeJungle extends TemplateBlockBase {
 //        }
 
     @Override
-    public void onBlockPlaced(Level level, int x, int y, int z, int side) {
+    public void onPlaced(World level, int x, int y, int z, int side) {
 
 
 //        int korzen = level.getTileMeta(x,y,z);

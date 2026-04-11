@@ -3,18 +3,16 @@ import java.util.List;
 
 
 import net.kozibrodka.extra.events.BlockListener;
-import net.minecraft.block.BlockBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Boat;
-import net.minecraft.entity.EntityBase;
-import net.minecraft.entity.Living;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.level.Level;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.maths.Box;
-import net.minecraft.util.maths.MathHelper;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
@@ -43,9 +41,9 @@ public class BlockLilyPad extends TemplatePlant {
 //        }
 //    }
 
-    public Box getCollisionShape(Level par1World, int par2, int par3, int par4)
+    public Box getCollisionShape(World par1World, int par2, int par3, int par4)
     {
-        return Box.createButWasteMemory((double)par2 + this.minX, (double)par3 + this.minY, (double)par4 + this.minZ, (double)par2 + this.maxX, (double)par3 + this.maxY, (double)par4 + this.maxZ);
+        return Box.createCached((double)par2 + this.minX, (double)par3 + this.minY, (double)par4 + this.minZ, (double)par2 + this.maxX, (double)par3 + this.maxY, (double)par4 + this.maxZ);
     }
 
 
@@ -54,7 +52,7 @@ public class BlockLilyPad extends TemplatePlant {
 //        return 2129968;
 //    }
 
-    public void afterPlaced(Level arg, int i, int j, int k, Living arg2) {
+    public void onPlaced(World arg, int i, int j, int k, LivingEntity arg2) {
         int var6 = MathHelper.floor((double)(arg2.yaw * 4.0F / 360.0F) + 0.5D) & 3;
         BlockState currentState = arg.getBlockState(i, j, k);
         if(var6 == 0) {
@@ -72,32 +70,32 @@ public class BlockLilyPad extends TemplatePlant {
 
     }
 
-    public void afterBreak(Level arg, PlayerBase arg2, int i, int j, int k, int l) {
-        if (!arg.isServerSide && arg2.getHeldItem() != null && arg2.getHeldItem().itemId == ItemBase.shears.id) {
-            arg2.increaseStat(Stats.mineBlock[this.id], 1);
-            this.drop(arg, i, j, k, new ItemInstance(BlockListener.waterlily.id, 1, l));
+    public void afterBreak(World arg, PlayerEntity arg2, int i, int j, int k, int l) {
+        if (!arg.isRemote && arg2.getHand() != null && arg2.getHand().itemId == Item.SHEARS.id) {
+            arg2.increaseStat(Stats.MINE_BLOCK[this.id], 1);
+            this.dropStack(arg, i, j, k, new ItemStack(BlockListener.waterlily.id, 1, l));
         } else {
             super.afterBreak(arg, arg2, i, j, k, l);
         }
     }
 
-    public boolean canPlaceAt(Level arg, int i, int j, int k) {
-        return this.canPlantOnTopOf(arg.getTileId(i, j - 1, k));
+    public boolean canPlaceAt(World arg, int i, int j, int k) {
+        return this.canPlantOnTop(arg.getBlockId(i, j - 1, k));
     }
 
-    protected boolean canPlantOnTopOf(int par1)
+    protected boolean canPlantOnTop(int par1)
     {
-        return par1 == BlockBase.STILL_WATER.id;
+        return par1 == Block.WATER.id;
     }
 
-    public boolean canGrow(Level level, int par2, int par3, int par4)
+    public boolean canGrow(World level, int par2, int par3, int par4)
     {
-        return par3 >= 0 && par3 < 256 && level.getMaterial(par2, par3 - 1, par4) == Material.WATER && level.getTileMeta(par2, par3 - 1, par4) == 0;
+        return par3 >= 0 && par3 < 256 && level.getMaterial(par2, par3 - 1, par4) == Material.WATER && level.getBlockMeta(par2, par3 - 1, par4) == 0;
     }
 
     public static final IntProperty SIDE = IntProperty.of("side", 0, 3);
 
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder){
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(SIDE);
         setDefaultState(SIDE, 0);
     }

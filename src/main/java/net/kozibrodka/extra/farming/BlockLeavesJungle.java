@@ -11,7 +11,7 @@ public class BlockLeavesJungle extends TemplateBlockBase {
         super(identifier, material);
     }
 
-    public boolean isFullOpaque() {
+    public boolean isOpaque() {
         return false;
     }
 }

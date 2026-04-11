@@ -1,13 +1,12 @@
 package net.kozibrodka.extra.farming;
 
 import net.kozibrodka.extra.events.BlockListener;
-import net.minecraft.block.BlockBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.block.DropListProvider;
 import net.modificationstation.stationapi.api.registry.Identifier;
@@ -23,10 +22,10 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
 
     public BlockCocoa(Identifier identifier, int texture) {
         super(identifier, texture);
-        this.setTicksRandomly(true);
+        this.setTickRandomly(true);
     }
 
-    public void onScheduledTick(Level level, int x, int y, int z, Random random)
+    public void onTick(World level, int x, int y, int z, Random random)
     {
         if (!this.canGrow(level, x, y, z))
         {
@@ -34,7 +33,7 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
 //            this.drop(level, x, y, z, 0);
 //            level.setBlockToAir(x, y, z);
         }
-        else if (level.rand.nextInt(5) == 0)
+        else if (level.random.nextInt(5) == 0)
         {
             BlockState currentState = level.getBlockState(x, y, z);
             int var7 = currentState.get(WZROST);
@@ -46,7 +45,7 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
     }
 
-    public void dropWithChance(Level level, int i, int j, int k, BlockState state, int l, float f) {
+    public void dropWithChance(World level, int i, int j, int k, BlockState state, int l, float f) {
         int c = state.get(WZROST);
         byte b = 1;
         if(c >= 2)
@@ -55,12 +54,12 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
         for (int a = 0; a < b; ++a)
         {
-            this.drop(level, i, j, k, new ItemInstance(ItemBase.dyePowder, 1, 3));
+            this.dropStack(level, i, j, k, new ItemStack(Item.DYE, 1, 3));
         }
     }
 
 
-    public List<ItemInstance> getDropList(Level level, int x, int y, int z, BlockState blockState, int meta) {
+    public List<ItemStack> getDropList(World level, int x, int y, int z, BlockState blockState, int meta) {
         int c = blockState.get(WZROST);
         byte b = 0;
         if(c >= 2)
@@ -69,12 +68,12 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
         for (int a = 0; a < b; ++a)
         {
-            this.drop(level, x, y, z, new ItemInstance(ItemBase.dyePowder, 1, 3));
+            this.dropStack(level, x, y, z, new ItemStack(Item.DYE, 1, 3));
         }
-        return List.of(new ItemInstance(ItemBase.dyePowder, 1, 3));
+        return List.of(new ItemStack(Item.DYE, 1, 3));
     }
 
-    public void fertilizeCocoa(Level world, int x, int y, int z)
+    public void fertilizeCocoa(World world, int x, int y, int z)
     {
         BlockState currentState = world.getBlockState(x, y, z);
         int fert = currentState.get(WZROST);
@@ -119,14 +118,14 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
     }
 
-    public void onTreeGrowth(Level level, int x, int y, int z, int side, int kokos)
+    public void onTreeGrowth(World level, int x, int y, int z, int side, int kokos)
     {
-        if(level.getTileId(x,y,z) == this.id) {
+        if(level.getBlockId(x,y,z) == this.id) {
             this.onBlockPlaced2(level, x, y, z, side, kokos);
         }
     }
 
-    public void onBlockPlaced(Level level, int x, int y, int z, int side) {
+    public void onPlaced(World level, int x, int y, int z, int side) {
         BlockState currentState = level.getBlockState(x, y, z);
         if(side == 2)
         {
@@ -146,7 +145,7 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
     }
 
-    public void onBlockPlaced2(Level level, int x, int y, int z, int side, int kokos) {
+    public void onBlockPlaced2(World level, int x, int y, int z, int side, int kokos) {
         BlockState currentState = level.getBlockState(x, y, z);
         if(side == 2)
         {
@@ -166,7 +165,7 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
         }
     }
 
-    public boolean canGrow(Level level, int x, int y, int z)
+    public boolean canGrow(World level, int x, int y, int z)
     {
     int var5 = 0;
     int var6 = 0;
@@ -176,22 +175,22 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
             if(var5 == 0)
             {
                 z += 1;
-                var6 = level.getTileId(x, y, z);
+                var6 = level.getBlockId(x, y, z);
             }
             if(var5 == 2)
             {
                 x += 1;
-                var6 = level.getTileId(x, y, z);
+                var6 = level.getBlockId(x, y, z);
             }
             if(var5 == 1)
             {
                 z -= 1;
-                var6 = level.getTileId(x, y, z);
+                var6 = level.getBlockId(x, y, z);
             }
             if(var5 == 3)
             {
                 x -= 1;
-                var6 = level.getTileId(x, y, z);
+                var6 = level.getBlockId(x, y, z);
             }
             return var6 == BlockListener.junglewood.id;
         }catch (Exception exception) {}
@@ -202,7 +201,7 @@ public class BlockCocoa extends TemplatePlant implements DropListProvider {
     public static final IntProperty WZROST = IntProperty.of("wzrost", 0, 2);
     public static final IntProperty SIDE = IntProperty.of("side", 0, 3);
 
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder){
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(WZROST);
         setDefaultState(WZROST, 0);
         builder.add(SIDE);

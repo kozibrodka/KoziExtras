@@ -1,8 +1,8 @@
 package net.kozibrodka.extra.blocksCosmetic;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.Box;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
 
@@ -13,19 +13,19 @@ public class PaneTintedCross extends TemplateBlockBase {
         super(identifier, material);
     }
 
-    public void doesBoxCollide(Level par1World, int par2, int par3, int par4, Box par5AxisAlignedBB, ArrayList par6List)
+    public void addIntersectingBoundingBox(World par1World, int par2, int par3, int par4, Box par5AxisAlignedBB, ArrayList par6List)
     {
         this.setBoundingBox(0.0F, 0.0F, 0.4375F, 1.0F, 1.0F, 0.5625F);
-        super.doesBoxCollide(par1World, par2, par3, par4, par5AxisAlignedBB, par6List);
+        super.addIntersectingBoundingBox(par1World, par2, par3, par4, par5AxisAlignedBB, par6List);
         this.setBoundingBox(0.4375F, 0.0F, 0.0F, 0.5625F, 1.0F, 1.0F);
-        super.doesBoxCollide(par1World, par2, par3, par4, par5AxisAlignedBB, par6List);
+        super.addIntersectingBoundingBox(par1World, par2, par3, par4, par5AxisAlignedBB, par6List);
     }
 
-    public int getRenderPass(){
+    public int getRenderLayer(){
         return 1;
     }
 
-    public boolean isFullOpaque()
+    public boolean isOpaque()
     {
         return false;
     }

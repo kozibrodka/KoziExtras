@@ -7,11 +7,10 @@ import net.kozibrodka.extra.events.BlockListener;
 import net.kozibrodka.extra.events.TextureListener;
 import net.kozibrodka.extra.utils.KoziFacing;
 import net.kozibrodka.extra.utils.KoziUtils;
-import net.minecraft.block.BlockBase;
 import net.minecraft.block.material.Material;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.Box;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.HasCustomBlockItemFactory;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
@@ -33,16 +32,16 @@ public class BlockWoodenSlabExtra extends TemplateBlockBase {
         }
     }
 
-    public void onBlockPlaced(Level var1, int i, int j, int k, int l){
+    public void onPlaced(World var1, int i, int j, int k, int l){
         if(l == 0) {
-            int var6 = var1.getTileMeta(i, j, k);
-            var1.setTileMeta(i, j, k, var6 | 8);
+            int var6 = var1.getBlockMeta(i, j, k);
+            var1.setBlockMeta(i, j, k, var6 | 8);
         }else if(l != 1){
             KoziUtils kozi = new KoziUtils();
             float a = kozi.giveCursorHeigh(i,j,k);
             if((double)a >= 0.5D){
-                int var6 = var1.getTileMeta(i, j, k);
-                var1.setTileMeta(i, j, k, var6 | 8);
+                int var6 = var1.getBlockMeta(i, j, k);
+                var1.setBlockMeta(i, j, k, var6 | 8);
             }
         }
     }
@@ -51,7 +50,7 @@ public class BlockWoodenSlabExtra extends TemplateBlockBase {
         if(field_2324){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
-            boolean flag = (arg.getTileMeta(i, j, k) & 8) != 0;
+            boolean flag = (arg.getBlockMeta(i, j, k) & 8) != 0;
 
             if (flag)
             {
@@ -64,7 +63,7 @@ public class BlockWoodenSlabExtra extends TemplateBlockBase {
         }
     }
 
-    public void method_1605() {
+    public void setupRenderBoundingBox() {
         if(field_2324){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
@@ -72,29 +71,29 @@ public class BlockWoodenSlabExtra extends TemplateBlockBase {
         }
     }
 
-    public boolean isSideRendered(BlockView arg, int i, int j, int k, int l)
+    public boolean isSideVisible(BlockView arg, int i, int j, int k, int l)
     {
         if(this.field_2324) {
-            super.isSideRendered(arg, i, j, k, l);
+            super.isSideVisible(arg, i, j, k, l);
         }
 
-        if(l != 1 && l != 0 && !super.isSideRendered(arg, i, j, k, l)) {
+        if(l != 1 && l != 0 && !super.isSideVisible(arg, i, j, k, l)) {
             return false;
         } else {
             int var6 = i + KoziFacing.offsetsXForSide[KoziFacing.faceToSide[l]];
             int var7 = j + KoziFacing.offsetsYForSide[KoziFacing.faceToSide[l]];
             int var8 = k + KoziFacing.offsetsZForSide[KoziFacing.faceToSide[l]];
-            boolean var9 = (arg.getTileMeta(var6, var7, var8) & 8) != 0;
-            return !var9 ? (l == 1 || (l == 0 && super.isSideRendered(arg, i, j, k, l) || arg.getTileId(i, j, k) != this.id || (arg.getTileMeta(i, j, k) & 8) != 0)) : (l == 0 || (l == 1 && super.isSideRendered(arg, i, j, k, l) || arg.getTileId(i, j, k) != this.id || (arg.getTileMeta(i, j, k) & 8) == 0));
+            boolean var9 = (arg.getBlockMeta(var6, var7, var8) & 8) != 0;
+            return !var9 ? (l == 1 || (l == 0 && super.isSideVisible(arg, i, j, k, l) || arg.getBlockId(i, j, k) != this.id || (arg.getBlockMeta(i, j, k) & 8) != 0)) : (l == 0 || (l == 1 && super.isSideVisible(arg, i, j, k, l) || arg.getBlockId(i, j, k) != this.id || (arg.getBlockMeta(i, j, k) & 8) == 0));
         }
     }
 
-    public void doesBoxCollide(Level world, int i, int j, int k, Box box, ArrayList list) {
+    public void addIntersectingBoundingBox(World world, int i, int j, int k, Box box, ArrayList list) {
         this.updateBoundingBox(world, i, j, k);
-        super.doesBoxCollide(world, i, j, k, box, list);
+        super.addIntersectingBoundingBox(world, i, j, k, box, list);
     }
 
-    public int getTextureForSide(int i, int j) {
+    public int getTexture(int i, int j) {
         if (j == 0 || j == 8) {
             return TextureListener.planks_spruce;
         } else if (j == 1 || j == 9) {
@@ -106,23 +105,23 @@ public class BlockWoodenSlabExtra extends TemplateBlockBase {
         }
     }
 
-    public int getTextureForSide(int i) {
-        return this.getTextureForSide(i, 0);
+    public int getTexture(int i) {
+        return this.getTexture(i, 0);
     }
 
-    public boolean isFullOpaque() {
+    public boolean isOpaque() {
         return this.field_2324;
     }
 
-    public int getDropId(int i, Random random) {
+    public int getDroppedItemId(int i, Random random) {
         return BlockListener.wooden_slab_extra.id;
     }
 
-    public int getDropCount(Random random) {
+    public int getDroppedItemCount(Random random) {
         return this.field_2324 ? 2 : 1;
     }
 
-    protected int droppedMeta(int i) {
+    protected int getDroppedItemMeta(int i) {
 //        if(i < 8)
 //            return i;
 //        else{

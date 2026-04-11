@@ -1,13 +1,13 @@
 package net.kozibrodka.extra.blocksCosmetic;
 
 import net.kozibrodka.extra.utils.FCUtilsMisc;
-import net.minecraft.block.BlockBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Living;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.Box;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
@@ -23,22 +23,22 @@ public class FenceGate extends TemplateBlockBase {
         super(identifier, material);
     }
 
-    public void afterPlaced(Level world, int i, int j, int k, Living entityLiving)
+    public void onPlaced(World world, int i, int j, int k, LivingEntity entityLiving)
     {
         int iFacing = FCUtilsMisc.ConvertPlacingEntityOrientationToFlatBlockFacing(entityLiving);
         SetFacing(world, i, j, k, iFacing);
     }
 
-    public void SetFacing(Level world, int i, int j, int k, int iFacing)
+    public void SetFacing(World world, int i, int j, int k, int iFacing)
     {
         BlockState currentState = world.getBlockState(i, j, k);
 //        world.setBlockStateWithNotify(i,j,k, currentState.with(FACING, iFacing));
     }
 
-    public void onAdjacentBlockUpdate(Level world, int x, int y, int z, int l) {
+    public void neighborUpdate(World world, int x, int y, int z, int l) {
     }
 
-    public void doesBoxCollide(Level par1World, int par2, int par3, int par4, Box par5AxisAlignedBB, ArrayList par6List)
+    public void addIntersectingBoundingBox(World par1World, int par2, int par3, int par4, Box par5AxisAlignedBB, ArrayList par6List)
     {
 
     }
@@ -47,9 +47,9 @@ public class FenceGate extends TemplateBlockBase {
     {
     }
 
-    public boolean canUse(Level world, int i, int j, int k, PlayerBase entityplayer)
+    public boolean onUse(World world, int i, int j, int k, PlayerEntity entityplayer)
     {
-        if(world.isServerSide)
+        if(world.isRemote)
         {
             return true;
         } else
@@ -60,7 +60,7 @@ public class FenceGate extends TemplateBlockBase {
         }
     }
 
-    public boolean isFullOpaque() {
+    public boolean isOpaque() {
         return false;
     }
 
@@ -68,8 +68,8 @@ public class FenceGate extends TemplateBlockBase {
         return false;
     }
 
-    public void activate(Level arg, int i, int j, int k, PlayerBase arg2) {
-        this.canUse(arg, i, j, k, arg2);
+    public void onBlockBreakStart(World arg, int i, int j, int k, PlayerEntity arg2) {
+        this.onUse(arg, i, j, k, arg2);
     }
 
     /**
@@ -78,7 +78,7 @@ public class FenceGate extends TemplateBlockBase {
     public static final IntProperty FACING = IntProperty.of("facing", 0, 2);
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
 
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder){
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(FACING);
         builder.add(OPEN);
     }

@@ -2,14 +2,13 @@ package net.kozibrodka.extra.generate;
 
 import net.kozibrodka.extra.events.BlockListener;
 import net.kozibrodka.extra.farming.BlockVine;
-import net.minecraft.block.BlockBase;
-import net.minecraft.level.Level;
-import net.minecraft.level.structure.Structure;
-import net.minecraft.util.maths.MathHelper;
-
+import net.minecraft.block.Block;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.Feature;
 import java.util.Random;
 
-public class HugeJungleTree extends Structure
+public class HugeJungleTree extends Feature
 {
     /** The base height of the tree */
     private final int baseHeight;
@@ -28,7 +27,7 @@ public class HugeJungleTree extends Structure
 //        this.leavesMetadata = par4;
     }
 
-    public boolean generate(Level level, Random random, int x, int y, int z)
+    public boolean generate(World level, Random random, int x, int y, int z)
     {
         int var6 = random.nextInt(3) + this.baseHeight;
         boolean var7 = true;
@@ -60,9 +59,9 @@ public class HugeJungleTree extends Structure
                     {
                         if (var8 >= 0 && var8 < 256)
                         {
-                            var12 = level.getTileId(var10, var8, var11);
+                            var12 = level.getBlockId(var10, var8, var11);
 
-                            if (var12 != 0 && var12 != BlockBase.LEAVES.id && var12 != BlockBase.GRASS.id && var12 != BlockBase.DIRT.id && var12 != BlockBase.LOG.id && var12 != BlockListener.junglesapling.id && var12 != BlockListener.junglewood.id && var12 != BlockListener.jungleleaves.id)
+                            if (var12 != 0 && var12 != Block.LEAVES.id && var12 != Block.GRASS_BLOCK.id && var12 != Block.DIRT.id && var12 != Block.LOG.id && var12 != BlockListener.junglesapling.id && var12 != BlockListener.junglewood.id && var12 != BlockListener.jungleleaves.id)
                             {
                                 var7 = false;
                             }
@@ -81,14 +80,14 @@ public class HugeJungleTree extends Structure
             }
             else
             {
-                var8 = level.getTileId(x, y - 1, z);
+                var8 = level.getBlockId(x, y - 1, z);
 
-                if ((var8 == BlockBase.GRASS.id || var8 == BlockBase.DIRT.id) && y < 256 - var6 - 1)
+                if ((var8 == Block.GRASS_BLOCK.id || var8 == Block.DIRT.id) && y < 256 - var6 - 1)
                 {
-                    level.setTileInChunk(x, y - 1, z, BlockBase.DIRT.id); // (0,2)?
-                    level.setTileInChunk(x + 1, y - 1, z, BlockBase.DIRT.id);
-                    level.setTileInChunk(x, y - 1, z + 1, BlockBase.DIRT.id);
-                    level.setTileInChunk(x + 1, y - 1, z + 1, BlockBase.DIRT.id);
+                    level.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.DIRT.id); // (0,2)?
+                    level.setBlockWithoutNotifyingNeighbors(x + 1, y - 1, z, Block.DIRT.id);
+                    level.setBlockWithoutNotifyingNeighbors(x, y - 1, z + 1, Block.DIRT.id);
+                    level.setBlockWithoutNotifyingNeighbors(x + 1, y - 1, z + 1, Block.DIRT.id);
                     this.growLeaves(level, x, z, y + var6, 2, random);
 
                     for (int var14 = y + var6 - 2 - random.nextInt(4); var14 > y + var6 / 2; var14 -= 2 + random.nextInt(4))
@@ -102,17 +101,17 @@ public class HugeJungleTree extends Structure
                         {
                             var11 = x + (int)(1.5F + MathHelper.cos(var15) * (float)var13);
                             var12 = z + (int)(1.5F + MathHelper.sin(var15) * (float)var13);
-                            level.setTile(var11, var14 - 3 + var13 / 2, var12, BlockListener.junglewood.id);
+                            level.setBlock(var11, var14 - 3 + var13 / 2, var12, BlockListener.junglewood.id);
                         }
                     }
 
                     for (var10 = 0; var10 < var6; ++var10)
                     {
-                        var11 = level.getTileId(x, y + var10, z);
+                        var11 = level.getBlockId(x, y + var10, z);
 
                         if (var11 == 0 || var11 == BlockListener.jungleleaves.id)
                         {
-                            level.setTile(x, y + var10, z, BlockListener.junglewood.id);
+                            level.setBlock(x, y + var10, z, BlockListener.junglewood.id);
 
                             if (var10 > 0)
                             {
@@ -132,11 +131,11 @@ public class HugeJungleTree extends Structure
 
                         if (var10 < var6 - 1)
                         {
-                            var11 = level.getTileId(x + 1, y + var10, z);
+                            var11 = level.getBlockId(x + 1, y + var10, z);
 
                             if (var11 == 0 || var11 == BlockListener.jungleleaves.id)
                             {
-                                level.setTile(x + 1, y + var10, z, BlockListener.junglewood.id);
+                                level.setBlock(x + 1, y + var10, z, BlockListener.junglewood.id);
 
                                 if (var10 > 0)
                                 {
@@ -154,11 +153,11 @@ public class HugeJungleTree extends Structure
                                 }
                             }
 
-                            var11 = level.getTileId(x + 1, y + var10, z + 1);
+                            var11 = level.getBlockId(x + 1, y + var10, z + 1);
 
                             if (var11 == 0 || var11 == BlockListener.jungleleaves.id)
                             {
-                                level.setTile(x + 1, y + var10, z + 1, BlockListener.junglewood.id);
+                                level.setBlock(x + 1, y + var10, z + 1, BlockListener.junglewood.id);
 
                                 if (var10 > 0)
                                 {
@@ -176,11 +175,11 @@ public class HugeJungleTree extends Structure
                                 }
                             }
 
-                            var11 = level.getTileId(x, y + var10, z + 1);
+                            var11 = level.getBlockId(x, y + var10, z + 1);
 
                             if (var11 == 0 || var11 == BlockListener.jungleleaves.id)
                             {
-                                level.setTile(x, y + var10, z + 1, BlockListener.junglewood.id);
+                                level.setBlock(x, y + var10, z + 1, BlockListener.junglewood.id);
 
                                 if (var10 > 0)
                                 {
@@ -214,13 +213,13 @@ public class HugeJungleTree extends Structure
         }
     }
 
-    private void stawVines(Level level, int x, int y, int z, int meta)
+    private void stawVines(World level, int x, int y, int z, int meta)
     {
-        level.setTile(x, y, z, BlockListener.vine.id);
+        level.setBlock(x, y, z, BlockListener.vine.id);
         ((BlockVine)BlockListener.vine).onTreeGrowth(level, x, y, z, meta);
     }
 
-    private void growLeaves(Level level, int x, int y, int z, int par5, Random random)
+    private void growLeaves(World level, int x, int y, int z, int par5, Random random)
     {
         byte var7 = 2;
 
@@ -239,11 +238,11 @@ public class HugeJungleTree extends Structure
 
                     if ((var12 >= 0 || var14 >= 0 || var12 * var12 + var14 * var14 <= var10 * var10) && (var12 <= 0 && var14 <= 0 || var12 * var12 + var14 * var14 <= (var10 + 1) * (var10 + 1)) && (random.nextInt(4) != 0 || var12 * var12 + var14 * var14 <= (var10 - 1) * (var10 - 1)))
                     {
-                        int var15 = level.getTileId(var11, var8, var13);
+                        int var15 = level.getBlockId(var11, var8, var13);
 
                         if (var15 == 0 || var15 == BlockListener.jungleleaves.id)
                         {
-                            level.setTile(var11, var8, var13, BlockListener.jungleleaves.id);
+                            level.setBlock(var11, var8, var13, BlockListener.jungleleaves.id);
                         }
                     }
                 }

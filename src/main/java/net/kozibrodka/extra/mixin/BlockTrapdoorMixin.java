@@ -2,12 +2,12 @@ package net.kozibrodka.extra.mixin;
 
 import net.kozibrodka.extra.blocksCosmetic.BlockWoodenSlabExtra;
 import net.kozibrodka.extra.utils.KoziUtils;
-import net.minecraft.block.BlockBase;
-import net.minecraft.block.Stairs;
-import net.minecraft.block.StoneSlab;
-import net.minecraft.block.Trapdoor;
+import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StairsBlock;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.level.Level;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,15 +15,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Trapdoor.class)
-public class BlockTrapdoorMixin extends BlockBase {
+@Mixin(TrapdoorBlock.class)
+public class BlockTrapdoorMixin extends Block {
 
     protected BlockTrapdoorMixin(int i, Material arg) {
         super(i, arg);
     }
     KoziUtils kozi = new KoziUtils();
     @Shadow
-    public void method_1059(Level arg, int i, int j, int k, boolean bl) {}
+    public void method_1059(World arg, int i, int j, int k, boolean bl) {}
     @Shadow
     public static boolean method_1061(int i) {
         return (i & 4) != 0;
@@ -70,9 +70,9 @@ public class BlockTrapdoorMixin extends BlockBase {
 
 
     @Override
-    public void onAdjacentBlockUpdate(Level arg, int i, int j, int k, int l) {
-        if (!arg.isServerSide) {
-            int var6 = arg.getTileMeta(i, j, k);
+    public void neighborUpdate(World arg, int i, int j, int k, int l) {
+        if (!arg.isRemote) {
+            int var6 = arg.getBlockMeta(i, j, k);
             int var7 = i;
             int var8 = k;
             if ((var6 & 3) == 0) {
@@ -91,13 +91,13 @@ public class BlockTrapdoorMixin extends BlockBase {
                 --var7;
             }
 
-            if (!isValidSupportBlock(arg.getTileId(var7, j, var8))) {
-                arg.setTile(i, j, k, 0);
-                this.drop(arg, i, j, k, var6);
+            if (!isValidSupportBlock(arg.getBlockId(var7, j, var8))) {
+                arg.setBlock(i, j, k, 0);
+                this.dropStacks(arg, i, j, k, var6);
             }
 
-            if (l > 0 && BlockBase.BY_ID[l].getEmitsRedstonePower()) {
-                boolean var9 = arg.hasRedstonePower(i, j, k);
+            if (l > 0 && Block.BLOCKS[l].canEmitRedstonePower()) {
+                boolean var9 = arg.isPowered(i, j, k);
                 this.method_1059(arg, i, j, k, var9);
             }
 
@@ -105,7 +105,7 @@ public class BlockTrapdoorMixin extends BlockBase {
     }
 
     @Override
-    public void onBlockPlaced(Level arg, int i, int j, int k, int l){
+    public void onPlaced(World arg, int i, int j, int k, int l){
         int var10 = 0;
 
         if (l == 2)
@@ -131,12 +131,12 @@ public class BlockTrapdoorMixin extends BlockBase {
         {
             var10 |= 8;
         }
-        arg.setTileMeta(i, j, k, var10);
+        arg.setBlockMeta(i, j, k, var10);
     }
 
     @Inject(method = "canPlaceAt", at = @At(value = "RETURN", ordinal = 2), cancellable = true)
-    private void injected(Level level, int j, int k, int l, int par5, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(isValidSupportBlock(level.getTileId(j,k,l)));
+    private void injected(World level, int j, int k, int l, int par5, CallbackInfoReturnable<Boolean> cir) {
+        cir.setReturnValue(isValidSupportBlock(level.getBlockId(j,k,l)));
 //        cir.setReturnValue(level.canSuffocate(j,k,l));
     }
 
@@ -148,8 +148,8 @@ public class BlockTrapdoorMixin extends BlockBase {
         }
         else
         {
-            BlockBase var1 = BlockBase.BY_ID[par0];
-            return var1 != null && var1.material.hasNoSuffocation() && var1.isFullCube() || var1 == BlockBase.GLOWSTONE || var1 instanceof StoneSlab || var1 instanceof Stairs|| var1 instanceof BlockWoodenSlabExtra; //DODAWAC SLABY
+            Block var1 = Block.BLOCKS[par0];
+            return var1 != null && var1.material.suffocates() && var1.isFullCube() || var1 == Block.GLOWSTONE || var1 instanceof SlabBlock || var1 instanceof StairsBlock|| var1 instanceof BlockWoodenSlabExtra; //DODAWAC SLABY
         }
     }
 
