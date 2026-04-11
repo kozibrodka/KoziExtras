@@ -45,7 +45,6 @@ public class TextureListener {
         quartz_top = registerBlockTexture("block/quartz_block_top");
         quartz_bottom = registerBlockTexture("block/quartz_block_bottom");
         quartz_side = registerBlockTexture("block/quartz_block_side");
-
     }
 
     private int registerBlockTexture(String s) {

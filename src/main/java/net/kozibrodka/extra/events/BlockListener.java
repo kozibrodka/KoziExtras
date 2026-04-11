@@ -38,7 +38,7 @@ public class BlockListener {
         fence1337 = new BlockFenceExtra(Identifier.of(MOD_ID, "stoneslab1337"), 0, birchplanks).setTranslationKey(MOD_ID, "stoneslab1337");
 
 //        stonebricks = new TemplateBlockBase(Identifier.of(MOD_ID, "stonebricks"), Material.STONE).setTranslationKey(MOD_ID, "stonebricks").setHardness(1.5F).setBlastResistance(10.0F).setSounds(BlockBase.STONE_SOUNDS);
-//        birchplanks = new TemplateBlockBase(Identifier.of(MOD_ID, "birchplanks"), Material.WOOD).setTranslationKey(MOD_ID, "birchplanks").setHardness(2.0F).setBlastResistance(5.0F).setSounds(BlockBase.WOOD_SOUNDS);
+        birchplanksjson = new TemplateBlockBase(Identifier.of(MOD_ID, "birchplanksjson"), Material.WOOD).setTranslationKey(MOD_ID, "birchplanksjson").setHardness(2.0F).setBlastResistance(5.0F).setSounds(BlockBase.WOOD_SOUNDS);
 //        spruceplanks = new TemplateBlockBase(Identifier.of(MOD_ID, "spruceplanks"), Material.WOOD).setTranslationKey(MOD_ID, "spruceplanks").setHardness(2.0F).setBlastResistance(5.0F).setSounds(BlockBase.WOOD_SOUNDS);
 //        jungleplanks = new TemplateBlockBase(Identifier.of(MOD_ID, "jungleplanks"), Material.WOOD).setTranslationKey(MOD_ID, "jungleplanks").setHardness(2.0F).setBlastResistance(5.0F).setSounds(BlockBase.WOOD_SOUNDS);
         watermelon = new TemplatePumpkin(Identifier.of(MOD_ID, "watermelon"), 1, false).setTranslationKey(MOD_ID, "watermelon").setHardness(1.0F).setSounds(BlockBase.WOOD_SOUNDS);
@@ -113,6 +113,7 @@ public class BlockListener {
 
     public static TemplateBlockBase junglewood;
     public static TemplateBlockBase jungleleaves;
+    public static TemplateBlockBase birchplanksjson;
 
     public static TemplateBlockBase wooden_slab_extra;
     public static TemplateBlockBase double_wooden_slab_extra;
