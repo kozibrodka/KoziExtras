@@ -11,13 +11,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BlockRenderManager.class)
 public abstract class RenderBlocksMixin {
 
     @Shadow
-    public boolean renderStandardBlock(Block arg, int i, int j, int k) {
+    public boolean renderBlock(Block arg, int i, int j, int k) {
         return false;
     }
     @Shadow
@@ -41,16 +40,16 @@ public abstract class RenderBlocksMixin {
     private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
         ((BlockStairsInterface)arg).updateBoundingBox1(blockView,i,j,k);
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-        this.renderStandardBlock(arg, i, j, k);
+        this.renderBlock(arg, i, j, k);
 
         boolean flag = ((BlockStairsInterface)arg).doesStairsCollide1(blockView,i,j,k);
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-        this.renderStandardBlock(arg, i, j, k);
+        this.renderBlock(arg, i, j, k);
 
         if (flag && ((BlockStairsInterface)arg).doesStairsCollide2(blockView,i,j,k))
         {
             arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-            this.renderStandardBlock(arg, i, j, k);
+            this.renderBlock(arg, i, j, k);
         }
             cir.setReturnValue(true);
     }
@@ -61,7 +60,7 @@ public abstract class RenderBlocksMixin {
         float var6 = 0.375F;
         float var7 = 0.625F;
         arg.setBoundingBox(var6, 0.0F, var6, var7, 1.0F, var7);
-        this.renderStandardBlock(arg, i, j, k);
+        this.renderBlock(arg, i, j, k);
         var5 = true;
         boolean var8 = false;
         boolean var9 = false;
@@ -91,13 +90,13 @@ public abstract class RenderBlocksMixin {
         float var19 = var13 ? 1.0F : var7;
         if (var8) {
             arg.setBoundingBox(var16, var14, var6, var17, var15, var7);
-            this.renderStandardBlock(arg, i, j, k);
+            this.renderBlock(arg, i, j, k);
             var5 = true;
         }
 
         if (var9) {
             arg.setBoundingBox(var6, var14, var18, var7, var15, var19);
-            this.renderStandardBlock(arg, i, j, k);
+            this.renderBlock(arg, i, j, k);
             var5 = true;
         }
 
@@ -105,13 +104,13 @@ public abstract class RenderBlocksMixin {
         var15 = 0.5625F;
         if (var8) {
             arg.setBoundingBox(var16, var14, var6, var17, var15, var7);
-            this.renderStandardBlock(arg, i, j, k);
+            this.renderBlock(arg, i, j, k);
             var5 = true;
         }
 
         if (var9) {
             arg.setBoundingBox(var6, var14, var18, var7, var15, var19);
-            this.renderStandardBlock(arg, i, j, k);
+            this.renderBlock(arg, i, j, k);
             var5 = true;
         }
 

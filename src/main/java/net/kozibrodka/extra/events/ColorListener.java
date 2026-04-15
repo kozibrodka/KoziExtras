@@ -6,16 +6,15 @@ import net.modificationstation.stationapi.api.client.color.world.BiomeColors;
 import net.modificationstation.stationapi.api.client.event.color.block.BlockColorsRegisterEvent;
 import net.modificationstation.stationapi.api.client.event.color.item.ItemColorsRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
-import net.modificationstation.stationapi.api.registry.ModID;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
+import net.modificationstation.stationapi.api.util.Namespace;
 import net.modificationstation.stationapi.api.util.Null;
-import net.modificationstation.stationapi.mixin.render.client.WaterColourAccessor;
 import org.jetbrains.annotations.Nullable;
 
 public class ColorListener {
 
-    @Entrypoint.ModID
-    public static final ModID MOD_ID = Null.get();
+    @Entrypoint.Namespace
+    public static Namespace MOD_ID = Null.get();
 
     @EventListener
     public static void colorForMelon(BlockColorsRegisterEvent event) {

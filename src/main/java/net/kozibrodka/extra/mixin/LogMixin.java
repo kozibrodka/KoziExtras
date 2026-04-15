@@ -64,7 +64,7 @@ public class LogMixin extends Block implements BlockWithWorldRenderer{
         }
     }
 
-    @Inject(method = "droppedMeta", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getDroppedItemMeta", at = @At("HEAD"), cancellable = true)
     private void injected(int i, CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(i & 3);
     }

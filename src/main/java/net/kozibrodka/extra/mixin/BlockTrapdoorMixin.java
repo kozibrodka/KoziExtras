@@ -23,9 +23,9 @@ public class BlockTrapdoorMixin extends Block {
     }
     KoziUtils kozi = new KoziUtils();
     @Shadow
-    public void method_1059(World arg, int i, int j, int k, boolean bl) {}
+    public void setOpen(World arg, int i, int j, int k, boolean bl) {}
     @Shadow
-    public static boolean method_1061(int i) {
+    public static boolean isOpen(int i) {
         return (i & 4) != 0;
     }
 
@@ -35,7 +35,7 @@ public class BlockTrapdoorMixin extends Block {
 //    }
 
 
-    @Inject(method = "method_1060", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "updateBoundingBox*", at = @At("HEAD"), cancellable = true)
     private void injectedStairs(int par1, CallbackInfo ci) {
         float var2 = 0.1875F;
 
@@ -48,7 +48,7 @@ public class BlockTrapdoorMixin extends Block {
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, var2, 1.0F);
         }
 //        this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, var2, 1.0F);
-        if (this.method_1061(par1)) {
+        if (this.isOpen(par1)) {
             if ((par1 & 3) == 0) {
                 this.setBoundingBox(0.0F, 0.0F, 1.0F - var2, 1.0F, 1.0F, 1.0F);
             }
@@ -98,7 +98,7 @@ public class BlockTrapdoorMixin extends Block {
 
             if (l > 0 && Block.BLOCKS[l].canEmitRedstonePower()) {
                 boolean var9 = arg.isPowered(i, j, k);
-                this.method_1059(arg, i, j, k, var9);
+                this.setOpen(arg, i, j, k, var9);
             }
 
         }

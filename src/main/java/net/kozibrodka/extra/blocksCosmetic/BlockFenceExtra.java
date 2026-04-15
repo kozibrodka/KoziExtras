@@ -1,12 +1,12 @@
 package net.kozibrodka.extra.blocksCosmetic;
 
 import net.minecraft.block.Block;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplateFence;
+import net.modificationstation.stationapi.api.template.block.TemplateFenceBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
-public class BlockFenceExtra extends TemplateFence {
+public class BlockFenceExtra extends TemplateFenceBlock {
 
-    public BlockFenceExtra(Identifier identifier, int j,  Block arg) {
+    public BlockFenceExtra(Identifier identifier, int j, Block arg) {
         super(identifier, j);
         this.template = arg;
     }

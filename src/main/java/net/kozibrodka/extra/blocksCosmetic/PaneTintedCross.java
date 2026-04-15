@@ -3,12 +3,12 @@ package net.kozibrodka.extra.blocksCosmetic;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
 import java.util.ArrayList;
 
-public class PaneTintedCross extends TemplateBlockBase {
+public class PaneTintedCross extends TemplateBlock {
     public PaneTintedCross(Identifier identifier, Material material) {
         super(identifier, material);
     }

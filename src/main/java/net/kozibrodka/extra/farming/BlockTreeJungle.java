@@ -4,13 +4,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
-import net.modificationstation.stationapi.api.template.item.TemplateLog;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
-public class BlockTreeJungle extends TemplateBlockBase {
+public class BlockTreeJungle extends TemplateBlock {
 
 
     public BlockTreeJungle(Identifier identifier, Material material) {

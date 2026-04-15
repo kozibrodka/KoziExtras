@@ -2,10 +2,10 @@ package net.kozibrodka.extra.blocksSimple;
 
 import net.kozibrodka.extra.events.TextureListener;
 import net.minecraft.block.material.Material;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
-public class BlockNetherBricks extends TemplateBlockBase {
+public class BlockNetherBricks extends TemplateBlock {
 
     public BlockNetherBricks(Identifier identifier, Material material) {
         super(identifier, material);

@@ -4,12 +4,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
 import java.util.ArrayList;
 
-public class PaneCross extends TemplateBlockBase {
+public class PaneCross extends TemplateBlock {
     public PaneCross(Identifier identifier, Material material) {
         super(identifier, material);
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);

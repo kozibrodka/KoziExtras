@@ -6,14 +6,14 @@ import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.event.recipe.RecipeRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
 import net.modificationstation.stationapi.api.recipe.CraftingRegistry;
-import net.modificationstation.stationapi.api.registry.ModID;
+import net.modificationstation.stationapi.api.util.Namespace;
 import net.modificationstation.stationapi.api.util.Null;
 
 
 public class RecipeListener {
 
-    @Entrypoint.ModID
-    public static final ModID MOD_ID = Null.get();
+    @Entrypoint.Namespace
+    public static Namespace MOD_ID = Null.get();
 
     @EventListener
     public void registerRecipes(RecipeRegisterEvent event) {

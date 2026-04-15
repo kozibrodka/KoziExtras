@@ -1,6 +1,5 @@
 package net.kozibrodka.extra.farming;
 
-
 import net.kozibrodka.extra.events.BlockListener;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,16 +11,15 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.registry.Identifier;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
-import net.modificationstation.stationapi.api.template.block.TemplatePlant;
 import net.modificationstation.stationapi.api.world.BlockStateView;
 
 import java.util.Random;
 
-public class BlockVine extends TemplateBlockBase {
+public class BlockVine extends TemplateBlock {
 
     public BlockVine(Identifier identifier, Material material) {
         super(identifier, material);

@@ -12,14 +12,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.HasCustomBlockItemFactory;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 @HasCustomBlockItemFactory(ItemWoodenSlabExtra.class)
-public class BlockWoodenSlabExtra extends TemplateBlockBase {
+public class BlockWoodenSlabExtra extends TemplateBlock {
 
     public static final String[] field_2323 = new String[]{"spruce", "birch", "jungle"};
     private boolean field_2324;

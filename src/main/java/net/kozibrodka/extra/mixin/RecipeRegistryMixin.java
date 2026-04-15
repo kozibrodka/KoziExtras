@@ -15,7 +15,7 @@ import java.util.Comparator;
 @Mixin(CraftingRecipeManager.class)
 public abstract class RecipeRegistryMixin {
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeRegistry;addShapedRecipe(Lnet/minecraft/item/ItemInstance;[Ljava/lang/Object;)V", ordinal = 23))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/CraftingRecipeManager;addShapedRecipe(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V", ordinal = 23))
     private void injected(CraftingRecipeManager instance, ItemStack objects, Object[] objects1) {
 
     }

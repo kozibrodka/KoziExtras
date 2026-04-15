@@ -6,9 +6,9 @@ import net.kozibrodka.extra.events.BlockListener;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.template.item.TemplateBlock;
+import net.modificationstation.stationapi.api.template.item.TemplateBlockItem;
 
-public class ItemWoodenSlabExtra extends TemplateBlock {
+public class ItemWoodenSlabExtra extends TemplateBlockItem {
     public ItemWoodenSlabExtra(int i) {
         super(i);
         this.setMaxDamage(0);

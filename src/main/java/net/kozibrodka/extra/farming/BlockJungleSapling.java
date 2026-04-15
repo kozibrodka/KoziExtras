@@ -2,15 +2,14 @@ package net.kozibrodka.extra.farming;
 
 import net.kozibrodka.extra.generate.HugeJungleTree;
 import net.kozibrodka.extra.generate.JungleTree;
-import net.minecraft.level.structure.*;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplatePlant;
+import net.modificationstation.stationapi.api.template.block.TemplatePlantBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
 import java.util.Random;
 
-public class BlockJungleSapling extends TemplatePlant {
+public class BlockJungleSapling extends TemplatePlantBlock {
 
     public BlockJungleSapling(Identifier identifier, int texture) {
         super(identifier, texture);

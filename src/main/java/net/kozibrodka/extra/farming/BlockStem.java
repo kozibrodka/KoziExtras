@@ -10,10 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.registry.Identifier;
+import net.modificationstation.stationapi.api.template.block.TemplatePlantBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
-import net.modificationstation.stationapi.api.template.block.TemplatePlant;
 import net.modificationstation.stationapi.api.world.BlockStateView;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class BlockStem extends TemplatePlant
+public class BlockStem extends TemplatePlantBlock
 {
     private final Block fruitType;
 

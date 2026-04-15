@@ -14,12 +14,12 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.registry.Identifier;
+import net.modificationstation.stationapi.api.template.block.TemplatePlantBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.IntProperty;
-import net.modificationstation.stationapi.api.template.block.TemplatePlant;
 
-public class BlockLilyPad extends TemplatePlant {
+public class BlockLilyPad extends TemplatePlantBlock {
 
     public BlockLilyPad(Identifier identifier, int texture) {
         super(identifier, texture);

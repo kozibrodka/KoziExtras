@@ -1,10 +1,10 @@
 package net.kozibrodka.extra.blocksCosmetic;
 
 import net.minecraft.block.material.Material;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
+import net.modificationstation.stationapi.api.template.block.TemplateBlock;
+import net.modificationstation.stationapi.api.util.Identifier;
 
-public class TintedGlass extends TemplateBlockBase {
+public class TintedGlass extends TemplateBlock {
 
     public TintedGlass(Identifier identifier, Material material) {
         super(identifier, material);

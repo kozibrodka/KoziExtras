@@ -22,7 +22,7 @@ public class BlockSlabMixin extends Block {
         super(i, arg);
     }
 
-    @Shadow private boolean field_2324;
+    @Shadow private boolean doubleSlab;
 
     @Override
     public void onPlaced(World arg, int i, int j, int k){
@@ -46,7 +46,7 @@ public class BlockSlabMixin extends Block {
 
     @Override
     public void updateBoundingBox(BlockView arg, int i, int j, int k){
-        if(field_2324){
+        if(doubleSlab){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
             boolean flag = (arg.getBlockMeta(i, j, k) & 4) != 0;
@@ -64,7 +64,7 @@ public class BlockSlabMixin extends Block {
 
     @Override
     public void setupRenderBoundingBox() {
-        if(field_2324){
+        if(doubleSlab){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
@@ -74,7 +74,7 @@ public class BlockSlabMixin extends Block {
     @Override
     public boolean isSideVisible(BlockView arg, int i, int j, int k, int l)
     {
-        if(this.field_2324) {
+        if(this.doubleSlab) {
             super.isSideVisible(arg, i, j, k, l);
         }
 
@@ -95,7 +95,7 @@ public class BlockSlabMixin extends Block {
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
     }
 
-    @Inject(method = "droppedMeta", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getDroppedItemMeta", at = @At("HEAD"), cancellable = true)
     private void injected(int i, CallbackInfoReturnable<Integer> cir) {
 //        if(i < 4)
 //            cir.setReturnValue(i);
