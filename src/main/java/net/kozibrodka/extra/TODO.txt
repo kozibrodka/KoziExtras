@@ -1,0 +1,30 @@
+//TODO list
+- Bone Meal API instead of DyeMixin for sure
+
+
+
+
+
+
+
+
+
+
+
+
+
+  "mixins": [
+    "BlockFenceMixin",
+    "BlockSlabMixin",
+    "BlockStairsMixin",
+    "BlockTrapdoorMixin",
+    "DyeMixin",
+    "ItemSlabMixin",
+    "LivingMixin",
+    "LogMixin",
+    "MinecraftAccessor",
+    "RecipeRegistryMixin",
+    "RenderBlockAccessor",
+    "RenderBlocksMixin",
+    "TallGrassMixin"
+  ],

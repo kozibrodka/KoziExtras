@@ -1,8 +1,10 @@
 package net.kozibrodka.extra.events;
 
-import net.kozibrodka.extra.blocksCosmetic.*;
-import net.kozibrodka.extra.blocksSimple.*;
-import net.kozibrodka.extra.farming.*;
+import net.glasslauncher.mods.gcapi3.api.ConfigRoot;
+import net.kozibrodka.extra.old_blocksCosmetic.*;
+import net.kozibrodka.extra.old_blocksSimple.*;
+import net.kozibrodka.extra.old_farming.*;
+import net.kozibrodka.extra.glasscfg.ExtrasCFG;
 import net.mine_diver.unsafeevents.listener.EventListener;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -11,11 +13,13 @@ import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
 import net.modificationstation.stationapi.api.template.item.TemplateSeedsItem;
 import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.template.block.*;
-import net.modificationstation.stationapi.api.template.block.TemplateBlock;
 import net.modificationstation.stationapi.api.util.Namespace;
 import net.modificationstation.stationapi.api.util.Null;
 
 public class BlockListener {
+
+    @ConfigRoot(value = "ExtrasCFG", visibleName = "Kozi Extras Config")
+    public static final ExtrasCFG exGlass = new ExtrasCFG();
 
     @Entrypoint.Namespace
     public static  Namespace MOD_ID = Null.get();
@@ -33,7 +37,7 @@ public class BlockListener {
 
         wooden_slab_extra = new BlockWoodenSlabExtra(Identifier.of(MOD_ID, "wooden_slab_extra"), Material.WOOD, false).setTranslationKey(MOD_ID, "wooden_slab_extra").setHardness(2.0F).setResistance(10.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
         double_wooden_slab_extra = new BlockWoodenSlabExtra(Identifier.of(MOD_ID, "double_wooden_slab_extra"), Material.WOOD, true).setTranslationKey(MOD_ID, "double_wooden_slab_extra").setHardness(2.0F).setResistance(10.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
-//        stoneslab1337 = new BlockSlabExtra(Identifier.of(MOD_ID, "stoneslab1337"), Material.STONE, birchplanks).setTranslationKey(MOD_ID, "stoneslab1337");
+////        stoneslab1337 = new BlockSlabExtra(Identifier.of(MOD_ID, "stoneslab1337"), Material.STONE, birchplanks).setTranslationKey(MOD_ID, "stoneslab1337");
         fence1337 = (TemplateFenceBlock) new BlockFenceExtra(Identifier.of(MOD_ID, "stoneslab1337"), 0, birchplanks).setTranslationKey(MOD_ID, "stoneslab1337");
 
 //        stonebricks = new TemplateBlock(Identifier.of(MOD_ID, "stonebricks"), Material.STONE).setTranslationKey(MOD_ID, "stonebricks").setHardness(1.5F).setBlastResistance(10.0F).setSoundGroup(Block.STONE_SOUNDS);
@@ -93,6 +97,8 @@ public class BlockListener {
         iron_bars = new IronFence(Identifier.of(MOD_ID, "iron_bars"), Material.GLASS).setTranslationKey(MOD_ID, "iron_bars").setHardness(5.0F).setResistance(10.0F).setSoundGroup(Block.METAL_SOUND_GROUP);
         iron_bars_cross = new IronFence(Identifier.of(MOD_ID, "iron_bars_cross"), Material.METAL).setTranslationKey(MOD_ID, "iron_bars_cross").setHardness(5.0F).setResistance(10.0F).setSoundGroup(Block.METAL_SOUND_GROUP);
 //        iron_bars_cross = new IronFence(Identifier.of(MOD_ID, "iron_bars_cross"), Material.METAL).setTranslationKey(MOD_ID, "iron_bars_cross").setHardness(5.0F).setResistance(10.0F).setSoundGroup(Block.METAL_SOUND_GROUP).mineableBy(Identifier.of("tools/pickaxes"), 0);
+
+        json_slab = new BlockJsonSlab(Identifier.of(MOD_ID, "json_slab"), Material.GLASS).setTranslationKey(MOD_ID, "json_slab").setHardness(0.2F).setSoundGroup(Block.METAL_SOUND_GROUP);
     }
 
     //TODO: Bloki:
@@ -171,5 +177,7 @@ public class BlockListener {
     public static TemplatePlantBlock waterlily;
     public static Block vine;
     public static TemplatePlantBlock junglesapling;
+
+    public static Block json_slab;
 
 }

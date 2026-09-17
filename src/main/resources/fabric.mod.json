@@ -30,8 +30,8 @@
     "stationapi:event_bus_server": [
 
     ],
-    "gcapi": [
-
+    "gcapi3": [
+      "net.kozibrodka.extra.events.BlockListener"
     ]
   },
   "mixins": [

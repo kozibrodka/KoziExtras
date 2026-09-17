@@ -1,7 +1,6 @@
 package net.kozibrodka.extra.utils;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.kozibrodka.extra.mixin.MinecraftAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.client.Minecraft;
@@ -16,10 +15,8 @@ public class KoziUtils {
     boolean flag4;
 
 //    public HitResult objectMouseOver = minecraft;
-    public float giveCursorHeigh(int x, int y, int z){
-        Minecraft mc = (Minecraft) FabricLoader.getInstance().getGameInstance();
-        HitResult objectMouseOver = mc.crosshairTarget;
-//                this.minecraft.hitResult;
+    public static float giveCursorHeigh(int x, int y, int z){
+        HitResult objectMouseOver = KoziClientUtils.minecraft.crosshairTarget;
         Vec3d vektor = objectMouseOver.pos;
         float varX = (float)vektor.x - (float)x;
         float varY = (float)vektor.y - (float)y;

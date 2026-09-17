@@ -1,0 +1,3 @@
+- Fixed Ogres not having Horns
+- Toggle for Alpha Ogre textures
+- Dolphin jumping (togglable)

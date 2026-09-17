@@ -1,7 +1,8 @@
 plugins {
-	id 'net.fabricmc.fabric-loom-remap' version '1.15.5'
-	id 'babric-loom-extension' version '1.15.3'
+	id 'fabric-loom' version '1.16.3'
+	id 'babric-loom-extension' version '1.16.1'
 	id 'maven-publish'
+	id "com.modrinth.minotaur" version "2.+"
 }
 
 version = property("mod_version")
@@ -110,9 +111,9 @@ dependencies {
 	modImplementation("net.glasslauncher.mods:AlwaysMoreItems:${project.alwaysmoreitems_version}") {
 		transitive = false
 	}
-	modImplementation("net.danygames2014:WhatsThis:${project.whatsthis_version}") {
-		transitive = false
-	}
+//	modImplementation("net.danygames2014:WhatsThis:${project.whatsthis_version}") {
+//		transitive = false
+//	}
 	modRuntimeOnly("maven.modrinth:retroauth:${project.retroauth_version}-b1.7.3") {
 		transitive = false
 	}
@@ -147,7 +148,7 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+		rename { "${it}_${project.archives_base_name}"}
 	}
 }
 
@@ -165,5 +166,34 @@ publishing {
 		// Notice: This block does NOT have the same function as the block in the top level.
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
+	}
+}
+
+modrinth {
+	if (project.hasProperty("modrinth_publishing_cave")) {
+		token = project.modrinth_publishing_cave
+	}
+	projectId = project.modrinth_slug
+	versionNumber = project.mod_version
+	versionName = "${project.modrinth_version_name} ${project.mod_version}"
+	changelog = rootProject.file("CHANGELOG.md").text
+	versionType = "release"
+	uploadFile = remapJar
+	gameVersions = ["b1.7.3"]
+	loaders = ["fabric", "babric"]
+	dependencies {
+		required.project "stationapi"
+		required.project "glass-config-api"
+	}
+}
+
+tasks.named("modrinth") {
+	onlyIf {
+		if (!project.hasProperty("modrinth_publishing_cave") || !project.hasProperty("modrinth_slug") || project.modrinth_slug.length() == 0 || !project.hasProperty("modrinth_version_name") || project.modrinth_version_name.length() == 0) {
+			println("Modrinth publishing skipped due to the required properties not being set")
+			return false
+		}
+
+		return true
 	}
 }
