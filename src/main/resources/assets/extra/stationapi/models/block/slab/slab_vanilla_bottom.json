@@ -1,0 +1,24 @@
+{
+	"overrides": [
+		{
+			"predicate": {"meta": 0},
+			"model": "extra:block/slab/slab_vanilla0_bottom"
+		},
+		{
+			"predicate": {"meta": 1},
+			"model": "extra:block/slab/slab_vanilla1_bottom"
+		},
+		{
+			"predicate": {"meta": 2},
+			"model": "extra:block/slab/slab_vanilla2_bottom"
+		},
+		{
+			"predicate": {"meta": 3},
+			"model": "extra:block/slab/slab_vanilla3_bottom"
+		},
+		{
+			"predicate": {"meta": 4},
+			"model": "extra:block/slab/slab_vanilla0_bottom"
+		}
+	]
+}

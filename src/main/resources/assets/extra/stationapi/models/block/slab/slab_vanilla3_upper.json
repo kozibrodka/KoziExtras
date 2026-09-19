@@ -1,0 +1,9 @@
+{
+	"parent": "extra:block/slab/slab_upper",
+	"textures": {
+		"1": "block/cobblestone",
+		"2": "block/cobblestone",
+		"3": "block/cobblestone",
+		"particle": "block/cobblestone"
+	}
+}

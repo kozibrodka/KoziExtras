@@ -1,0 +1,27 @@
+{
+	"parent": "extra:block/slab/slab_upper",
+	"textures": {
+		"1": "block/smooth_stone_slab_side",
+		"2": "block/smooth_stone",
+		"3": "block/smooth_stone",
+		"particle": "block/smooth_stone_slab_side"
+	},
+	"overrides": [
+		{
+			"predicate": {"meta": 1},
+			"model": "extra:block/slab/slab_vanilla1_upper"
+		},
+		{
+			"predicate": {"meta": 2},
+			"model": "extra:block/slab/slab_vanilla2_upper"
+		},
+		{
+			"predicate": {"meta": 3},
+			"model": "extra:block/slab/slab_vanilla3_upper"
+		},
+		{
+			"predicate": {"meta": 4},
+			"model": "extra:block/slab/slab_vanilla0_upper"
+		}
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"parent": "extra:block/slab/slab_bottom",
+	"textures": {
+		"1": "block/sandstone",
+		"2": "block/sandstone_top",
+		"3": "block/sandstone_bottom",
+		"particle": "block/sandstone"
+	}
+}

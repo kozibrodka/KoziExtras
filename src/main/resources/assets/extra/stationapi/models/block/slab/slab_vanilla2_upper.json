@@ -1,0 +1,9 @@
+{
+	"parent": "extra:block/slab/slab_upper",
+	"textures": {
+		"1": "block/oak_planks",
+		"2": "block/oak_planks",
+		"3": "block/oak_planks",
+		"particle": "block/oak_planks"
+	}
+}

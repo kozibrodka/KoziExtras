@@ -1,0 +1,30 @@
+{
+	"textures": {
+		"1": "null",
+		"2": "null",
+		"3": "null",
+		"particle": "null"
+	},
+	"overrides": [
+		{
+			"predicate": {"meta": 0},
+			"model": "extra:block/slab/slab_vanilla0_upper"
+		},
+		{
+			"predicate": {"meta": 1},
+			"model": "extra:block/slab/slab_vanilla1_upper"
+		},
+		{
+			"predicate": {"meta": 2},
+			"model": "extra:block/slab/slab_vanilla2_upper"
+		},
+		{
+			"predicate": {"meta": 3},
+			"model": "extra:block/slab/slab_vanilla3_upper"
+		},
+		{
+			"predicate": {"meta": 4},
+			"model": "extra:block/slab/slab_vanilla0_upper"
+		}
+	]
+}

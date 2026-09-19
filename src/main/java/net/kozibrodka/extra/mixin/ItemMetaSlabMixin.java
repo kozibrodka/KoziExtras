@@ -31,7 +31,8 @@ public class ItemMetaSlabMixin extends BlockItem {
         } else {
             int clickedID = level.getBlockId(x, y, z);
             int clickedMeta = level.getBlockMeta(x, y, z);
-            int materialMeta = clickedMeta & 3;
+//            int materialMeta = clickedMeta & 3; /// OG
+            int materialMeta = clickedMeta;
             boolean var11 = false;
 //            boolean var11 = (clickedMeta & 4) != 0; /// old-meta logic, nie równa się Dolna plytka
 
@@ -80,7 +81,10 @@ public class ItemMetaSlabMixin extends BlockItem {
 
         int clickedID = level.getBlockId(x, y, z);
         int clickedMeta = level.getBlockMeta(x, y, z);
-        int materialMeta = clickedMeta & 3;
+
+//        int materialMeta = clickedMeta & 3;
+        int materialMeta = clickedMeta;
+
         if(clickedID == Block.SLAB.id && materialMeta == itemstack.getDamage()) {
             if(level.canSpawnEntity(Block.DOUBLE_SLAB.getCollisionShape(level, x, y, z)) && level.setBlock(x, y, z, Block.DOUBLE_SLAB.id, materialMeta)) {
                 level.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, Block.DOUBLE_SLAB.soundGroup.getSound(), (Block.DOUBLE_SLAB.soundGroup.getVolume() + 1.0F) / 2.0F, Block.DOUBLE_SLAB.soundGroup.getPitch() * 0.8F);
