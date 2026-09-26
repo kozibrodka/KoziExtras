@@ -1,18 +1,17 @@
 package net.kozibrodka.extra.mixin;
 
-import net.kozibrodka.extra.utils.KoziFacing;
+import net.kozibrodka.extra.utils.BlockSlabInterface;
 import net.kozibrodka.extra.utils.KoziUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
-import net.modificationstation.stationapi.api.state.property.IntProperty;
 import net.modificationstation.stationapi.api.world.BlockStateView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,13 +19,11 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
-import java.util.Properties;
 
 @Mixin(SlabBlock.class)
-public class BlockSlabMetaMixin extends Block {
+public class BlockSlabMetaMixin extends Block implements BlockSlabInterface {
     protected BlockSlabMetaMixin(int i, Material arg) {
         super(i, arg);
     }
@@ -36,11 +33,12 @@ public class BlockSlabMetaMixin extends Block {
     @Unique
     private static final BooleanProperty UPPER = BooleanProperty.of("upper");
     @Unique
-    private static final IntProperty MATERIAL = IntProperty.of("material", 0, 3); /// {STONE, SANDSTONE, WOOD, COBBLESTONE}
+//    private static final IntProperty MATERIAL = IntProperty.of("material", 0, 3); /// {STONE, SANDSTONE, WOOD, COBBLESTONE}
 
+    @Override
     public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(UPPER);
-        builder.add(MATERIAL);
+//        builder.add(MATERIAL);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -50,15 +48,17 @@ public class BlockSlabMetaMixin extends Block {
         );
     }
 
-    @Override
-    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
-        System.out.println("GRAMY");
-        BlockState currentState = world.getBlockState(x, y, z);
-        int mat = currentState.get(MATERIAL);
-//        world.setBlockState(x,y,z, currentState.with(MATERIAL, mat % 4));
-        world.setBlockState(x,y,z, currentState.with(MATERIAL, 3));
-        return false;
-    }
+//    @Override
+//    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
+//        /// DEV debug interactiom
+////        player
+//        System.out.println("GRAMY");
+//        BlockState currentState = world.getBlockState(x, y, z);
+//        int mat = currentState.get(MATERIAL);
+////        world.setBlockState(x,y,z, currentState.with(MATERIAL, mat % 4));
+//        world.setBlockState(x,y,z, currentState.with(MATERIAL, 3));
+//        return false;
+//    }
 
     @Override
     public void onPlaced(World world, int x, int y, int z) {
@@ -67,7 +67,46 @@ public class BlockSlabMetaMixin extends Block {
 
 
     @Override
+    public void onPlacedSlabExtra(World world, int i, int j, int k, boolean upper){
+        System.out.println("onPlacedSlab");
+        if(upper){
+            int currentMeta = world.getBlockMeta(i, j, k); /// Moja aktualna Meta
+            BlockState currentState = world.getBlockState(i, j, k);
+            world.setBlockState(i, j, k, currentState.with(UPPER, true));
+            world.setBlockMeta(i, j, k, currentMeta);
+        }
+    }
+
+    @Override
     public void onPlaced(World world, int i, int j, int k, int side){
+        System.out.println("onPlaced");
+
+        int currentMeta = world.getBlockMeta(i, j, k); /// Moja aktualna Meta
+        BlockState currentState = world.getBlockState(i, j, k);
+        if(side == 0) { /// Góra
+            world.setBlockState(i, j, k, currentState.with(UPPER, true));
+            world.setBlockMeta(i, j, k, currentMeta);
+        }
+    }
+
+    @Override
+    public void onPlaced(World world, int i, int j, int k, LivingEntity placer) {
+//        if(KoziUtils.getCursorHeightApi(placer, world, i,j,k)){
+//
+//        }
+        System.out.println("onPlaced2");
+
+        if(KoziUtils.giveCursorHeigh(i,j,k) >= 0.5F){
+            int currentMeta = world.getBlockMeta(i, j, k); /// Moja aktualna Meta
+            BlockState currentState = world.getBlockState(i, j, k);
+            world.setBlockState(i, j, k, currentState.with(UPPER, true));
+            world.setBlockMeta(i, j, k, currentMeta);
+        }
+    }
+
+    public void onPlaced_oldLogiv(World world, int i, int j, int k, int side){
+        System.out.println("PLACED SIDE");
+
         int currentMeta = world.getBlockMeta(i, j, k); /// Moja aktualna Meta
         BlockState currentState = world.getBlockState(i, j, k);
         int newMeta = currentMeta;

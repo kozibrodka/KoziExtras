@@ -19,13 +19,13 @@
   "environment": "*",
   "entrypoints": {
     "stationapi:event_bus": [
-      "net.kozibrodka.extra.events.TextureListener",
       "net.kozibrodka.extra.events.BlockListener",
       "net.kozibrodka.extra.events.RecipeListener",
-      "net.kozibrodka.extra.events.ColorListener"
+      "net.kozibrodka.extra.events.PacketListener"
     ],
     "stationapi:event_bus_client": [
-
+      "net.kozibrodka.extra.events.TextureListener",
+      "net.kozibrodka.extra.events.ColorListener"
     ],
     "stationapi:event_bus_server": [
 

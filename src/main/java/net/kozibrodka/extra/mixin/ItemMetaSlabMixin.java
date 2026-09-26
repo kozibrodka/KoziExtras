@@ -2,13 +2,20 @@ package net.kozibrodka.extra.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.glasslauncher.mods.networking.helpers.PacketHelperClientImpl;
+import net.kozibrodka.extra.network.PlacementExtraPacket;
+import net.kozibrodka.extra.utils.BlockSlabInterface;
+import net.kozibrodka.extra.utils.EnvTool;
+import net.kozibrodka.extra.utils.KoziUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SlabBlockItem;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.network.packet.PacketHelper;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,7 +56,7 @@ public class ItemMetaSlabMixin extends BlockItem {
 
                 return true;
             } else {
-                return attemptDoubleSlabPlaceWithOffset(itemstack, playerbase, level, x, y, z, site) || super.useOnBlock(itemstack, playerbase, level, x, y, z, site);
+                return attemptDoubleSlabPlaceWithOffset(itemstack, playerbase, level, x, y, z, site) || useOnBlockSuper(itemstack, playerbase, level, x, y, z, site);
             }
         }
     }
@@ -96,18 +103,69 @@ public class ItemMetaSlabMixin extends BlockItem {
         }
     }
 
+    public boolean useOnBlockSuper(ItemStack stack, PlayerEntity user, World world, int x, int y, int z, int side) {
+
+        boolean isUpper = side >= 2 && KoziUtils.getCursorHeight2D(user, world, x, y, z, side); /// upper Slab przy bocznych kliknięciach
+
+        if (world.getBlockId(x, y, z) == Block.SNOW.id) {
+            side = 0;
+        } else {
+            if (side == 0) {
+                --y;
+                isUpper = true; /// kliknięcie od spodu
+            }
+
+            if (side == 1) {
+                ++y;
+            }
+
+            if (side == 2) {
+                --z;
+            }
+
+            if (side == 3) {
+                ++z;
+            }
+
+            if (side == 4) {
+                --x;
+            }
+
+            if (side == 5) {
+                ++x;
+            }
+        }
+
+        if (stack.count == 0) {
+            return false;
+        } else if (y == 127 && Block.BLOCKS[this.blockId].material.isSolid()) {
+            return false;
+        } else if (world.canPlace(this.blockId, x, y, z, false, side)) {
+            Block var8 = Block.BLOCKS[this.blockId];
+            if (world.setBlock(x, y, z, this.blockId, this.getPlacementMetadata(stack.getDamage()))) {
+
+                if(world.isRemote){
+                    PlacementExtraPacket packet = new PlacementExtraPacket(x,y,z,this.blockId);
+                    ((PacketAccessor)packet).setCreationTime(System.currentTimeMillis() + 10000);
+                    PacketHelper.send(packet);
+                }else if(EnvTool.isEnvClient()){
+//                    ((BlockSlabInterface)Block.BLOCKS[this.blockId]).onPlacedSlabExtra(world,x,y,z,isUpper); /// nowa metoda onPlace
+                }
+
+
+                world.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, var8.soundGroup.getSound(), (var8.soundGroup.getVolume() + 1.0F) / 2.0F, var8.soundGroup.getPitch() * 0.8F);
+                --stack.count;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
     @Environment(EnvType.CLIENT)
-    @Override
-    public String getTranslationKey(ItemStack stack) {
-        return super.getTranslationKey() + "." + SlabBlock.names[getDamageForNewMeta(stack.getDamage())];
-    }
-
-
-    public int getDamageForNewMeta(int oldMeta){
-        return oldMeta % 4;
-    }
-
-
     @Inject(method = "getTranslationKey", at = @At("HEAD"), cancellable = true)
     public void preventCrash(ItemStack stack, CallbackInfoReturnable<String> cir) { //TODO uniTwerks possible conflict
         if (stack.getDamage() >= SlabBlock.names.length) {

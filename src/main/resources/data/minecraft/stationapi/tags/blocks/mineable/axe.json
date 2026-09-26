@@ -4,6 +4,8 @@
     "extra:double_wooden_slab_extra",
     "extra:birchplanks",
     "extra:spruceplanks",
-    "extra:jungleplanks"
+    "extra:jungleplanks",
+    "oak_stairs",
+    "minecraft:oak_stairs"
   ]
 }

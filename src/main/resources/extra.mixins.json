@@ -5,12 +5,17 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "net.kozibrodka.extra.compat.ExtraMixinPlugin",
   "mixins": [
-    "ItemMetaSlabMixin",
-    "BlockSlabMetaMixin"
+    "BlockSlabMetaMixin",
+    "BlockStairsMixin",
+    "ItemMetaSlabMixin"
   ],
   "server": [
   ],
   "client": [
+    "PacketAccessor",
+    "InteractionManagerMixin",
+    "MultiplayerInteractionManagerMixin",
+    "RenderBlocksMixin"
   ],
   "injectors": {
     "defaultRequire": 1

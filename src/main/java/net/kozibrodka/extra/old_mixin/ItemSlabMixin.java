@@ -86,6 +86,8 @@ public class ItemSlabMixin extends BlockItem {
         }
     }
 
+
+
     @Environment(EnvType.CLIENT)
     @Override
     public String getTranslationKey(ItemStack stack) {
