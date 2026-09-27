@@ -1,4 +1,4 @@
-package net.kozibrodka.extra.utils;
+package net.kozibrodka.extra.mixin_interface;
 
 import net.minecraft.world.World;
 

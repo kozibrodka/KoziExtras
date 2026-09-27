@@ -5,17 +5,21 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "net.kozibrodka.extra.compat.ExtraMixinPlugin",
   "mixins": [
-    "BlockSlabMetaMixin",
-    "BlockStairsMixin",
-    "ItemMetaSlabMixin"
+    "SlabBlockItemMixin",
+    "SlabBlockMixin",
+    "datafix.FlattenedWorldManagerMixin",
+    "placement.PlayerInteractBlockC2SPacketMixin"
   ],
   "server": [
+    "placement.ServerPlayerInteractionManagerMixin",
+    "placement.ServerPlayNetworkHandlerMixin"
   ],
   "client": [
     "PacketAccessor",
-    "InteractionManagerMixin",
-    "MultiplayerInteractionManagerMixin",
-    "RenderBlocksMixin"
+    "placement.InteractionManagerMixin",
+    "placement.MinecraftMixin",
+    "placement.MultiplayerInteractionManagerMixin",
+    "stapi.ArsenicDiggingParticleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

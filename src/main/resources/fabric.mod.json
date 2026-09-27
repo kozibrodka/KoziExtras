@@ -3,10 +3,10 @@
   "id": "extra",
   "version": "${version}",
 
-  "name": "Kozibrodka mod",
+  "name": "Release Tweaks",
   "description": "Na ten moment jest to testowy mod",
   "authors": [
-    "Me!"
+    "kozibrodka"
   ],
   "contact": {
     "homepage": "https://glass-launcher.net/",

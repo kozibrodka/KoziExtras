@@ -63,7 +63,7 @@ public class KoziUtils {
 //        if(EnvTool.isEnvServ()){
 //            eye.add(0, player.standingEyeHeight,0);
 //        }
-        System.out.println("TEST " + eye.y + " " + look.y);
+//        System.out.println("TEST " + eye.y + " " + look.y);
 
         /// Algebra trójkąta
         double t;

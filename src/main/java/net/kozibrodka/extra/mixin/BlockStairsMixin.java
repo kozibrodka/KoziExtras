@@ -1,5 +1,7 @@
 package net.kozibrodka.extra.mixin;
 
+import net.kozibrodka.extra.block.item.BlockItemStairs;
+import net.kozibrodka.extra.old_blockItem.ItemWoodenSlabExtra;
 import net.kozibrodka.extra.utils.BlockStairsInterface;
 import net.kozibrodka.extra.utils.KoziUtils;
 import net.minecraft.block.Block;
@@ -10,12 +12,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.block.HasCustomBlockItemFactory;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.ArrayList;
 
 
 @Mixin(StairsBlock.class)
+@HasCustomBlockItemFactory(BlockItemStairs.class)
 public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
     protected BlockStairsMixin(int i, Material arg) {
@@ -38,31 +42,11 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         }
 
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-
-
-//        this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
-//        super.doesBoxCollide(world, par2, par3, par4, box, list);
-//        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 0.5F);
-//        super.doesBoxCollide(world, par2, par3, par4, box, list);
     }
 
-//    @Override
-//    public void updateBoundingBox(BlockView arg, int i, int j, int k) {
-////        int meta = arg.getTileMeta(i, j, k);
-////        if ((meta & 4) != 0)
-////        {
-////            this.setBoundingBox(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
-////        }
-////        else
-////        {
-////            this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
-////        }
-//
-//
-//        this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-////        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 1.0F);
-//    }
 
+
+    @Override
     public void updateBoundingBox1(BlockView arg, int i, int j, int k){
                 int meta = arg.getBlockMeta(i, j, k);
         if ((meta & 4) != 0)

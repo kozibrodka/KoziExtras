@@ -63,6 +63,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 ////        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 1.0F);
 //    }
 
+    @Override
     public void updateBoundingBox1(BlockView arg, int i, int j, int k){
                 int meta = arg.getBlockMeta(i, j, k);
         if ((meta & 4) != 0)

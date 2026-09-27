@@ -2,20 +2,15 @@ package net.kozibrodka.extra.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.glasslauncher.mods.networking.helpers.PacketHelperClientImpl;
-import net.kozibrodka.extra.network.PlacementExtraPacket;
-import net.kozibrodka.extra.utils.BlockSlabInterface;
-import net.kozibrodka.extra.utils.EnvTool;
-import net.kozibrodka.extra.utils.KoziUtils;
+import net.kozibrodka.extra.mixin_interface.BlockItemExtraPlacementInterface;
+import net.kozibrodka.extra.mixin_interface.BlockSlabInterface;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SlabBlockItem;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.network.packet.PacketHelper;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,25 +18,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SlabBlockItem.class)
-public class ItemMetaSlabMixin extends BlockItem {
+public class SlabBlockItemMixin extends BlockItem implements BlockItemExtraPlacementInterface {
 
-    public ItemMetaSlabMixin(int i) {
+    public SlabBlockItemMixin(int i) {
         super(i);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
 
     @Override
-    public boolean useOnBlock(ItemStack itemstack, PlayerEntity playerbase, World level, int x, int y, int z, int site) {
+    public boolean useOnBlockExtra(ItemStack itemstack, PlayerEntity playerbase, World level, int x, int y, int z, int site, float offSetX, float offSetY, float offSetZ) {
         if(itemstack.count == 0) {
             return false;
         } else {
             int clickedID = level.getBlockId(x, y, z);
-            int clickedMeta = level.getBlockMeta(x, y, z);
-//            int materialMeta = clickedMeta & 3; /// OG
-            int materialMeta = clickedMeta;
+            int materialMeta = level.getBlockMeta(x, y, z);
             boolean var11 = false;
-//            boolean var11 = (clickedMeta & 4) != 0; /// old-meta logic, nie równa się Dolna plytka
 
             boolean isClickedSlab = clickedID == Block.SLAB.id;
             if(isClickedSlab){
@@ -56,7 +48,7 @@ public class ItemMetaSlabMixin extends BlockItem {
 
                 return true;
             } else {
-                return attemptDoubleSlabPlaceWithOffset(itemstack, playerbase, level, x, y, z, site) || useOnBlockSuper(itemstack, playerbase, level, x, y, z, site);
+                return attemptDoubleSlabPlaceWithOffset(itemstack, playerbase, level, x, y, z, site) || useOnBlockSuper(itemstack, playerbase, level, x, y, z, site, offSetX, offSetY, offSetZ);
             }
         }
     }
@@ -65,32 +57,24 @@ public class ItemMetaSlabMixin extends BlockItem {
         if(side == 0) {
             --y;
         }
-
         if(side == 1) {
             ++y;
         }
-
         if(side == 2) {
             --z;
         }
-
         if(side == 3) {
             ++z;
         }
-
         if(side == 4) {
             --x;
         }
-
         if(side == 5) {
             ++x;
         }
 
         int clickedID = level.getBlockId(x, y, z);
-        int clickedMeta = level.getBlockMeta(x, y, z);
-
-//        int materialMeta = clickedMeta & 3;
-        int materialMeta = clickedMeta;
+        int materialMeta = level.getBlockMeta(x, y, z);
 
         if(clickedID == Block.SLAB.id && materialMeta == itemstack.getDamage()) {
             if(level.canSpawnEntity(Block.DOUBLE_SLAB.getCollisionShape(level, x, y, z)) && level.setBlock(x, y, z, Block.DOUBLE_SLAB.id, materialMeta)) {
@@ -103,9 +87,8 @@ public class ItemMetaSlabMixin extends BlockItem {
         }
     }
 
-    public boolean useOnBlockSuper(ItemStack stack, PlayerEntity user, World world, int x, int y, int z, int side) {
-
-        boolean isUpper = side >= 2 && KoziUtils.getCursorHeight2D(user, world, x, y, z, side); /// upper Slab przy bocznych kliknięciach
+    public boolean useOnBlockSuper(ItemStack stack, PlayerEntity user, World world, int x, int y, int z, int side, float offSetX, float offSetY, float offSetZ) {
+        boolean isUpper = side >= 2 && offSetY >= 0.5F; /// upper Slab przy bocznych kliknięciach przy offSetY >=0.5F
 
         if (world.getBlockId(x, y, z) == Block.SNOW.id) {
             side = 0;
@@ -114,23 +97,18 @@ public class ItemMetaSlabMixin extends BlockItem {
                 --y;
                 isUpper = true; /// kliknięcie od spodu
             }
-
             if (side == 1) {
                 ++y;
             }
-
             if (side == 2) {
                 --z;
             }
-
             if (side == 3) {
                 ++z;
             }
-
             if (side == 4) {
                 --x;
             }
-
             if (side == 5) {
                 ++x;
             }
@@ -138,21 +116,12 @@ public class ItemMetaSlabMixin extends BlockItem {
 
         if (stack.count == 0) {
             return false;
-        } else if (y == 127 && Block.BLOCKS[this.blockId].material.isSolid()) {
+        } else if (y == 127 && Block.BLOCKS[this.blockId].material.isSolid()) { //todo? logika heigth?
             return false;
         } else if (world.canPlace(this.blockId, x, y, z, false, side)) {
             Block var8 = Block.BLOCKS[this.blockId];
             if (world.setBlock(x, y, z, this.blockId, this.getPlacementMetadata(stack.getDamage()))) {
-
-                if(world.isRemote){
-                    PlacementExtraPacket packet = new PlacementExtraPacket(x,y,z,this.blockId);
-                    ((PacketAccessor)packet).setCreationTime(System.currentTimeMillis() + 10000);
-                    PacketHelper.send(packet);
-                }else if(EnvTool.isEnvClient()){
-//                    ((BlockSlabInterface)Block.BLOCKS[this.blockId]).onPlacedSlabExtra(world,x,y,z,isUpper); /// nowa metoda onPlace
-                }
-
-
+                ((BlockSlabInterface)Block.BLOCKS[this.blockId]).onPlacedSlabExtra(world,x,y,z,isUpper); /// nowa metoda onPlace
                 world.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, var8.soundGroup.getSound(), (var8.soundGroup.getVolume() + 1.0F) / 2.0F, var8.soundGroup.getPitch() * 0.8F);
                 --stack.count;
             }
@@ -163,8 +132,6 @@ public class ItemMetaSlabMixin extends BlockItem {
         }
     }
 
-
-
     @Environment(EnvType.CLIENT)
     @Inject(method = "getTranslationKey", at = @At("HEAD"), cancellable = true)
     public void preventCrash(ItemStack stack, CallbackInfoReturnable<String> cir) { //TODO uniTwerks possible conflict
@@ -173,4 +140,5 @@ public class ItemMetaSlabMixin extends BlockItem {
             cir.setReturnValue(super.getTranslationKey() + ".crash");
         }
     }
+
 }

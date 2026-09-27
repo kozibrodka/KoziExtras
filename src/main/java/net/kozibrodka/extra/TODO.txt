@@ -1,9 +1,18 @@
-//TODO list
+//TODO list - Kompletnie refactoruje Moda
+- Niektóre Feature wypadałoby przenieść do osobnego API.
+
+
+- Datafixer dokończyć.
+- Dodać lookingDirection (byte) do Pakietu Placementa.
+
+
+
+
+
+
+
+
 - Bone Meal API instead of DyeMixin for sure
-
-
-
-
 
 
 
