@@ -53,8 +53,8 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface {
     public void onPlacedSlabExtra(World world, int i, int j, int k, boolean upper, int oldMeta){
         /// on ItemBlock use
         BlockState currentState = world.getBlockState(i, j, k);
-        world.setBlockState(i, j, k, currentState.with(UPPER, upper));
-        world.setBlockMeta(i, j, k, oldMeta);
+        world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(UPPER, upper));
+        world.setBlockMetaWithoutNotifyingNeighbors(i, j, k, oldMeta);
     }
 
     @Override

@@ -39,6 +39,8 @@ public abstract class RenderBlocksMixin {
 
     @Inject(method = "renderStairs", at = @At("HEAD"), cancellable = true)
     private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
+
+        /// RENDER ZAMAZANY HAHA
         ((BlockStairsInterface)arg).updateBoundingBox1(blockView,i,j,k);
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
         this.renderBlock(arg, i, j, k);

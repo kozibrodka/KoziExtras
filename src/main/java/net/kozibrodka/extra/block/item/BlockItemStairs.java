@@ -52,7 +52,7 @@ public class BlockItemStairs extends BlockItem implements BlockItemExtraPlacemen
             return false;
         } else if (world.canPlace(this.blockId, x, y, z, false, side)) {
             Block var8 = Block.BLOCKS[this.blockId];
-            if (world.setBlock(x, y, z, this.blockId)) {
+            if (world.setBlockWithoutNotifyingNeighbors(x, y, z, this.blockId)) { //TODO bez powiadomiena??? i dać tylko jednorazowo z powiadomieniem przy ustawianiu meTY w onPlacedStairs?
 //                Block.BLOCKS[this.blockId].onPlaced(world, x, y, z, side);
 //                Block.BLOCKS[this.blockId].onPlaced(world, x, y, z, playerbase);
                 ((BlockStairsInterface)Block.BLOCKS[this.blockId]).onPlacedStairsExtra(world, x, y, z, isUpper, geoFacing, metaData); /// nowa metoda onPlace

@@ -44,14 +44,23 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
     ///  ENUM PROPERRY? ^^ zrób swój Enum Stairs Shape.
 
-//    private static final Property FACING2 = DirectionProperty.of("facing", "raz", "dwa");
+//    @Override
+//    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
+//        BlockState currentS = world.getBlockState(x,y,z);
+//        world.setBlockState(x,y,z, currentS.with(SHAPE, StairShapeEnum.INNER_LEFT));
+////        currentS.with(SHAPE, StairShapeEnum.INNER_LEFT);
+//        /// DEBUG DEV
+//        return false;
+//    }
+
     @Override
-    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
-        BlockState currentS = world.getBlockState(x,y,z);
-        world.setBlockState(x,y,z, currentS.with(SHAPE, StairShapeEnum.INNER_LEFT));
-//        currentS.with(SHAPE, StairShapeEnum.INNER_LEFT);
-        /// DEBUG DEV
-        return false;
+    public int getTexture(int side) {
+        return 8;
+    }
+
+    @Override
+    public int getTexture(int side, int meta) {
+        return 8;
     }
 
 
@@ -75,13 +84,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     public void onPlacedStairsExtra(World world, int i, int j, int k, boolean upper, Direction geoFacing, int oldMeta) {
         /// on ItemBlock use
         BlockState currentState = world.getBlockState(i, j, k);
-        world.setBlockState(i, j, k, currentState.with(FACING, geoFacing).with(UPPER, upper));
-        world.setBlockMeta(i, j, k, oldMeta);
+        world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(FACING, geoFacing).with(UPPER, upper));
+        world.setBlockMeta(i, j, k, oldMeta); //TODO tutaj jedyne wywołanie updateNeighbors
     }
 
     @Override
     public void neighborUpdate(World world, int x, int y, int z, int id) {
         if(id == 0 || Block.BLOCKS[id] instanceof StairsBlock){
+            investigateStairShape(world, x, y, z);
             /// tylko w tym przypadku będę sprawdzał raczej.
         }
         System.out.println("SĄSIEDNI_UPDATE " + id);
@@ -93,18 +103,28 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     public void investigateStairShape(World world, int i, int j, int k)
     {
         int currentMeta = world.getBlockMeta(i, j, k);
-        boolean naroznik_wewnetrzny = true;
-        boolean naroznik_zewnetrzny = this.createOuterCorners(world, i, j, k); /// true = niestworzony.
+        boolean naroznik_wewnetrzny = false;
+        boolean naroznik_zewnetrzny = determineOuterShape(world, i, j, k); /// false = niestworzony.
 
-        if (naroznik_zewnetrzny)
+        if (!naroznik_zewnetrzny)
         {
-            naroznik_wewnetrzny = this.createInnerCorners(world, i, j, k); /// true = niestworzony.
+            naroznik_wewnetrzny = determineInnerShape(world, i, j, k); /// false = niestworzony.
         }
 
-        if(!naroznik_wewnetrzny || !naroznik_zewnetrzny){ /// Gdy chociaż jeden został stworzony.
-            world.setBlockMeta(i, j, k, currentMeta);
+        if(naroznik_wewnetrzny || naroznik_zewnetrzny){ /// Gdy SHAPE został zmieniony.
+            world.setBlockMetaWithoutNotifyingNeighbors(i, j, k, currentMeta);
         }
+
         //TODO stworzyć metody dla ustawiania blockStatesów ^^ osobne.   investigateStairShape ma być odpalane tylko na neighborupdate.
+    }
+
+    public boolean tryUpdateShapeState(World world, BlockState currentState, BlockPos pos, StairShapeEnum newShape){ /// TRUE - gdy rzeczywiście potrzeba update.
+        if(currentState.get(SHAPE) == newShape){
+            return false;
+        }else{
+            world.setBlockStateWithoutNotifyingNeighbors(pos, currentState.with(SHAPE, newShape));
+            return true;
+        }
     }
 
     @Override
@@ -161,6 +181,8 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         return par0 > 0 && Block.BLOCKS[par0] instanceof StairsBlock;
     }
 
+    //TODO getRid of BlockVievs...
+
     public boolean isBlockPosStairs(BlockView blockViev, BlockPos pos){
         return Block.BLOCKS[blockViev.getBlockId(pos.x, pos.y, pos.z)] instanceof StairsBlock;
     }
@@ -183,11 +205,13 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         }
     }
 
+    //TODO!!! get rid of blockViev kurwa... jak ogarne render...
+
     @Override
-    public boolean createOuterCorners(BlockView blockView, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
+    public boolean createOuterCorners(BlockView world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
     {
         BlockPos currentPos = new BlockPos(x, y, z);
-        BlockState currentState = ((BlockStateView)blockView).getBlockState(currentPos);
+        BlockState currentState = ((BlockStateView)world).getBlockState(currentPos);
         Direction geographicDir = currentState.get(FACING);
         boolean upperStairs = currentState.get(UPPER);
         float minY = 0.5F;
@@ -201,7 +225,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         float maxX = 1.0F;
         float minZ = 0.0F;
         float maxZ = 0.5F;
-        boolean var13 = true;
+        boolean flag = true;
         Direction neighborFACING;
         BlockPos neighborPos;
         if (geographicDir == Direction.EAST)
@@ -210,19 +234,19 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
             maxZ = 1.0F;
             neighborPos = currentPos.add(Direction.EAST.getVector());
 
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
                     maxZ = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
-                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
                     minZ = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
             }
         }
@@ -232,19 +256,19 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
             maxZ = 1.0F;
             neighborPos = currentPos.add(Direction.WEST.getVector());
 
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
                     maxZ = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
-                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
                     minZ = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
             }
         }
@@ -254,51 +278,51 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
             maxZ = 1.0F;
             neighborPos = currentPos.add(Direction.SOUTH.getVector());
 
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
                     maxX = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
-                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
                     minX = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
             }
         }
         else if (geographicDir == Direction.NORTH)
         {
             neighborPos = currentPos.add(Direction.NORTH.getVector());
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
                     maxX = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
-                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
                     minX = 0.5F;
-                    var13 = false;
+                    flag = false;
                 }
             }
         }
 
         this.setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
-        return var13;
+        return flag;
     }
 
     @Override
-    public boolean createInnerCorners(BlockView blockView, int x, int y, int z) /// narożnik wewnętrzny - 1/4 przestrzeni to puste powietrze.
+    public boolean createInnerCorners(BlockView world, int x, int y, int z) /// narożnik wewnętrzny - 1/4 przestrzeni to puste powietrze.
     {
         BlockPos currentPos = new BlockPos(x, y, z);
-        BlockState currentState = ((BlockStateView)blockView).getBlockState(currentPos);
+        BlockState currentState = ((BlockStateView)world).getBlockState(currentPos);
         Direction geographicDir = currentState.get(FACING);
         boolean upperStairs = currentState.get(UPPER);
         float minY = 0.5F;
@@ -312,28 +336,28 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         float maxX = 0.5F;
         float minZ = 0.5F;
         float maxZ = 1.0F;
-        boolean var13 = false;
+        boolean flag = false;
         Direction neighborFACING;
         BlockPos neighborPos;
         if (geographicDir == Direction.EAST)
         {
             neighborPos = currentPos.add(Direction.WEST.getVector());
 
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
                     minZ = 0.0F;
                     maxZ = 0.5F;
-                    var13 = true;
+                    flag = true;
                 }
-                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
                     minZ = 0.5F;
                     maxZ = 1.0F;
-                    var13 = true;
+                    flag = true;
                 }
             }
         }
@@ -341,70 +365,263 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         {
             neighborPos = currentPos.add(Direction.EAST.getVector());
 
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
                 minX = 0.5F;
                 maxX = 1.0F;
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
                     minZ = 0.0F;
                     maxZ = 0.5F;
-                    var13 = true;
+                    flag = true;
                 }
-                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
                     minZ = 0.5F;
                     maxZ = 1.0F;
-                    var13 = true;
+                    flag = true;
                 }
             }
         }
         else if (geographicDir == Direction.SOUTH)
         {
             neighborPos = currentPos.add(Direction.NORTH.getVector());
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
                 minZ = 0.0F;
                 maxZ = 0.5F;
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
 
-                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
-                    var13 = true;
+                    flag = true;
                 }
-                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
                     minX = 0.5F;
                     maxX = 1.0F;
-                    var13 = true;
+                    flag = true;
                 }
             }
         }
         else if (geographicDir == Direction.NORTH)
         {
             neighborPos = currentPos.add(Direction.SOUTH.getVector());
-            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
             {
-                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
-                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
-                    var13 = true;
+                    flag = true;
                 }
-                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
                     minX = 0.5F;
                     maxX = 1.0F;
-                    var13 = true;
+                    flag = true;
                 }
             }
         }
-        if (var13)
+        if (flag)
         {
             this.setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
         }
-        return var13;
+        return flag;
+    }
+
+    /// --- Investigate Stair Shape (blockState) section ---
+    public boolean determineOuterShape(World world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
+    {
+        BlockPos currentPos = new BlockPos(x, y, z);
+        BlockState currentState = world.getBlockState(currentPos);
+        Direction geographicDir = currentState.get(FACING);
+        boolean upperStairs = currentState.get(UPPER);
+        boolean flag = false;
+        Direction neighborFACING;
+        BlockPos neighborPos;
+        if (geographicDir == Direction.EAST)
+        {
+            neighborPos = currentPos.add(Direction.EAST.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                }
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                }
+            }
+        }
+        else if (geographicDir == Direction.WEST)
+        {
+            neighborPos = currentPos.add(Direction.WEST.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                }
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                }
+            }
+        }
+        else if (geographicDir == Direction.SOUTH)
+        {
+            neighborPos = currentPos.add(Direction.SOUTH.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                }
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                }
+            }
+        }
+        else if (geographicDir == Direction.NORTH)
+        {
+            neighborPos = currentPos.add(Direction.NORTH.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                }
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                }
+            }
+        }
+
+        return flag;
+    }
+
+    public boolean determineInnerShape(World world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze.
+    {
+        BlockPos currentPos = new BlockPos(x, y, z);
+        BlockState currentState = world.getBlockState(currentPos);
+        Direction geographicDir = currentState.get(FACING);
+        boolean upperStairs = currentState.get(UPPER);
+        boolean flag = false;
+        Direction neighborFACING;
+        BlockPos neighborPos;
+        if (geographicDir == Direction.EAST)
+        {
+            neighborPos = currentPos.add(Direction.WEST.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                }
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                }
+            }
+        }
+        else if (geographicDir == Direction.WEST)
+        {
+            neighborPos = currentPos.add(Direction.EAST.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                }
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                }
+            }
+        }
+        else if (geographicDir == Direction.SOUTH)
+        {
+            neighborPos = currentPos.add(Direction.NORTH.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                }
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                }
+            }
+        }
+        else if (geographicDir == Direction.NORTH)
+        {
+            neighborPos = currentPos.add(Direction.SOUTH.getVector());
+            if (isBlockPosStairs(world, neighborPos) && upperStairs == isBlockPosUpperStairs(world, neighborPos))
+            {
+                neighborFACING = getBlockPosGeographicDir(world, neighborPos);
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                }
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
+                {
+//                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
+//                    flag = true;
+                    flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                }
+            }
+        }
+        if (!flag)
+        {
+//            world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.STRAIGHT));
+//            flag = true;
+            /// Shape == Straight na pewno.
+            flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.STRAIGHT);
+        }
+        return flag;
     }
 
 }
