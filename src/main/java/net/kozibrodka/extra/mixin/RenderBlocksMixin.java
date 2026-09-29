@@ -1,8 +1,7 @@
 package net.kozibrodka.extra.mixin;
 
 
-import net.kozibrodka.extra.utils.BlockFenceInterface;
-import net.kozibrodka.extra.utils.BlockStairsInterface;
+import net.kozibrodka.extra.mixin_interface.BlockStairsInterface;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.world.BlockView;
@@ -44,11 +43,11 @@ public abstract class RenderBlocksMixin {
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
         this.renderBlock(arg, i, j, k);
 
-        boolean flag = ((BlockStairsInterface)arg).doesStairsCollide1(blockView,i,j,k);
+        boolean flag = ((BlockStairsInterface)arg).createOuterCorners(blockView,i,j,k);
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
         this.renderBlock(arg, i, j, k);
 
-        if (flag && ((BlockStairsInterface)arg).doesStairsCollide2(blockView,i,j,k))
+        if (flag && ((BlockStairsInterface)arg).createInnerCorners(blockView,i,j,k))
         {
             arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
             this.renderBlock(arg, i, j, k);

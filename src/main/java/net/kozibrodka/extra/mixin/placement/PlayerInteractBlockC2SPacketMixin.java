@@ -29,12 +29,17 @@ public class PlayerInteractBlockC2SPacketMixin implements InteractPacketOffSetIn
     @Unique
     private float zOffset;
 
+    /** The geographical looking direction of placing entity */
+    @Unique
+    private int lookDir;
+
 
     @Inject(method = "write", at = @At("RETURN"))
     private void write(DataOutputStream stream, CallbackInfo ci) throws IOException {
         stream.writeFloat(this.xOffset);
         stream.writeFloat(this.yOffset);
         stream.writeFloat(this.zOffset);
+        stream.writeByte(this.lookDir);
     }
 
     @Inject(method = "read", at = @At("RETURN"))
@@ -42,13 +47,15 @@ public class PlayerInteractBlockC2SPacketMixin implements InteractPacketOffSetIn
         this.xOffset = stream.readFloat();
         this.yOffset = stream.readFloat();
         this.zOffset = stream.readFloat();
+        this.lookDir = stream.readByte();
     }
 
     @Override
-    public void setOffsets(float xOffset, float yOffset, float zOffset) {
+    public void setOffsets(float xOffset, float yOffset, float zOffset, int lookDirection) {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.zOffset = zOffset;
+        this.lookDir = lookDirection;
     }
 
     @Override
@@ -57,4 +64,6 @@ public class PlayerInteractBlockC2SPacketMixin implements InteractPacketOffSetIn
     public float getYOffset() { return this.yOffset; }
     @Override
     public float getZOffset() { return this.zOffset; }
+    @Override
+    public int getLookDireciton() {return this.lookDir;}
 }

@@ -1,9 +1,9 @@
 //TODO list - Kompletnie refactoruje Moda
 - Niektóre Feature wypadałoby przenieść do osobnego API.
 
-
+- Stairs powoli rozszyfrować. - mappingsy w doesStairCollide...
 - Datafixer dokończyć.
-- Dodać lookingDirection (byte) do Pakietu Placementa.
+
 
 
 

@@ -35,7 +35,8 @@ public class ServerPlayNetworkHandlerMixin {
         return  ((ServerInteractionManagerExtraInterface)instance).interactBlockExtra(player, world, itemStack, x, y, z, side,
                 ((InteractPacketOffSetInterface)packet).getXOffset(),
                 ((InteractPacketOffSetInterface)packet).getYOffset(),
-                ((InteractPacketOffSetInterface)packet).getZOffset());
+                ((InteractPacketOffSetInterface)packet).getZOffset(),
+                ((InteractPacketOffSetInterface)packet).getLookDireciton());
 
     }
 }

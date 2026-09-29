@@ -1,6 +1,7 @@
 package net.kozibrodka.extra.mixin.placement;
 
 import net.kozibrodka.extra.mixin_interface.InteractPacketOffSetInterface;
+import net.kozibrodka.extra.utils.LookDirectionUtils;
 import net.minecraft.client.MultiplayerInteractionManager;
 import net.minecraft.client.network.ClientNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,7 @@ public class MultiplayerInteractionManagerMixin extends InteractionManagerMixin 
     @Shadow
     private ClientNetworkHandler networkHandler;
 
+    /// Client on server method
     @Override
     public boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, Vec3d eyeVec) {
         this.updateSelectedSlot();
@@ -28,12 +30,13 @@ public class MultiplayerInteractionManagerMixin extends InteractionManagerMixin 
         float xPosition = (float)eyeVec.x - (float)x;
         float yPosition = (float)eyeVec.y - (float)y;
         float zPosition = (float)eyeVec.z - (float)z;
+        int lookingDirection = LookDirectionUtils.headYawToLookDirection(player);
 
         PlayerInteractBlockC2SPacket packet = new PlayerInteractBlockC2SPacket(x, y, z, side, player.inventory.getSelectedItem());
-        ((InteractPacketOffSetInterface)packet).setOffsets(xPosition, yPosition, zPosition);
+        ((InteractPacketOffSetInterface)packet).setOffsets(xPosition, yPosition, zPosition, lookingDirection);
         this.networkHandler.sendPacket(packet);
 
-        boolean var8 = this.interactBlockExtraClient(player, world, itemStack, x, y, z, side, eyeVec);
+        boolean var8 = this.interactBlockExtraClient(player, world, itemStack, x, y, z, side, eyeVec, lookingDirection);
         return var8;
     }
 

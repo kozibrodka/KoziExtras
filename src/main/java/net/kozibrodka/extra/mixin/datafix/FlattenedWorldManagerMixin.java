@@ -14,6 +14,7 @@ import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.impl.world.FlattenedWorldManager;
 import net.modificationstation.stationapi.impl.world.chunk.ChunkSection;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -31,34 +32,39 @@ public class FlattenedWorldManagerMixin {
             World world, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
             @Local(name = "sectionTag") NbtCompound sectionTag
     ) {
-        /// Jeśli sekcja nie posiada zapisanego kontenera stanów, pomiń
-        if (!sectionTag.contains("block_states")) return;
-
+        if (!sectionTag.contains("block_states")) return;  /// Jeśli sekcja nie posiada zapisanego kontenera stanów, pomiń
         NbtCompound states = sectionTag.getCompound("block_states");
         NbtList palette = states.getList("palette");
+        extra_stairsNeedsConversion = false; /// reset Flag
 
         /// Chunk Palette
-        for (short i = 0; i < palette.size(); i++) { //TODO dodać flagi. + Jedynie uzupełnienie propsów dla poszczególnych bloków.
+        for (short i = 0; i < palette.size(); i++) {
             NbtCompound tag = (NbtCompound) palette.get(i);
-
-            /// Jeśli wpis posiada już Properties (czyli świat był już zapisany z Twoim modem), nie rób nic
-            if (tag.contains("Properties")) continue;
-
-            Identifier id = Identifier.of(tag.getString("Name"));
+            if (tag.contains("Properties")) continue; /// Jeśli wpis posiada już Properties (czyli świat był już zapisany z Modem), nie rób nic
+            String blockName = tag.getString("Name");
+            Identifier id = Identifier.of(blockName);
             Block block = BlockRegistry.INSTANCE.get(id);
             if (block == null) continue;
 
-            /// Interesują nas tylko bloki, do których Twój mod dodał nowe właściwości (np. Slab)
-            if (block.getStateManager().getProperties().isEmpty()) continue;
+            /// Half-Slabs
+            if (blockName.equals("minecraft:slab")) {
+                NbtCompound propertiesTag = new NbtCompound();
+                tag.put("Properties", propertiesTag);
+                BlockState defaultState = block.getDefaultState();
+                for (Property<?> property : defaultState.getProperties()) {
+                    propertiesTag.putString(property.getName(), defaultState.get(property).toString()); /// Default State Apply
+                }
+            }
 
-            /// Pobieramy domyślny stan (w którym Twój onConstructorEnd ustawił już upper = false)
-            BlockState defaultState = block.getDefaultState();
-            NbtCompound propertiesTag = new NbtCompound();
-
-            /// Wstrzykujemy brakujące "Properties" bezpośrednio do NBT palety
-            tag.put("Properties", propertiesTag);
-            for (Property<?> property : defaultState.getProperties()) {
-                propertiesTag.putString(property.getName(), defaultState.get(property).toString());
+            /// Stairs
+            else if (block instanceof net.minecraft.block.StairsBlock) {
+                extra_stairsNeedsConversion = true;
+                NbtCompound propertiesTag = new NbtCompound();
+                tag.put("Properties", propertiesTag);
+                BlockState defaultState = block.getDefaultState();
+                for (Property<?> property : defaultState.getProperties()) {
+                    propertiesTag.putString(property.getName(), defaultState.get(property).toString());
+                }
             }
         }
     }
@@ -74,7 +80,11 @@ public class FlattenedWorldManagerMixin {
             World level, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
             @Local ChunkSection chunkSection
     ) {
-        ExtraBlockFixer.fixChunkSection(chunkSection);
+        //todo Fixery - odpalane tylko przy pierwszy załadowaniu chunku na podstawie flag: np. extra_stairsNeedsConversion
+//        ExtraBlockFixer.fixChunkSection(chunkSection);
     }
+
+    @Unique
+    private static boolean extra_stairsNeedsConversion = false;
 
 }

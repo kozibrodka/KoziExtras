@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.Mixin;
 public class ServerPlayerInteractionManagerMixin implements ServerInteractionManagerExtraInterface {
 
     @Override
-    public boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, float offSetX, float offSetY, float offSetZ) {
+    public boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, float offSetX, float offSetY, float offSetZ, int lookDirection) {
         int var8 = world.getBlockId(x, y, z);
         if (var8 > 0 && Block.BLOCKS[var8].onUse(world, x, y, z, player)) {
             return true;
         } else {
             if(itemStack != null){
                 if(itemStack.getItem() instanceof BlockItemExtraPlacementInterface){
-                    return  ((BlockItemExtraPlacementInterface)itemStack.getItem()).useOnBlockExtra(itemStack, player, world, x, y, z, side, offSetX, offSetY, offSetZ);
+                    return  ((BlockItemExtraPlacementInterface)itemStack.getItem()).useOnBlockExtra(itemStack, player, world, x, y, z, side, offSetX, offSetY, offSetZ, lookDirection);
                 }else{
                     return itemStack.useOnBlock(player, world, x, y, z, side);
                 }

@@ -14,6 +14,8 @@ import net.minecraft.world.biome.Biome;
 public class FCUtilsMisc
 {
 
+    /// KOPIA KLASY z better than wolves, do wyjebania prawdopodobnie.
+
     public FCUtilsMisc()
     {
     }

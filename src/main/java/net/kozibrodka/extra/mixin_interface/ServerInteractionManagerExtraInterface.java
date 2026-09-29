@@ -7,6 +7,6 @@ import net.minecraft.world.World;
 
 public interface ServerInteractionManagerExtraInterface {
 
-    boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, float offSetX, float offSetY, float offSetZ);
+    boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, float offSetX, float offSetY, float offSetZ, int lookDirection);
 
 }

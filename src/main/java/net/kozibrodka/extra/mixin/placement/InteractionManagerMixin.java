@@ -2,6 +2,7 @@ package net.kozibrodka.extra.mixin.placement;
 
 import net.kozibrodka.extra.mixin_interface.BlockItemExtraPlacementInterface;
 import net.kozibrodka.extra.mixin_interface.InteractionManagerExtraInterface;
+import net.kozibrodka.extra.utils.LookDirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.InteractionManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(InteractionManager.class)
 public class InteractionManagerMixin implements InteractionManagerExtraInterface {
 
+    /// Singleplayer method
     @Override
     public boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, Vec3d eyeVec) {
         int var8 = world.getBlockId(x, y, z);
@@ -26,8 +28,7 @@ public class InteractionManagerMixin implements InteractionManagerExtraInterface
                     float yPosition = (float)eyeVec.y - (float)y;
                     float zPosition = (float)eyeVec.z - (float)z;
 
-                    return  ((BlockItemExtraPlacementInterface)itemStack.getItem()).useOnBlockExtra(itemStack, player, world, x, y, z, side, xPosition, yPosition, zPosition);
-//                    return itemStack.useOnBlock(player, world, x, y, z, side); /// TODO mój osobny interface
+                    return  ((BlockItemExtraPlacementInterface)itemStack.getItem()).useOnBlockExtra(itemStack, player, world, x, y, z, side, xPosition, yPosition, zPosition, LookDirectionUtils.headYawToLookDirection(player));
                 }else{
                     return itemStack.useOnBlock(player, world, x, y, z, side);
                 }
@@ -36,11 +37,9 @@ public class InteractionManagerMixin implements InteractionManagerExtraInterface
         }
     }
 
-//    @Override
+    /// Client on server method
     @Unique
-    public boolean interactBlockExtraClient(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, Vec3d eyeVec) {
-//        System.out.println("USE ESXTRA CLIENT");
-//        return this.interactBlockExtra(player, world, itemStack, x, y, z, side, eyeVec);
+    public boolean interactBlockExtraClient(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, Vec3d eyeVec, int lookDirection) {
         /// Aby uniknąć Overflow crash - zapętlenia.
         int var8 = world.getBlockId(x, y, z);
         if (var8 > 0 && Block.BLOCKS[var8].onUse(world, x, y, z, player)) {
@@ -52,7 +51,7 @@ public class InteractionManagerMixin implements InteractionManagerExtraInterface
                     float yPosition = (float)eyeVec.y - (float)y;
                     float zPosition = (float)eyeVec.z - (float)z;
 
-                    return  ((BlockItemExtraPlacementInterface)itemStack.getItem()).useOnBlockExtra(itemStack, player, world, x, y, z, side, xPosition, yPosition, zPosition);
+                    return  ((BlockItemExtraPlacementInterface)itemStack.getItem()).useOnBlockExtra(itemStack, player, world, x, y, z, side, xPosition, yPosition, zPosition, lookDirection);
                 }else{
                     return itemStack.useOnBlock(player, world, x, y, z, side);
                 }

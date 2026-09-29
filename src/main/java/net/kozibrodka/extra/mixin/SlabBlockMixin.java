@@ -50,13 +50,11 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface {
 
 
     @Override
-    public void onPlacedSlabExtra(World world, int i, int j, int k, boolean upper){
-        if(upper){
-            int currentMeta = world.getBlockMeta(i, j, k); /// Moja aktualna Meta
-            BlockState currentState = world.getBlockState(i, j, k);
-            world.setBlockState(i, j, k, currentState.with(UPPER, true));
-            world.setBlockMeta(i, j, k, currentMeta);
-        }
+    public void onPlacedSlabExtra(World world, int i, int j, int k, boolean upper, int oldMeta){
+        /// on ItemBlock use
+        BlockState currentState = world.getBlockState(i, j, k);
+        world.setBlockState(i, j, k, currentState.with(UPPER, upper));
+        world.setBlockMeta(i, j, k, oldMeta);
     }
 
     @Override

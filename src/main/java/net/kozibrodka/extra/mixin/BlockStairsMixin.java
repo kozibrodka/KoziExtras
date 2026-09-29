@@ -1,19 +1,28 @@
 package net.kozibrodka.extra.mixin;
 
 import net.kozibrodka.extra.block.item.BlockItemStairs;
-import net.kozibrodka.extra.old_blockItem.ItemWoodenSlabExtra;
-import net.kozibrodka.extra.utils.BlockStairsInterface;
-import net.kozibrodka.extra.utils.KoziUtils;
+import net.kozibrodka.extra.mixin_interface.BlockStairsInterface;
+import net.kozibrodka.extra.utils.StairShapeEnum;
 import net.minecraft.block.Block;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.block.HasCustomBlockItemFactory;
+import net.modificationstation.stationapi.api.state.StateManager;
+import net.modificationstation.stationapi.api.state.property.*;
+import net.modificationstation.stationapi.api.util.math.Direction;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 
@@ -26,6 +35,77 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         super(i, arg);
     }
 
+    @Unique
+    private static final BooleanProperty UPPER = BooleanProperty.of("upper");
+    @Unique
+    private static final DirectionProperty FACING = DirectionProperty.of("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+    @Unique
+    private static final EnumProperty<StairShapeEnum> SHAPE = EnumProperty.of("shape", StairShapeEnum.class);
+
+    ///  ENUM PROPERRY? ^^ zrób swój Enum Stairs Shape.
+
+//    private static final Property FACING2 = DirectionProperty.of("facing", "raz", "dwa");
+    @Override
+    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
+        BlockState currentS = world.getBlockState(x,y,z);
+        world.setBlockState(x,y,z, currentS.with(SHAPE, StairShapeEnum.INNER_LEFT));
+//        currentS.with(SHAPE, StairShapeEnum.INNER_LEFT);
+        /// DEBUG DEV
+        return false;
+    }
+
+
+    @Override
+    public void appendProperties(StateManager.Builder<Block, BlockState> builder){
+        builder.add(UPPER);
+        builder.add(FACING);
+        builder.add(SHAPE);
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void onConstructorEnd(CallbackInfo ci) {
+        setDefaultState(getDefaultState()
+                .with(UPPER, false)
+                .with(FACING, Direction.NORTH)
+                .with(SHAPE, StairShapeEnum.STRAIGHT)
+        );
+    }
+
+    @Override
+    public void onPlacedStairsExtra(World world, int i, int j, int k, boolean upper, Direction geoFacing, int oldMeta) {
+        /// on ItemBlock use
+        BlockState currentState = world.getBlockState(i, j, k);
+        world.setBlockState(i, j, k, currentState.with(FACING, geoFacing).with(UPPER, upper));
+        world.setBlockMeta(i, j, k, oldMeta);
+    }
+
+    @Override
+    public void neighborUpdate(World world, int x, int y, int z, int id) {
+        if(id == 0 || Block.BLOCKS[id] instanceof StairsBlock){
+            /// tylko w tym przypadku będę sprawdzał raczej.
+        }
+        System.out.println("SĄSIEDNI_UPDATE " + id);
+//        investigateStairShape(world, x, y, z); //todo
+        //TODO crash PISTON - ale w Render.
+    }
+
+    @Unique
+    public void investigateStairShape(World world, int i, int j, int k)
+    {
+        int currentMeta = world.getBlockMeta(i, j, k);
+        boolean naroznik_wewnetrzny = true;
+        boolean naroznik_zewnetrzny = this.createOuterCorners(world, i, j, k); /// true = niestworzony.
+
+        if (naroznik_zewnetrzny)
+        {
+            naroznik_wewnetrzny = this.createInnerCorners(world, i, j, k); /// true = niestworzony.
+        }
+
+        if(!naroznik_wewnetrzny || !naroznik_zewnetrzny){ /// Gdy chociaż jeden został stworzony.
+            world.setBlockMeta(i, j, k, currentMeta);
+        }
+        //TODO stworzyć metody dla ustawiania blockStatesów ^^ osobne.   investigateStairShape ma być odpalane tylko na neighborupdate.
+    }
 
     @Override
     public void addIntersectingBoundingBox(World world, int i, int j, int k, Box box, ArrayList list)
@@ -33,10 +113,10 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         this.updateBoundingBox1(world, i, j, k);
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
 
-        boolean var8 = this.doesStairsCollide1(world, i, j, k);
+        boolean var8 = this.createOuterCorners(world, i, j, k);
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
 
-        if (var8 && this.doesStairsCollide2(world, i, j, k))
+        if (var8 && this.createInnerCorners(world, i, j, k))
         {
             super.addIntersectingBoundingBox(world, i, j, k, box, list);
         }
@@ -44,12 +124,12 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-
-
     @Override
     public void updateBoundingBox1(BlockView arg, int i, int j, int k){
-                int meta = arg.getBlockMeta(i, j, k);
-        if ((meta & 4) != 0)
+        boolean flag = ((BlockStateView)arg).getBlockState(i,j,k).get(UPPER);
+//        int meta = arg.getBlockMeta(i, j, k);
+//        if ((meta & 4) != 0)
+        if (flag)
         {
             this.setBoundingBox(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
         }
@@ -61,46 +141,16 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
 
     @Override
-    public void onPlaced(World arg, int i, int j, int k, LivingEntity arg2) {
-        int var6 = MathHelper.floor((double)(arg2.yaw * 4.0F / 360.0F) + 0.5D) & 3;
-        int var7 = arg.getBlockMeta(i, j, k) & 4;
-//        System.out.println(arg.getTileMeta(i, j, k));
-//        System.out.println(var7);
-//        System.out.println("XD");
-        if(var6 == 0) {
-            arg.setBlockMeta(i, j, k, 2 | var7);
-        }
-
-        if(var6 == 1) {
-            arg.setBlockMeta(i, j, k, 1 | var7);
-        }
-
-        if(var6 == 2) {
-            arg.setBlockMeta(i, j, k, 3 | var7);
-        }
-
-        if(var6 == 3) {
-            arg.setBlockMeta(i, j, k, 0 | var7);
-        }
-
+    public void onPlaced(World arg, int i, int j, int k, LivingEntity placer) {
+        /// no vanilla logic
     }
 
     @Override
     public void onPlaced(World var1, int i, int j, int k, int l){
-        if(l == 0) {
-            int var6 = var1.getBlockMeta(i, j, k);
-            var1.setBlockMeta(i, j, k, var6 | 4);
-        }else if(l != 1){
-            KoziUtils kozi = new KoziUtils();
-            float a = kozi.giveCursorHeigh(i,j,k);
-            if((double)a >= 0.5D){
-                int var6 = var1.getBlockMeta(i, j, k);
-                var1.setBlockMeta(i, j, k, var6 | 4);
-            }
-        }
+        /// no vanilla logic
     }
 
-    private boolean isStairsConnected(BlockView blockviev, int x, int y, int z, int par5)
+    private boolean isStairsIdentical(BlockView blockviev, int x, int y, int z, int par5)
     {
         int var6 = blockviev.getBlockId(x, y, z);
         return isBlockStairsID(var6) && blockviev.getBlockMeta(x, y, z) == par5;
@@ -111,245 +161,249 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         return par0 > 0 && Block.BLOCKS[par0] instanceof StairsBlock;
     }
 
+    public boolean isBlockPosStairs(BlockView blockViev, BlockPos pos){
+        return Block.BLOCKS[blockViev.getBlockId(pos.x, pos.y, pos.z)] instanceof StairsBlock;
+    }
+
+    public boolean isBlockPosUpperStairs(BlockView blockView, BlockPos pos){
+        return ((BlockStateView)blockView).getBlockState(pos).get(UPPER);
+    }
+
+    public Direction getBlockPosGeographicDir(BlockView blockView, BlockPos pos){
+        return ((BlockStateView)blockView).getBlockState(pos).get(FACING);
+    }
+
+    public boolean isStairsIdentical(BlockView blockView, BlockState currentState, BlockPos pos){ /// Sprawdzam FACING & UPPER
+        if(isBlockPosStairs(blockView, pos)) {
+            BlockState neighborState = ((BlockStateView) blockView).getBlockState(pos);
+            return neighborState.get(UPPER) == currentState.get(UPPER) && neighborState.get(FACING) == currentState.get(FACING);
+        }else
+        {
+            return false;
+        }
+    }
+
     @Override
-    public boolean doesStairsCollide1(BlockView par1IBlockAccess, int par2, int par3, int par4)
+    public boolean createOuterCorners(BlockView blockView, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
     {
-        int var5 = par1IBlockAccess.getBlockMeta(par2, par3, par4);
-        int var6 = var5 & 3;
-        float var7 = 0.5F;
-        float var8 = 1.0F;
-
-        if ((var5 & 4) != 0)
+        BlockPos currentPos = new BlockPos(x, y, z);
+        BlockState currentState = ((BlockStateView)blockView).getBlockState(currentPos);
+        Direction geographicDir = currentState.get(FACING);
+        boolean upperStairs = currentState.get(UPPER);
+        float minY = 0.5F;
+        float maxY = 1.0F;
+        if (upperStairs) /// Stopień jest na dole, dla górnych schodów
         {
-            var7 = 0.0F;
-            var8 = 0.5F;
+            minY = 0.0F;
+            maxY = 0.5F;
         }
-
-        float var9 = 0.0F;
-        float var10 = 1.0F;
-        float var11 = 0.0F;
-        float var12 = 0.5F;
+        float minX = 0.0F;
+        float maxX = 1.0F;
+        float minZ = 0.0F;
+        float maxZ = 0.5F;
         boolean var13 = true;
-        int var14;
-        int var15;
-        int var16;
-
-        if (var6 == 0)
+        Direction neighborFACING;
+        BlockPos neighborPos;
+        if (geographicDir == Direction.EAST)
         {
-            var9 = 0.5F;
-            var12 = 1.0F;
-            var14 = par1IBlockAccess.getBlockId(par2 + 1, par3, par4);
-            var15 = par1IBlockAccess.getBlockMeta(par2 + 1, par3, par4);
+            minX = 0.5F;
+            maxZ = 1.0F;
+            neighborPos = currentPos.add(Direction.EAST.getVector());
 
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var16 = var15 & 3;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
-                    var12 = 0.5F;
+                    maxZ = 0.5F;
                     var13 = false;
                 }
-                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
-                    var11 = 0.5F;
+                    minZ = 0.5F;
                     var13 = false;
                 }
             }
         }
-        else if (var6 == 1)
+        else if (geographicDir == Direction.WEST)
         {
-            var10 = 0.5F;
-            var12 = 1.0F;
-            var14 = par1IBlockAccess.getBlockId(par2 - 1, par3, par4);
-            var15 = par1IBlockAccess.getBlockMeta(par2 - 1, par3, par4);
+            maxX = 0.5F;
+            maxZ = 1.0F;
+            neighborPos = currentPos.add(Direction.WEST.getVector());
 
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var16 = var15 & 3;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
-                    var12 = 0.5F;
+                    maxZ = 0.5F;
                     var13 = false;
                 }
-                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
-                    var11 = 0.5F;
+                    minZ = 0.5F;
                     var13 = false;
                 }
             }
         }
-        else if (var6 == 2)
+        else if (geographicDir == Direction.SOUTH)
         {
-            var11 = 0.5F;
-            var12 = 1.0F;
-            var14 = par1IBlockAccess.getBlockId(par2, par3, par4 + 1);
-            var15 = par1IBlockAccess.getBlockMeta(par2, par3, par4 + 1);
+            minZ = 0.5F;
+            maxZ = 1.0F;
+            neighborPos = currentPos.add(Direction.SOUTH.getVector());
 
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var16 = var15 & 3;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
-                    var10 = 0.5F;
+                    maxX = 0.5F;
                     var13 = false;
                 }
-                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
-                    var9 = 0.5F;
+                    minX = 0.5F;
                     var13 = false;
                 }
             }
         }
-        else if (var6 == 3)
+        else if (geographicDir == Direction.NORTH)
         {
-            var14 = par1IBlockAccess.getBlockId(par2, par3, par4 - 1);
-            var15 = par1IBlockAccess.getBlockMeta(par2, par3, par4 - 1);
-
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            neighborPos = currentPos.add(Direction.NORTH.getVector());
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var16 = var15 & 3;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
-                    var10 = 0.5F;
+                    maxX = 0.5F;
                     var13 = false;
                 }
-                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
-                    var9 = 0.5F;
+                    minX = 0.5F;
                     var13 = false;
                 }
             }
         }
 
-        this.setBoundingBox(var9, var7, var11, var10, var8, var12);
+        this.setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
         return var13;
     }
 
     @Override
-    public boolean doesStairsCollide2(BlockView par1IBlockAccess, int par2, int par3, int par4)
+    public boolean createInnerCorners(BlockView blockView, int x, int y, int z) /// narożnik wewnętrzny - 1/4 przestrzeni to puste powietrze.
     {
-        int var5 = par1IBlockAccess.getBlockMeta(par2, par3, par4);
-        int var6 = var5 & 3;
-        float var7 = 0.5F;
-        float var8 = 1.0F;
-
-        if ((var5 & 4) != 0)
+        BlockPos currentPos = new BlockPos(x, y, z);
+        BlockState currentState = ((BlockStateView)blockView).getBlockState(currentPos);
+        Direction geographicDir = currentState.get(FACING);
+        boolean upperStairs = currentState.get(UPPER);
+        float minY = 0.5F;
+        float maxY = 1.0F;
+        if (upperStairs)  /// Stopień jest na dole, dla górnych schodów
         {
-            var7 = 0.0F;
-            var8 = 0.5F;
+            minY = 0.0F;
+            maxY = 0.5F;
         }
-
-        float var9 = 0.0F;
-        float var10 = 0.5F;
-        float var11 = 0.5F;
-        float var12 = 1.0F;
+        float minX = 0.0F;
+        float maxX = 0.5F;
+        float minZ = 0.5F;
+        float maxZ = 1.0F;
         boolean var13 = false;
-        int var14;
-        int var15;
-        int var16;
-
-        if (var6 == 0)
+        Direction neighborFACING;
+        BlockPos neighborPos;
+        if (geographicDir == Direction.EAST)
         {
-            var14 = par1IBlockAccess.getBlockId(par2 - 1, par3, par4);
-            var15 = par1IBlockAccess.getBlockMeta(par2 - 1, par3, par4);
+            neighborPos = currentPos.add(Direction.WEST.getVector());
 
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var16 = var15 & 3;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
-                    var11 = 0.0F;
-                    var12 = 0.5F;
+                    minZ = 0.0F;
+                    maxZ = 0.5F;
                     var13 = true;
                 }
-                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
-                    var11 = 0.5F;
-                    var12 = 1.0F;
+                    minZ = 0.5F;
+                    maxZ = 1.0F;
                     var13 = true;
                 }
             }
         }
-        else if (var6 == 1)
+        else if (geographicDir == Direction.WEST)
         {
-            var14 = par1IBlockAccess.getBlockId(par2 + 1, par3, par4);
-            var15 = par1IBlockAccess.getBlockMeta(par2 + 1, par3, par4);
+            neighborPos = currentPos.add(Direction.EAST.getVector());
 
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var9 = 0.5F;
-                var10 = 1.0F;
-                var16 = var15 & 3;
+                minX = 0.5F;
+                maxX = 1.0F;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 3 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 - 1, var5))
+                if (neighborFACING == Direction.NORTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
-                    var11 = 0.0F;
-                    var12 = 0.5F;
+                    minZ = 0.0F;
+                    maxZ = 0.5F;
                     var13 = true;
                 }
-                else if (var16 == 2 && !this.isStairsConnected(par1IBlockAccess, par2, par3, par4 + 1, var5))
+                else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
-                    var11 = 0.5F;
-                    var12 = 1.0F;
+                    minZ = 0.5F;
+                    maxZ = 1.0F;
                     var13 = true;
                 }
             }
         }
-        else if (var6 == 2)
+        else if (geographicDir == Direction.SOUTH)
         {
-            var14 = par1IBlockAccess.getBlockId(par2, par3, par4 - 1);
-            var15 = par1IBlockAccess.getBlockMeta(par2, par3, par4 - 1);
-
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            neighborPos = currentPos.add(Direction.NORTH.getVector());
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var11 = 0.0F;
-                var12 = 0.5F;
-                var16 = var15 & 3;
+                minZ = 0.0F;
+                maxZ = 0.5F;
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
 
-                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
                     var13 = true;
                 }
-                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
-                    var9 = 0.5F;
-                    var10 = 1.0F;
+                    minX = 0.5F;
+                    maxX = 1.0F;
                     var13 = true;
                 }
             }
         }
-        else if (var6 == 3)
+        else if (geographicDir == Direction.NORTH)
         {
-            var14 = par1IBlockAccess.getBlockId(par2, par3, par4 + 1);
-            var15 = par1IBlockAccess.getBlockMeta(par2, par3, par4 + 1);
-
-            if (isBlockStairsID(var14) && (var5 & 4) == (var15 & 4))
+            neighborPos = currentPos.add(Direction.SOUTH.getVector());
+            if (isBlockPosStairs(blockView, neighborPos) && upperStairs == isBlockPosUpperStairs(blockView, neighborPos))
             {
-                var16 = var15 & 3;
-
-                if (var16 == 1 && !this.isStairsConnected(par1IBlockAccess, par2 - 1, par3, par4, var5))
+                neighborFACING = getBlockPosGeographicDir(blockView, neighborPos);
+                if (neighborFACING == Direction.WEST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
                     var13 = true;
                 }
-                else if (var16 == 0 && !this.isStairsConnected(par1IBlockAccess, par2 + 1, par3, par4, var5))
+                else if (neighborFACING == Direction.EAST && !isStairsIdentical(blockView, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
-                    var9 = 0.5F;
-                    var10 = 1.0F;
+                    minX = 0.5F;
+                    maxX = 1.0F;
                     var13 = true;
                 }
             }
         }
-
         if (var13)
         {
-            this.setBoundingBox(var9, var7, var11, var10, var8, var12);
+            this.setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
         }
-
         return var13;
     }
 

@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "net.kozibrodka.extra.compat.ExtraMixinPlugin",
   "mixins": [
+    "BlockStairsMixin",
     "SlabBlockItemMixin",
     "SlabBlockMixin",
     "datafix.FlattenedWorldManagerMixin",
@@ -16,6 +17,7 @@
   ],
   "client": [
     "PacketAccessor",
+    "RenderBlocksMixin",
     "placement.InteractionManagerMixin",
     "placement.MinecraftMixin",
     "placement.MultiplayerInteractionManagerMixin",

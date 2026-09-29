@@ -1,6 +1,6 @@
 package net.kozibrodka.extra.old_mixin;
 
-import net.kozibrodka.extra.utils.BlockStairsInterface;
+import net.kozibrodka.extra.mixin_interface.BlockStairsInterface;
 import net.kozibrodka.extra.utils.KoziUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.StairsBlock;
@@ -10,6 +10,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.ArrayList;
@@ -29,10 +30,10 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         this.updateBoundingBox1(world, i, j, k);
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
 
-        boolean var8 = this.doesStairsCollide1(world, i, j, k);
+        boolean var8 = this.createOuterCorners(world, i, j, k);
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
 
-        if (var8 && this.doesStairsCollide2(world, i, j, k))
+        if (var8 && this.createInnerCorners(world, i, j, k))
         {
             super.addIntersectingBoundingBox(world, i, j, k, box, list);
         }
@@ -76,6 +77,11 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         }
     }
 
+    @Override
+    public void onPlacedStairsExtra(World world, int i, int j, int k, boolean upper, Direction geoFacing, int oldMeta) {
+
+    }
+
 
     @Override
     public void onPlaced(World arg, int i, int j, int k, LivingEntity arg2) {
@@ -102,6 +108,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
     }
 
+    @Override
     public void onPlaced(World var1, int i, int j, int k, int l){
         if(l == 0) {
             int var6 = var1.getBlockMeta(i, j, k);
@@ -128,7 +135,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     }
 
     @Override
-    public boolean doesStairsCollide1(BlockView par1IBlockAccess, int par2, int par3, int par4)
+    public boolean createOuterCorners(BlockView par1IBlockAccess, int par2, int par3, int par4)
     {
         int var5 = par1IBlockAccess.getBlockMeta(par2, par3, par4);
         int var6 = var5 & 3;
@@ -246,7 +253,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     }
 
     @Override
-    public boolean doesStairsCollide2(BlockView par1IBlockAccess, int par2, int par3, int par4)
+    public boolean createInnerCorners(BlockView par1IBlockAccess, int par2, int par3, int par4)
     {
         int var5 = par1IBlockAccess.getBlockMeta(par2, par3, par4);
         int var6 = var5 & 3;

@@ -6,5 +6,5 @@ import net.minecraft.world.World;
 
 public interface BlockItemExtraPlacementInterface {
 
-    boolean useOnBlockExtra(ItemStack itemstack, PlayerEntity playerbase, World level, int x, int y, int z, int site, float offSetX, float offSetY, float offSetZ);
+    boolean useOnBlockExtra(ItemStack itemstack, PlayerEntity playerbase, World world, int x, int y, int z, int side, float offSetX, float offSetY, float offSetZ, int lookDirection);
 }
