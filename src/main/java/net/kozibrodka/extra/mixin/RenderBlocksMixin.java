@@ -41,20 +41,21 @@ public abstract class RenderBlocksMixin {
     private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
 
         /// RENDER ZAMAZANY HAHA
-        ((BlockStairsInterface)arg).updateBoundingBox1(blockView,i,j,k);
-        arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-        this.renderBlock(arg, i, j, k);
-
-        boolean flag = ((BlockStairsInterface)arg).createOuterCorners(blockView,i,j,k);
-        arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-        this.renderBlock(arg, i, j, k);
-
-        if (flag && ((BlockStairsInterface)arg).createInnerCorners(blockView,i,j,k))
-        {
-            arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-            this.renderBlock(arg, i, j, k);
-        }
+//        ((BlockStairsInterface)arg).updateBoundingBox1(blockView,i,j,k);
+//        arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
+//        this.renderBlock(arg, i, j, k);
+//
+//        boolean flag = ((BlockStairsInterface)arg).createOuterCorners(blockView,i,j,k);
+//        arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
+//        this.renderBlock(arg, i, j, k);
+//
+//        if (flag && ((BlockStairsInterface)arg).createInnerCorners(blockView,i,j,k))
+//        {
+//            arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
+//            this.renderBlock(arg, i, j, k);
+//        }
             cir.setReturnValue(true);
+
     }
 
 //    @Inject(method = "renderFence", at = @At("HEAD"), cancellable = true)

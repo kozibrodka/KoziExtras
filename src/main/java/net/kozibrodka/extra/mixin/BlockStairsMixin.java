@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
     protected BlockStairsMixin(int i, Material arg) {
-        super(i, arg);
+        super(i, 8, arg);
     }
 
     @Unique
@@ -53,10 +53,10 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //        return false;
 //    }
 
-    @Override
-    public int getTexture(int side) {
-        return 8;
-    }
+//    @Override
+//    public int getTexture(int side) {
+//        return 8;
+//    }
 
     @Override
     public int getTexture(int side, int meta) {
@@ -86,6 +86,9 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         BlockState currentState = world.getBlockState(i, j, k);
         world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(FACING, geoFacing).with(UPPER, upper));
         world.setBlockMeta(i, j, k, oldMeta); //TODO tutaj jedyne wywołanie updateNeighbors
+
+//        this.neighborUpdate(world, i, j, k, this.id);
+        this.investigateStairShape(world, i, j, k);
     }
 
     @Override
@@ -103,12 +106,24 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     public void investigateStairShape(World world, int i, int j, int k)
     {
         int currentMeta = world.getBlockMeta(i, j, k);
+
+        boolean flagS = true;
+
+        boolean naroznik_zewnetrzny = false;
         boolean naroznik_wewnetrzny = false;
-        boolean naroznik_zewnetrzny = determineOuterShape(world, i, j, k); /// false = niestworzony.
+//        boolean naroznik_zewnetrzny = determineOuterShape(world, i, j, k); /// false = niestworzony.
+
+        int naro_zewn_info = determineOuterShape(world, i, j, k); /// 0 - BRAK KSZTAŁTU,  1 - UTRWALENIE KSZTAŁTU,  2 - NOWY KSZTAŁT
+        if(naro_zewn_info > 0){
+            flagS = false;
+            if(naro_zewn_info > 1){
+                naroznik_zewnetrzny = true;
+            }
+        }
 
         if (!naroznik_zewnetrzny)
         {
-            naroznik_wewnetrzny = determineInnerShape(world, i, j, k); /// false = niestworzony.
+            naroznik_wewnetrzny = determineInnerShape(world, i, j, k, flagS); /// false = niestworzony.
         }
 
         if(naroznik_wewnetrzny || naroznik_zewnetrzny){ /// Gdy SHAPE został zmieniony.
@@ -432,13 +447,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     }
 
     /// --- Investigate Stair Shape (blockState) section ---
-    public boolean determineOuterShape(World world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
+    public int determineOuterShape(World world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
     {
         BlockPos currentPos = new BlockPos(x, y, z);
         BlockState currentState = world.getBlockState(currentPos);
         Direction geographicDir = currentState.get(FACING);
         boolean upperStairs = currentState.get(UPPER);
         boolean flag = false;
+        boolean flagStraighten = true;
         Direction neighborFACING;
         BlockPos neighborPos;
         if (geographicDir == Direction.EAST)
@@ -452,12 +468,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                    flagStraighten = false;
                 }
             }
         }
@@ -472,12 +490,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.NORTH.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                    flagStraighten = false;
                 }
             }
         }
@@ -492,12 +512,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                    flagStraighten = false;
                 }
             }
         }
@@ -512,26 +534,36 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_LEFT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.WEST.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.OUTER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.OUTER_RIGHT);
+                    flagStraighten = false;
                 }
             }
         }
 
-        return flag;
+        if(flagStraighten && !flag){ /// TODO żeby ładnie było...
+            return 0;
+        }else if(flagStraighten == false && !flag){
+            return 1;
+        }else if(flagStraighten == false && flag){
+            return 2;
+        }
+        return 0;
     }
 
-    public boolean determineInnerShape(World world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze.
+    public boolean determineInnerShape(World world, int x, int y, int z, boolean flagS) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze.
     {
         BlockPos currentPos = new BlockPos(x, y, z);
         BlockState currentState = world.getBlockState(currentPos);
         Direction geographicDir = currentState.get(FACING);
         boolean upperStairs = currentState.get(UPPER);
         boolean flag = false;
+        boolean flagStraighten = flagS;
         Direction neighborFACING;
         BlockPos neighborPos;
         if (geographicDir == Direction.EAST)
@@ -545,12 +577,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                    flagStraighten = false;
                 }
             }
         }
@@ -565,12 +599,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.SOUTH && !isStairsIdentical(world, currentState, currentPos.add(Direction.SOUTH.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                    flagStraighten = false;
                 }
             }
         }
@@ -585,12 +621,14 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                    flagStraighten = false;
                 }
             }
         }
@@ -605,16 +643,18 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_LEFT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_LEFT);
+                    flagStraighten = false;
                 }
                 else if (neighborFACING == Direction.EAST && !isStairsIdentical(world, currentState, currentPos.add(Direction.EAST.getVector())))
                 {
 //                    world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.INNER_RIGHT));
 //                    flag = true;
                     flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.INNER_RIGHT);
+                    flagStraighten = false;
                 }
             }
         }
-        if (!flag)
+        if (flagStraighten)
         {
 //            world.setBlockStateWithoutNotifyingNeighbors(currentPos, currentState.with(SHAPE, StairShapeEnum.STRAIGHT));
 //            flag = true;
