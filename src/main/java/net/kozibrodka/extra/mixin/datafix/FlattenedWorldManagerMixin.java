@@ -1,7 +1,7 @@
 package net.kozibrodka.extra.mixin.datafix;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.kozibrodka.extra.utils.ExtraBlockFixer;
+import net.kozibrodka.extra.events.datafix.ExtraBlockFixer;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -40,7 +40,7 @@ public class FlattenedWorldManagerMixin {
         /// Chunk Palette
         for (short i = 0; i < palette.size(); i++) {
             NbtCompound tag = (NbtCompound) palette.get(i);
-            if (tag.contains("Properties")) continue; /// Jeśli wpis posiada już Properties (czyli świat był już zapisany z Modem), nie rób nic
+            if (tag.contains("Properties")) continue; /// Jeśli wpis posiada już Properties (czyli świat był już zapisany z Modem), pomiń
             String blockName = tag.getString("Name");
             Identifier id = Identifier.of(blockName);
             Block block = BlockRegistry.INSTANCE.get(id);
@@ -58,11 +58,13 @@ public class FlattenedWorldManagerMixin {
 
             /// Stairs
             else if (block instanceof net.minecraft.block.StairsBlock) {
+                System.out.println("VANILLA STAIRS DETECTED");
                 extra_stairsNeedsConversion = true;
                 NbtCompound propertiesTag = new NbtCompound();
                 tag.put("Properties", propertiesTag);
                 BlockState defaultState = block.getDefaultState();
                 for (Property<?> property : defaultState.getProperties()) {
+                    System.out.println("naprawiam schody: " + property.getName());
                     propertiesTag.putString(property.getName(), defaultState.get(property).toString());
                 }
             }
@@ -81,7 +83,9 @@ public class FlattenedWorldManagerMixin {
             @Local ChunkSection chunkSection
     ) {
         //todo Fixery - odpalane tylko przy pierwszy załadowaniu chunku na podstawie flag: np. extra_stairsNeedsConversion
-//        ExtraBlockFixer.fixChunkSection(chunkSection);
+        if(extra_stairsNeedsConversion){
+            ExtraBlockFixer.fixChunkSection(chunkSection, extra_stairsNeedsConversion);
+        }
     }
 
     @Unique

@@ -31,7 +31,7 @@ public class MultiplayerInteractionManagerMixin extends InteractionManagerMixin 
         float yPosition = (float)eyeVec.y - (float)y;
         float zPosition = (float)eyeVec.z - (float)z;
         int lookingDirection = LookDirectionUtils.headYawToLookDirection(player);
-
+        // TODO NETWORK-VANILLA-COMP
         PlayerInteractBlockC2SPacket packet = new PlayerInteractBlockC2SPacket(x, y, z, side, player.inventory.getSelectedItem());
         ((InteractPacketOffSetInterface)packet).setOffsets(xPosition, yPosition, zPosition, lookingDirection);
         this.networkHandler.sendPacket(packet);

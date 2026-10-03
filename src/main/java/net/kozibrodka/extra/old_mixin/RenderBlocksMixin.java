@@ -6,6 +6,7 @@ import net.kozibrodka.extra.mixin_interface.BlockStairsInterface;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,11 +43,11 @@ public abstract class RenderBlocksMixin {
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
         this.renderBlock(arg, i, j, k);
 
-        boolean flag = ((BlockStairsInterface)arg).createOuterCorners(blockView,i,j,k);
+        boolean flag = ((BlockStairsInterface)arg).createOuterCorners((World) blockView,i,j,k);
         arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
         this.renderBlock(arg, i, j, k);
 
-        if (flag && ((BlockStairsInterface)arg).createInnerCorners(blockView,i,j,k))
+        if (flag && ((BlockStairsInterface)arg).createInnerCorners((World) blockView,i,j,k))
         {
             arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
             this.renderBlock(arg, i, j, k);

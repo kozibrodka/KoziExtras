@@ -2,7 +2,12 @@
 - Niektóre Feature wypadałoby przenieść do osobnego API.
 
 - Stairs powoli rozszyfrować. - mappingsy w doesStairCollide...
-- Datafixer dokończyć.
+- Datafixer dokończyć - dla stairs koniecznie.
+- Fajna Minaturka Release Tweaks
+
+- DataFixer API? - całościowe przekształcenie?
+
+//  NETWORK-VANILLA-COMP zeby z serwerow vanilla nie wywalalo moze
 
 
 

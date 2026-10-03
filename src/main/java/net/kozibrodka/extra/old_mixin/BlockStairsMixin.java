@@ -61,7 +61,18 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //
 //
 //        this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-////        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 1.0F);
+
+    @Override
+    public boolean createOuterCorners(World world, int x, int y, int z) {
+        return false;
+    }
+
+    @Override
+    public boolean createInnerCorners(World world, int x, int y, int z) {
+        return false;
+    }
+
+    ////        this.setBoundingBox(0.0F, 0.5F, 0.0F, 0.5F, 1.0F, 1.0F);
 //    }
 
     @Override
@@ -134,7 +145,6 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         return par0 > 0 && Block.BLOCKS[par0] instanceof StairsBlock;
     }
 
-    @Override
     public boolean createOuterCorners(BlockView par1IBlockAccess, int par2, int par3, int par4)
     {
         int var5 = par1IBlockAccess.getBlockMeta(par2, par3, par4);
@@ -252,7 +262,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         return var13;
     }
 
-    @Override
+
     public boolean createInnerCorners(BlockView par1IBlockAccess, int par2, int par3, int par4)
     {
         int var5 = par1IBlockAccess.getBlockMeta(par2, par3, par4);

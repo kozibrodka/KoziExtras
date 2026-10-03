@@ -37,37 +37,20 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
     @Unique
     private static final BooleanProperty UPPER = BooleanProperty.of("upper");
-    @Unique
-    private static final DirectionProperty FACING = DirectionProperty.of("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+//    @Unique
+//    private static final DirectionProperty FACING = DirectionProperty.of("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     @Unique
     private static final EnumProperty<StairShapeEnum> SHAPE = EnumProperty.of("shape", StairShapeEnum.class);
-
-    ///  ENUM PROPERRY? ^^ zrób swój Enum Stairs Shape.
-
-//    @Override
-//    public boolean onUse(World world, int x, int y, int z, PlayerEntity player) {
-//        BlockState currentS = world.getBlockState(x,y,z);
-//        world.setBlockState(x,y,z, currentS.with(SHAPE, StairShapeEnum.INNER_LEFT));
-////        currentS.with(SHAPE, StairShapeEnum.INNER_LEFT);
-//        /// DEBUG DEV
-//        return false;
-//    }
-
-//    @Override
-//    public int getTexture(int side) {
-//        return 8;
-//    }
 
     @Override
     public int getTexture(int side, int meta) {
         return 8;
     }
 
-
     @Override
     public void appendProperties(StateManager.Builder<Block, BlockState> builder){
         builder.add(UPPER);
-        builder.add(FACING);
+        builder.add(Properties.HORIZONTAL_FACING);
         builder.add(SHAPE);
     }
 
@@ -75,7 +58,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     private void onConstructorEnd(CallbackInfo ci) {
         setDefaultState(getDefaultState()
                 .with(UPPER, false)
-                .with(FACING, Direction.NORTH)
+                .with(Properties.HORIZONTAL_FACING, Direction.NORTH)
                 .with(SHAPE, StairShapeEnum.STRAIGHT)
         );
     }
@@ -84,7 +67,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     public void onPlacedStairsExtra(World world, int i, int j, int k, boolean upper, Direction geoFacing, int oldMeta) {
         /// on ItemBlock use
         BlockState currentState = world.getBlockState(i, j, k);
-        world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(FACING, geoFacing).with(UPPER, upper));
+        world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(Properties.HORIZONTAL_FACING, geoFacing).with(UPPER, upper));
         world.setBlockMeta(i, j, k, oldMeta); //TODO tutaj jedyne wywołanie updateNeighbors
 
 //        this.neighborUpdate(world, i, j, k, this.id);
@@ -95,7 +78,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     public void neighborUpdate(World world, int x, int y, int z, int id) {
         if(id == 0 || Block.BLOCKS[id] instanceof StairsBlock){
             investigateStairShape(world, x, y, z);
-            /// tylko w tym przypadku będę sprawdzał raczej.
+            /// AIR, STAIRS
         }
         System.out.println("SĄSIEDNI_UPDATE " + id);
 //        investigateStairShape(world, x, y, z); //todo
@@ -111,7 +94,6 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
         boolean naroznik_zewnetrzny = false;
         boolean naroznik_wewnetrzny = false;
-//        boolean naroznik_zewnetrzny = determineOuterShape(world, i, j, k); /// false = niestworzony.
 
         int naro_zewn_info = determineOuterShape(world, i, j, k); /// 0 - BRAK KSZTAŁTU,  1 - UTRWALENIE KSZTAŁTU,  2 - NOWY KSZTAŁT
         if(naro_zewn_info > 0){
@@ -130,7 +112,6 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
             world.setBlockMetaWithoutNotifyingNeighbors(i, j, k, currentMeta);
         }
 
-        //TODO stworzyć metody dla ustawiania blockStatesów ^^ osobne.   investigateStairShape ma być odpalane tylko na neighborupdate.
     }
 
     public boolean tryUpdateShapeState(World world, BlockState currentState, BlockPos pos, StairShapeEnum newShape){ /// TRUE - gdy rzeczywiście potrzeba update.
@@ -145,15 +126,16 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     @Override
     public void addIntersectingBoundingBox(World world, int i, int j, int k, Box box, ArrayList list)
     {
-        this.updateBoundingBox1(world, i, j, k);
-        super.addIntersectingBoundingBox(world, i, j, k, box, list);
-
-        boolean var8 = this.createOuterCorners(world, i, j, k);
-        super.addIntersectingBoundingBox(world, i, j, k, box, list);
-
-        if (var8 && this.createInnerCorners(world, i, j, k))
-        {
+        if(world.getBlockMeta(i, j, k) < 4) {
+            this.updateBoundingBox1(world, i, j, k);
             super.addIntersectingBoundingBox(world, i, j, k, box, list);
+
+            boolean var8 = this.createOuterCorners(world, i, j, k);
+            super.addIntersectingBoundingBox(world, i, j, k, box, list);
+
+            if (var8 && this.createInnerCorners(world, i, j, k)) {
+                super.addIntersectingBoundingBox(world, i, j, k, box, list);
+            }
         }
 
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -185,49 +167,34 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         /// no vanilla logic
     }
 
-    private boolean isStairsIdentical(BlockView blockviev, int x, int y, int z, int par5)
-    {
-        int var6 = blockviev.getBlockId(x, y, z);
-        return isBlockStairsID(var6) && blockviev.getBlockMeta(x, y, z) == par5;
-    }
-
-    public boolean isBlockStairsID(int par0)
-    {
-        return par0 > 0 && Block.BLOCKS[par0] instanceof StairsBlock;
-    }
-
-    //TODO getRid of BlockVievs...
-
-    public boolean isBlockPosStairs(BlockView blockViev, BlockPos pos){
+    public boolean isBlockPosStairs(World blockViev, BlockPos pos){
         return Block.BLOCKS[blockViev.getBlockId(pos.x, pos.y, pos.z)] instanceof StairsBlock;
     }
 
-    public boolean isBlockPosUpperStairs(BlockView blockView, BlockPos pos){
-        return ((BlockStateView)blockView).getBlockState(pos).get(UPPER);
+    public boolean isBlockPosUpperStairs(World blockView, BlockPos pos){
+        return blockView.getBlockState(pos).get(UPPER);
     }
 
-    public Direction getBlockPosGeographicDir(BlockView blockView, BlockPos pos){
-        return ((BlockStateView)blockView).getBlockState(pos).get(FACING);
+    public Direction getBlockPosGeographicDir(World blockView, BlockPos pos){
+        return blockView.getBlockState(pos).get(Properties.HORIZONTAL_FACING);
     }
 
-    public boolean isStairsIdentical(BlockView blockView, BlockState currentState, BlockPos pos){ /// Sprawdzam FACING & UPPER
+    public boolean isStairsIdentical(World blockView, BlockState currentState, BlockPos pos){ /// Sprawdzam FACING & UPPER
         if(isBlockPosStairs(blockView, pos)) {
-            BlockState neighborState = ((BlockStateView) blockView).getBlockState(pos);
-            return neighborState.get(UPPER) == currentState.get(UPPER) && neighborState.get(FACING) == currentState.get(FACING);
+            BlockState neighborState = blockView.getBlockState(pos);
+            return neighborState.get(UPPER) == currentState.get(UPPER) && neighborState.get(Properties.HORIZONTAL_FACING) == currentState.get(Properties.HORIZONTAL_FACING);
         }else
         {
             return false;
         }
     }
 
-    //TODO!!! get rid of blockViev kurwa... jak ogarne render...
-
     @Override
-    public boolean createOuterCorners(BlockView world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
+    public boolean createOuterCorners(World world, int x, int y, int z) /// narożnik zewnętrzny - 3/4 przestrzeni to puste powietrze. NADPISUJĄCA METODA
     {
         BlockPos currentPos = new BlockPos(x, y, z);
-        BlockState currentState = ((BlockStateView)world).getBlockState(currentPos);
-        Direction geographicDir = currentState.get(FACING);
+        BlockState currentState = world.getBlockState(currentPos);
+        Direction geographicDir = currentState.get(Properties.HORIZONTAL_FACING);
         boolean upperStairs = currentState.get(UPPER);
         float minY = 0.5F;
         float maxY = 1.0F;
@@ -334,11 +301,11 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     }
 
     @Override
-    public boolean createInnerCorners(BlockView world, int x, int y, int z) /// narożnik wewnętrzny - 1/4 przestrzeni to puste powietrze.
+    public boolean createInnerCorners(World world, int x, int y, int z) /// narożnik wewnętrzny - 1/4 przestrzeni to puste powietrze.
     {
         BlockPos currentPos = new BlockPos(x, y, z);
-        BlockState currentState = ((BlockStateView)world).getBlockState(currentPos);
-        Direction geographicDir = currentState.get(FACING);
+        BlockState currentState = world.getBlockState(currentPos);
+        Direction geographicDir = currentState.get(Properties.HORIZONTAL_FACING);
         boolean upperStairs = currentState.get(UPPER);
         float minY = 0.5F;
         float maxY = 1.0F;
@@ -451,7 +418,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     {
         BlockPos currentPos = new BlockPos(x, y, z);
         BlockState currentState = world.getBlockState(currentPos);
-        Direction geographicDir = currentState.get(FACING);
+        Direction geographicDir = currentState.get(Properties.HORIZONTAL_FACING);
         boolean upperStairs = currentState.get(UPPER);
         boolean flag = false;
         boolean flagStraighten = true;
@@ -560,7 +527,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     {
         BlockPos currentPos = new BlockPos(x, y, z);
         BlockState currentState = world.getBlockState(currentPos);
-        Direction geographicDir = currentState.get(FACING);
+        Direction geographicDir = currentState.get(Properties.HORIZONTAL_FACING);
         boolean upperStairs = currentState.get(UPPER);
         boolean flag = false;
         boolean flagStraighten = flagS;

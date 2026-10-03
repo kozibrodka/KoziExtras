@@ -4,5 +4,11 @@
         "bottom": "block/oak_planks",
         "top": "block/oak_planks",
         "side": "block/oak_planks"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {"meta": 4},
+            "model": "extra:block/stairs/oak_invisible_stairs"
+        }
+    ]
 }
