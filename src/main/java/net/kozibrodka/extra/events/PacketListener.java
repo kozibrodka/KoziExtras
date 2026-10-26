@@ -1,6 +1,5 @@
 package net.kozibrodka.extra.events;
 
-import net.kozibrodka.extra.network.PlacementExtraPacket;
 import net.mine_diver.unsafeevents.listener.EventListener;
 import net.modificationstation.stationapi.api.event.network.packet.PacketRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
@@ -17,7 +16,7 @@ public class PacketListener {
 
     @EventListener
     public void registerPacket(PacketRegisterEvent event) {
-        Registry.register(PacketTypeRegistry.INSTANCE, MOD_ID.id("placement"), PlacementExtraPacket.TYPE);
+//        Registry.register(PacketTypeRegistry.INSTANCE, MOD_ID.id("placement"), PlacementExtraPacket.TYPE);
 
     }
 }

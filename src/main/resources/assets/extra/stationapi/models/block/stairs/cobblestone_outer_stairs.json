@@ -1,0 +1,14 @@
+{
+    "parent": "extra:block/stairs/outer_stairs",
+    "textures": {
+        "bottom": "block/cobblestone",
+        "top": "block/cobblestone",
+        "side": "block/cobblestone"
+    },
+    "overrides": [
+        {
+            "predicate": {"meta": 4},
+            "model": "extra:block/stairs/cobblestone_invisible_stairs"
+        }
+    ]
+}

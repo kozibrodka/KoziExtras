@@ -1,6 +1,7 @@
 package net.kozibrodka.extra.mixin;
 
 import net.kozibrodka.extra.mixin_interface.BlockSlabInterface;
+import net.kozibrodka.extra.mixin_interface.INeedsStateForBoxUpdate;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.material.Material;
@@ -10,6 +11,7 @@ import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
+import net.modificationstation.stationapi.api.state.property.Properties;
 import net.modificationstation.stationapi.api.world.BlockStateView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,25 +23,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 
 @Mixin(SlabBlock.class)
-public class SlabBlockMixin extends Block implements BlockSlabInterface {
+public class SlabBlockMixin extends Block implements BlockSlabInterface, INeedsStateForBoxUpdate {
     protected SlabBlockMixin(int i, Material arg) {
         super(i, arg);
     }
 
     @Shadow private boolean doubleSlab;
 
-    @Unique
-    private static final BooleanProperty UPPER = BooleanProperty.of("upper");
+//    @Unique
+//    private static final BooleanProperty UPPER = BooleanProperty.of("upper");
 
     @Override
     public void appendProperties(StateManager.Builder<Block, BlockState> builder){
-        builder.add(UPPER);
+        builder.add(Properties.BOTTOM);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onConstructorEnd(CallbackInfo ci) {
         setDefaultState(getDefaultState()
-                .with(UPPER, false)
+                .with(Properties.BOTTOM, true)
         );
     }
 
@@ -50,10 +52,10 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface {
 
 
     @Override
-    public void onPlacedSlabExtra(World world, int i, int j, int k, boolean upper, int oldMeta){
+    public void onPlacedSlabExtra(World world, int i, int j, int k, boolean bottom, int oldMeta){
         /// on ItemBlock use
         BlockState currentState = world.getBlockState(i, j, k);
-        world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(UPPER, upper));
+        world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(Properties.BOTTOM, bottom));
         world.setBlockMetaWithoutNotifyingNeighbors(i, j, k, oldMeta);
     }
 
@@ -62,8 +64,8 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface {
         if(doubleSlab){
             this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }else{
-            boolean flag = ((BlockStateView)arg).getBlockState(i,j,k).get(UPPER);
-            if (flag)
+            boolean flag = ((BlockStateView)arg).getBlockState(i,j,k).get(Properties.BOTTOM);
+            if (!flag)
             {
                 this.setBoundingBox(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
             }
@@ -89,4 +91,20 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface {
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
     }
 
+    @Override
+    public void updateBoundingBox(BlockState state, BlockView arg, int i, int j, int k) {
+        if(doubleSlab){
+            this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        }else{
+            boolean flag = state.get(Properties.BOTTOM);
+            if (!flag)
+            {
+                this.setBoundingBox(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
+            }
+            else
+            {
+                this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+            }
+        }
+    }
 }

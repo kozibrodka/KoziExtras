@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import net.modificationstation.stationapi.api.state.property.DirectionProperty;
+import net.modificationstation.stationapi.api.state.property.Properties;
 import net.modificationstation.stationapi.api.state.property.Property;
 import net.modificationstation.stationapi.api.util.math.Direction;
 import net.modificationstation.stationapi.impl.world.chunk.ChunkSection;
@@ -47,20 +48,16 @@ public class ExtraBlockFixer {
                         default -> Direction.NORTH; /// case 3
                     };
 
-                    @SuppressWarnings("unchecked") //todo tymczasowe
-                    Property<Direction> facingProperty = (Property<Direction>) state.getBlock().getStateManager().getProperty("facing");
+//                    @SuppressWarnings("unchecked") //Logika Gdybym używał swojego customego blockState (np. StairShape)
+//                    Property<Direction> facingProperty = (Property<Direction>) state.getBlock().getStateManager().getProperty("facing");
+//                    if (facingProperty != null) {
+//                        BlockState fixedState = state.with(facingProperty, dir);
+//                        section.setBlockState(dx, dy, dz, fixedState);
+//                    }
 
-                    if (facingProperty != null) {
-                        // Teraz 'with' nie wygeneruje błędu, ponieważ używasz oryginalnej instancji właściwości
-                        BlockState fixedState = state.with(facingProperty, dir);
-                        section.setBlockState(dx, dy, dz, fixedState);
-                    }
-
-//                    BlockState fixedState = state.with(DirectionProperty.of("facing"), dir);
-////                    BlockState fixedState = state.with(DirectionProperty.of("facing"), 1);
-////                    BlockState fixedState = state.with(BooleanProperty.of("upper"), true);
-//                    section.setBlockState(dx, dy, dz, fixedState);
-                    /// oryginalna meta powinna zostać
+                    BlockState fixedState = state.with(Properties.HORIZONTAL_FACING, dir);
+                    section.setBlockState(dx, dy, dz, fixedState);
+                    /// oryginalna meta zostaje
                 }
             }
         }

@@ -48,14 +48,14 @@ public class BlockItemStairs extends BlockItem implements BlockItemExtraPlacemen
 
         if (itemstack.count == 0) {
             return false;
-        } else if (y == world.getHeight()-1 && Block.BLOCKS[this.blockId].material.isSolid()) { ///  worldHEight logic...
+        } else if (y == world.getTopY()-1 && Block.BLOCKS[this.blockId].material.isSolid()) { ///  worldHEight logic...
             return false;
         } else if (world.canPlace(this.blockId, x, y, z, false, side)) {
             Block var8 = Block.BLOCKS[this.blockId];
             if (world.setBlockWithoutNotifyingNeighbors(x, y, z, this.blockId)) { //TODO bez powiadomiena??? i dać tylko jednorazowo z powiadomieniem przy ustawianiu meTY w onPlacedStairs?
 //                Block.BLOCKS[this.blockId].onPlaced(world, x, y, z, side);
 //                Block.BLOCKS[this.blockId].onPlaced(world, x, y, z, playerbase);
-                ((BlockStairsInterface)Block.BLOCKS[this.blockId]).onPlacedStairsExtra(world, x, y, z, isUpper, geoFacing, metaData); /// nowa metoda onPlace
+                ((BlockStairsInterface)Block.BLOCKS[this.blockId]).onPlacedStairsExtra(world, x, y, z, !isUpper, geoFacing, metaData); /// nowa metoda onPlace
                 world.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, var8.soundGroup.getSound(), (var8.soundGroup.getVolume() + 1.0F) / 2.0F, var8.soundGroup.getPitch() * 0.8F);
                 --itemstack.count;
             }
@@ -66,7 +66,7 @@ public class BlockItemStairs extends BlockItem implements BlockItemExtraPlacemen
         }
     }
 
-
+    //todo metoda do wyjebania?!
     @Override
     public boolean useOnBlock(ItemStack stack, PlayerEntity user, World world, int x, int y, int z, int side) {
         System.out.println("O KURWA BlockITEM");
@@ -100,7 +100,7 @@ public class BlockItemStairs extends BlockItem implements BlockItemExtraPlacemen
 
         if (stack.count == 0) {
             return false;
-        } else if (y == 127 && Block.BLOCKS[this.blockId].material.isSolid()) {
+        } else if (y == world.getHeight()-1 && Block.BLOCKS[this.blockId].material.isSolid()) {
             return false;
         } else if (world.canPlace(this.blockId, x, y, z, false, side)) {
             Block var8 = Block.BLOCKS[this.blockId];

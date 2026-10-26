@@ -9,6 +9,7 @@
     "SlabBlockItemMixin",
     "SlabBlockMixin",
     "datafix.FlattenedWorldManagerMixin",
+    "piston.PistonExtensionBlockMixin",
     "placement.PlayerInteractBlockC2SPacketMixin"
   ],
   "server": [
@@ -16,11 +17,11 @@
     "placement.ServerPlayNetworkHandlerMixin"
   ],
   "client": [
-    "PacketAccessor",
     "RenderBlocksMixin",
     "placement.InteractionManagerMixin",
     "placement.MinecraftMixin",
     "placement.MultiplayerInteractionManagerMixin",
+    "smp_fixes.CreeperMixin",
     "stapi.ArsenicDiggingParticleMixin"
   ],
   "injectors": {

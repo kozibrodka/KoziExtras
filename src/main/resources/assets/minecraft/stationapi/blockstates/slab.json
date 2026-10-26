@@ -1,6 +1,6 @@
 {
   "variants": {
-    "upper=false": { "model": "extra:block/slab/slab_vanilla_bottom" },
-    "upper=true": { "model": "extra:block/slab/slab_vanilla_upper" }
+    "bottom=true": { "model": "extra:block/slab/slab_vanilla_bottom" },
+    "bottom=false": { "model": "extra:block/slab/slab_vanilla_upper" }
   }
 }

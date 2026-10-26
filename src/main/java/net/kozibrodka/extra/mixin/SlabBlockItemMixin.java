@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SlabBlockItem;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
+import net.modificationstation.stationapi.api.state.property.Properties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,14 +34,14 @@ public class SlabBlockItemMixin extends BlockItem implements BlockItemExtraPlace
         } else {
             int clickedID = level.getBlockId(x, y, z);
             int materialMeta = level.getBlockMeta(x, y, z);
-            boolean var11 = false;
+            boolean isUpper = false;
 
             boolean isClickedSlab = clickedID == Block.SLAB.id;
             if(isClickedSlab){
-                var11 = level.getBlockState(x,y,z).get(BooleanProperty.of("upper"));
+                isUpper = !level.getBlockState(x,y,z).get(Properties.BOTTOM);
             }
 
-            if((site == 1 && !var11 || site == 0 && var11) && isClickedSlab && materialMeta == itemstack.getDamage()) {
+            if((site == 1 && !isUpper || site == 0 && isUpper) && isClickedSlab && materialMeta == itemstack.getDamage()) {
                 if(level.canSpawnEntity(Block.DOUBLE_SLAB.getCollisionShape(level, x, y, z)) && level.setBlock(x, y, z, Block.DOUBLE_SLAB.id, materialMeta)) {
                     level.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, Block.DOUBLE_SLAB.soundGroup.getSound(), (Block.DOUBLE_SLAB.soundGroup.getVolume() + 1.0F) / 2.0F, Block.DOUBLE_SLAB.soundGroup.getPitch() * 0.8F);
                     --itemstack.count;
@@ -116,12 +117,12 @@ public class SlabBlockItemMixin extends BlockItem implements BlockItemExtraPlace
 
         if (stack.count == 0) {
             return false;
-        } else if (y == world.getHeight()-1 && Block.BLOCKS[this.blockId].material.isSolid()) {
+        } else if (y == world.getTopY()-1 && Block.BLOCKS[this.blockId].material.isSolid()) {
             return false;
         } else if (world.canPlace(this.blockId, x, y, z, false, side)) {
             Block var8 = Block.BLOCKS[this.blockId];
             if (world.setBlock(x, y, z, this.blockId)) {
-                ((BlockSlabInterface)Block.BLOCKS[this.blockId]).onPlacedSlabExtra(world, x, y, z, isUpper, this.getPlacementMetadata(stack.getDamage())); /// nowa metoda onPlace
+                ((BlockSlabInterface)Block.BLOCKS[this.blockId]).onPlacedSlabExtra(world, x, y, z, !isUpper, this.getPlacementMetadata(stack.getDamage())); /// nowa metoda onPlace
                 world.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, var8.soundGroup.getSound(), (var8.soundGroup.getVolume() + 1.0F) / 2.0F, var8.soundGroup.getPitch() * 0.8F);
                 --stack.count;
             }

@@ -33,13 +33,18 @@ public class PlayerInteractBlockC2SPacketMixin implements InteractPacketOffSetIn
     @Unique
     private int lookDir;
 
+    /** Is server modded */
+    @Unique
+    private boolean modded_server;
 
     @Inject(method = "write", at = @At("RETURN"))
     private void write(DataOutputStream stream, CallbackInfo ci) throws IOException {
-        stream.writeFloat(this.xOffset);
-        stream.writeFloat(this.yOffset);
-        stream.writeFloat(this.zOffset);
-        stream.writeByte(this.lookDir);
+        if(this.modded_server) {
+            stream.writeFloat(this.xOffset);
+            stream.writeFloat(this.yOffset);
+            stream.writeFloat(this.zOffset);
+            stream.writeByte(this.lookDir);
+        }
     }
 
     @Inject(method = "read", at = @At("RETURN"))
@@ -56,6 +61,7 @@ public class PlayerInteractBlockC2SPacketMixin implements InteractPacketOffSetIn
         this.yOffset = yOffset;
         this.zOffset = zOffset;
         this.lookDir = lookDirection;
+        this.modded_server = true;
     }
 
     @Override

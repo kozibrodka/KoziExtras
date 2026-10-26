@@ -2,12 +2,15 @@ package net.kozibrodka.extra.mixin.datafix;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.kozibrodka.extra.events.datafix.ExtraBlockFixer;
+import net.kozibrodka.extra.utils.KoziClientUtils;
 import net.minecraft.block.Block;
+import net.minecraft.client.network.MultiplayerClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.modificationstation.stationapi.api.block.BlockState;
+import net.modificationstation.stationapi.api.network.ModdedPacketHandler;
 import net.modificationstation.stationapi.api.registry.BlockRegistry;
 import net.modificationstation.stationapi.api.state.property.Property;
 import net.modificationstation.stationapi.api.util.Identifier;
@@ -32,6 +35,12 @@ public class FlattenedWorldManagerMixin {
             World world, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
             @Local(name = "sectionTag") NbtCompound sectionTag
     ) {
+//        /// Przy wchodzeniu na serwa Vanilla to w ogóle nie ODPALA.
+//        if(world.isRemote &&  !((ModdedPacketHandler) ((MultiplayerClientPlayerEntity)KoziClientUtils.minecraft.player).networkHandler).isModded() ){
+//            System.out.println("KLIENT NA SERWIE VANILLA");
+//            return;
+//        }
+
         if (!sectionTag.contains("block_states")) return;  /// Jeśli sekcja nie posiada zapisanego kontenera stanów, pomiń
         NbtCompound states = sectionTag.getCompound("block_states");
         NbtList palette = states.getList("palette");
@@ -58,13 +67,12 @@ public class FlattenedWorldManagerMixin {
 
             /// Stairs
             else if (block instanceof net.minecraft.block.StairsBlock) {
-                System.out.println("VANILLA STAIRS DETECTED");
+                System.out.println("mod_ReleaseTweaks: Vanilla Stairs Detected, activating DataFixer");
                 extra_stairsNeedsConversion = true;
                 NbtCompound propertiesTag = new NbtCompound();
                 tag.put("Properties", propertiesTag);
                 BlockState defaultState = block.getDefaultState();
                 for (Property<?> property : defaultState.getProperties()) {
-                    System.out.println("naprawiam schody: " + property.getName());
                     propertiesTag.putString(property.getName(), defaultState.get(property).toString());
                 }
             }
@@ -82,7 +90,6 @@ public class FlattenedWorldManagerMixin {
             World level, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
             @Local ChunkSection chunkSection
     ) {
-        //todo Fixery - odpalane tylko przy pierwszy załadowaniu chunku na podstawie flag: np. extra_stairsNeedsConversion
         if(extra_stairsNeedsConversion){
             ExtraBlockFixer.fixChunkSection(chunkSection, extra_stairsNeedsConversion);
         }

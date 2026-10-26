@@ -22,6 +22,7 @@ public class LogMixin extends Block implements BlockWithWorldRenderer{
         super(i, arg);
     }
 
+    @Override
     @Environment(EnvType.CLIENT)
     public void setupRenderBoundingBox() {
         this.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -63,6 +64,7 @@ public class LogMixin extends Block implements BlockWithWorldRenderer{
         cir.setReturnValue(i & 3);
     }
 
+    @Override
     public void onPlaced(World var1, int i, int j, int k, int l){
         int var6 = var1.getBlockMeta(i, j, k);
         int var10 = var6 & 3;
@@ -86,6 +88,7 @@ public class LogMixin extends Block implements BlockWithWorldRenderer{
         var1.setBlockMeta(i, j, k, var10 | var11);
     }
 
+    @Override
     public boolean renderWorld(BlockRenderManager tileRenderer, BlockView tileView, int x, int y, int z) {
 
         int var5 = tileView.getBlockMeta(x, y, z);

@@ -1,14 +1,17 @@
 //TODO list - Kompletnie refactoruje Moda
 - Niektóre Feature wypadałoby przenieść do osobnego API.
 
-- Stairs powoli rozszyfrować. - mappingsy w doesStairCollide...
-- Datafixer dokończyć - dla stairs koniecznie.
 - Fajna Minaturka Release Tweaks
 
+- Piston Fixes... blockState and predicating meta... //todo -> może pobierz to StationAPI aby móc wyszukiwać lepiej/
+
 - DataFixer API? - całościowe przekształcenie?
+- ChopTree option!! - add blockState to log. - afterBreak(World world, PlayerEntity playerEntity, int x, int y, int z, int meta) - zabawa z tym, opcjonalne ofc.
+- Textures: LOGS, activated DETECTOR RAIL
 
-//  NETWORK-VANILLA-COMP zeby z serwerow vanilla nie wywalalo moze
 
+//  NETWORK-VANILLA-COMP nie wywala z serwera, ale schody maja default state
+- !!! ten debilny check na serwerze, że po stopach nie mogę bić wypierdolić!!
 
 
 

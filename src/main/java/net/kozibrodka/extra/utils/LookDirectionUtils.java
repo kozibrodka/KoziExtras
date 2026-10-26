@@ -42,7 +42,7 @@ public class LookDirectionUtils {
         return Direction.NORTH;
     }
 
-    // stare metadata facing na direction
+    // stare metadata facing(f3) na direction
     /// NORTH = 3 | Direction.NORTH
     /// SOUTH = 2 | Direction.SOUTH
     /// WEST = 1  | Direction.WEST

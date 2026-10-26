@@ -1,5 +1,6 @@
 package net.kozibrodka.extra.mixin.placement;
 
+import net.kozibrodka.extra.mixin_interface.BlockItemExtraPlacementInterface;
 import net.kozibrodka.extra.mixin_interface.InteractPacketOffSetInterface;
 import net.kozibrodka.extra.utils.LookDirectionUtils;
 import net.minecraft.client.MultiplayerInteractionManager;
@@ -9,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.modificationstation.stationapi.api.network.ModdedPacketHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -25,15 +27,17 @@ public class MultiplayerInteractionManagerMixin extends InteractionManagerMixin 
     @Override
     public boolean interactBlockExtra(PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side, Vec3d eyeVec) {
         this.updateSelectedSlot();
-//        this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(x, y, z, side, player.inventory.getSelectedItem()));
 
         float xPosition = (float)eyeVec.x - (float)x;
         float yPosition = (float)eyeVec.y - (float)y;
         float zPosition = (float)eyeVec.z - (float)z;
         int lookingDirection = LookDirectionUtils.headYawToLookDirection(player);
-        // TODO NETWORK-VANILLA-COMP
         PlayerInteractBlockC2SPacket packet = new PlayerInteractBlockC2SPacket(x, y, z, side, player.inventory.getSelectedItem());
-        ((InteractPacketOffSetInterface)packet).setOffsets(xPosition, yPosition, zPosition, lookingDirection);
+
+        /// Wysyłam zmodyfikowany pakiet jedynie na Serwie STAPI aby nie wywalało, za bad-packet ID.
+        if(((ModdedPacketHandler)networkHandler).isModded()){ //TODO modList jak będzie działać sprawdx to.
+            ((InteractPacketOffSetInterface) packet).setOffsets(xPosition, yPosition, zPosition, lookingDirection);
+        }
         this.networkHandler.sendPacket(packet);
 
         boolean var8 = this.interactBlockExtraClient(player, world, itemStack, x, y, z, side, eyeVec, lookingDirection);
