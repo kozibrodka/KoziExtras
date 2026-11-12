@@ -27,7 +27,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
     @Override
     public void addIntersectingBoundingBox(World world, int i, int j, int k, Box box, ArrayList list)
     {
-        this.updateBoundingBox1(world, i, j, k);
+        this.updateBoundingBoxExtra(world, i, j, k);
         super.addIntersectingBoundingBox(world, i, j, k, box, list);
 
         boolean var8 = this.createOuterCorners(world, i, j, k);
@@ -76,7 +76,7 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 //    }
 
     @Override
-    public void updateBoundingBox1(BlockView arg, int i, int j, int k){
+    public void updateBoundingBoxExtra(BlockView arg, int i, int j, int k){
                 int meta = arg.getBlockMeta(i, j, k);
         if ((meta & 4) != 0)
         {

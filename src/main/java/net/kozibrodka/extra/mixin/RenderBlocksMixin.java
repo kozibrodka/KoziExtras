@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockRenderManager.class)
 public abstract class RenderBlocksMixin {
 
+    /// Potrzebny aby w razie potrzeby "ZASŁONIĆ" Vanilla render na potrzeby DEBUG - aby nie zmylało że renderuje coś.
     /// MIXIN dla starej logiki vanilla render, prawdopodobnie do wyjebania
 
     @Shadow
@@ -54,7 +55,10 @@ public abstract class RenderBlocksMixin {
 //            arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
 //            this.renderBlock(arg, i, j, k);
 //        }
-            cir.setReturnValue(true);
+
+
+
+//            cir.setReturnValue(true); //TODO zamazywacz
 
     }
 

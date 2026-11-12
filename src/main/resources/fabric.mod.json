@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "Release Tweaks",
-  "description": "Na ten moment jest to testowy mod",
+  "description": "Tweaks and Content from early Release versions",
   "authors": [
     "kozibrodka"
   ],
   "contact": {
-    "homepage": "https://glass-launcher.net/",
-    "sources": "https://github.com/calmilamsy/BIN-fabric-example-mod"
+    "homepage": "",
+    "sources": "https://github.com/kozibrodka/KoziExtras"
   },
 
   "license": "CC0-1.0",
@@ -21,17 +21,21 @@
     "stationapi:event_bus": [
       "net.kozibrodka.extra.events.BlockListener",
       "net.kozibrodka.extra.events.RecipeListener",
-      "net.kozibrodka.extra.events.PacketListener"
+      "net.kozibrodka.extra.events.PacketListener",
+      "net.kozibrodka.extra.events.ConfigListener"
     ],
     "stationapi:event_bus_client": [
       "net.kozibrodka.extra.events.TextureListener",
-      "net.kozibrodka.extra.events.ColorListener"
+      "net.kozibrodka.extra.events.ColorListener",
+      "net.kozibrodka.extra.registryJson.init.RuntimeResourcesListener",
+      "net.kozibrodka.extra.registryJson.init.UnbakedModelListener"
+
     ],
     "stationapi:event_bus_server": [
 
     ],
     "gcapi3": [
-      "net.kozibrodka.extra.events.BlockListener"
+      "net.kozibrodka.extra.events.ConfigListener"
     ]
   },
   "mixins": [

@@ -1,9 +1,31 @@
 //TODO list - Kompletnie refactoruje Moda
+
+dodać dummy warianty, aby zapisywały się kształty oraz przypisanie kierunku GEO od razu aby nie aktywować data-fixera niepotrzebnie
+
+- aktualizacja stapi zobaczyć.
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------
+
 - Niektóre Feature wypadałoby przenieść do osobnego API.
+
+
+- aktualizacja STAPI.
+Wyjeabć data/c/tags/blocks stairs
+
+// setBlockState --- with METADATA as argument - dla schodów done, zobacz slabsy
 
 - Fajna Minaturka Release Tweaks
 
-- Piston Fixes... blockState and predicating meta... //todo -> może pobierz to StationAPI aby móc wyszukiwać lepiej/
 
 - DataFixer API? - całościowe przekształcenie?
 - ChopTree option!! - add blockState to log. - afterBreak(World world, PlayerEntity playerEntity, int x, int y, int z, int meta) - zabawa z tym, opcjonalne ofc.

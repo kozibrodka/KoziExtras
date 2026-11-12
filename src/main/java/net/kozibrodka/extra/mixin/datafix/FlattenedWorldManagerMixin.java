@@ -55,7 +55,7 @@ public class FlattenedWorldManagerMixin {
             Block block = BlockRegistry.INSTANCE.get(id);
             if (block == null) continue;
 
-            /// Half-Slabs
+            /// Half-Slabs //TODO FULL SLABSY TEŻ POTRZEBUJĄ STATE!!!!!!!!! ustawić defaultowego
             if (blockName.equals("minecraft:slab")) {
                 NbtCompound propertiesTag = new NbtCompound();
                 tag.put("Properties", propertiesTag);
@@ -66,14 +66,14 @@ public class FlattenedWorldManagerMixin {
             }
 
             /// Stairs
-            else if (block instanceof net.minecraft.block.StairsBlock) {
+            else if (block instanceof net.minecraft.block.StairsBlock) { //todo być może lepiej uspecyfikować tak jak w Slabsach? (jeżeli jakiś dziwny modded używający States ale innych)
                 System.out.println("mod_ReleaseTweaks: Vanilla Stairs Detected, activating DataFixer");
                 extra_stairsNeedsConversion = true;
                 NbtCompound propertiesTag = new NbtCompound();
                 tag.put("Properties", propertiesTag);
                 BlockState defaultState = block.getDefaultState();
                 for (Property<?> property : defaultState.getProperties()) {
-                    propertiesTag.putString(property.getName(), defaultState.get(property).toString());
+                    propertiesTag.putString(property.getName(), defaultState.get(property).toString()); /// Default State Apply
                 }
             }
         }

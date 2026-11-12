@@ -18,18 +18,16 @@ import net.modificationstation.stationapi.api.util.Null;
 
 public class BlockListener {
 
-    @ConfigRoot(value = "ExtrasCFG", visibleName = "Kozi Extras Config")
-    public static final ExtrasCFG exGlass = new ExtrasCFG();
-
     @Entrypoint.Namespace
-    public static  Namespace MOD_ID = Null.get();
+    public static Namespace MOD_ID = Null.get();
 
     @EventListener
     public void registerBlocks(BlockRegistryEvent event){
 
-        spruceplanks = new BlockSprucePlanks(Identifier.of(MOD_ID, "spruceplanks"), Material.WOOD).setTranslationKey(MOD_ID, "spruceplanks").setHardness(2.0F).setResistance(5.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
-        birchplanks = new BlockBirchPlanks(Identifier.of(MOD_ID, "birchplanks"), Material.WOOD).setTranslationKey(MOD_ID, "birchplanks").setHardness(2.0F).setResistance(5.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
-        jungleplanks = new BlockJunglePlanks(Identifier.of(MOD_ID, "jungleplanks"), Material.WOOD).setTranslationKey(MOD_ID, "jungleplanks").setHardness(2.0F).setResistance(5.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
+//        spruceplanks = new BlockSprucePlanks(Identifier.of(MOD_ID, "spruceplanks"), Material.WOOD).setTranslationKey(MOD_ID, "spruceplanks").setHardness(2.0F).setResistance(5.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
+//        birchplanks = new BlockBirchPlanks(Identifier.of(MOD_ID, "birchplanks"), Material.WOOD).setTranslationKey(MOD_ID, "birchplanks").setHardness(2.0F).setResistance(5.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
+//        jungleplanks = new BlockJunglePlanks(Identifier.of(MOD_ID, "jungleplanks"), Material.WOOD).setTranslationKey(MOD_ID, "jungleplanks").setHardness(2.0F).setResistance(5.0F).setSoundGroup(Block.WOOD_SOUND_GROUP);
+
 //        stonebricks = new BlockStoneBricks(Identifier.of(MOD_ID, "stonebricks"), Material.STONE).setTranslationKey(MOD_ID, "stonebricks").setHardness(1.5F).setResistance(10.0F).setSoundGroup(Block.DEFAULT_SOUND_GROUP);
 //        stonemossybricks = new BlockMossyStoneBricks(Identifier.of(MOD_ID, "stonemossybricks"), Material.STONE).setTranslationKey(MOD_ID, "stonemossybricks").setHardness(1.5F).setResistance(10.0F).setSoundGroup(Block.DEFAULT_SOUND_GROUP);
 //        netherbricks = new BlockNetherBricks(Identifier.of(MOD_ID, "netherbricks"), Material.STONE).setTranslationKey(MOD_ID, "netherbricks").setHardness(2.0F).setResistance(10.0F).setSoundGroup(Block.DEFAULT_SOUND_GROUP);
