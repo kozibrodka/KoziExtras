@@ -49,10 +49,14 @@ public class PlayerInteractBlockC2SPacketMixin implements InteractPacketOffSetIn
 
     @Inject(method = "read", at = @At("RETURN"))
     private void onRead(DataInputStream stream, CallbackInfo ci) throws IOException {
+        try {
         this.xOffset = stream.readFloat();
         this.yOffset = stream.readFloat();
         this.zOffset = stream.readFloat();
         this.lookDir = stream.readByte();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

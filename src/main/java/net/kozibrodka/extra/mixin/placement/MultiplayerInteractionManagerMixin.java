@@ -35,7 +35,7 @@ public class MultiplayerInteractionManagerMixin extends InteractionManagerMixin 
         PlayerInteractBlockC2SPacket packet = new PlayerInteractBlockC2SPacket(x, y, z, side, player.inventory.getSelectedItem());
 
         /// Wysyłam zmodyfikowany pakiet jedynie na Serwie STAPI aby nie wywalało, za bad-packet ID.
-        if(((ModdedPacketHandler)networkHandler).isModded()){ //TODO modList jak będzie działać sprawdx to.
+        if(itemStack.getItem() instanceof BlockItemExtraPlacementInterface && ((ModdedPacketHandler)networkHandler).isModded()){ //TODO modList jak będzie działać sprawdx to.
             ((InteractPacketOffSetInterface) packet).setOffsets(xPosition, yPosition, zPosition, lookingDirection);
         }
         this.networkHandler.sendPacket(packet);

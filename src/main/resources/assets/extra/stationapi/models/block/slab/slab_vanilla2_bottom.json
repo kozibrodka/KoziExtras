@@ -1,9 +1,9 @@
 {
 	"parent": "extra:block/slab/slab_bottom",
 	"textures": {
-		"1": "block/oak_planks",
-		"2": "block/oak_planks",
-		"3": "block/oak_planks",
+		"side": "block/oak_planks",
+		"top": "block/oak_planks",
+		"bottom": "block/oak_planks",
 		"particle": "block/oak_planks"
 	}
 }

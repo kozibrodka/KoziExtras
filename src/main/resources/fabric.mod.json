@@ -17,6 +17,7 @@
   "icon": "assets/extra/icon.png",
 
   "environment": "*",
+  "accessWidener": "koziex.accesswidener",
   "entrypoints": {
     "stationapi:event_bus": [
       "net.kozibrodka.extra.events.BlockListener",

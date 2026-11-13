@@ -9,4 +9,7 @@ public class ModernBlocks {
 
     @ConfigEntry(name="§5Modern Slabs", description = "Slabs function as in modern minecraft, crash slabs still work", requiresRestart = true)
     public Boolean modern_slabs = true;
+
+    @ConfigEntry(name="§eVanilla Slab Placement Fix", description = "Works only if 'Modern Slabs' are disabled, vanilla slabs but with fixed placement")
+    public Boolean slab_placement_vanilla_fix = true;
 }

@@ -38,29 +38,12 @@ public abstract class RenderBlocksMixin {
 
     @Shadow public abstract boolean renderCactus(Block arg, int i, int j, int k);
 
-    @Inject(method = "renderStairs", at = @At("HEAD"), cancellable = true)
-    private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
-
-        /// RENDER ZAMAZANY HAHA - dla testu jedynie
-//        ((BlockStairsInterface)arg).updateBoundingBox1(blockView,i,j,k);
-//        arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-//        this.renderBlock(arg, i, j, k);
+//    @Inject(method = "renderStairs", at = @At("HEAD"), cancellable = true)
+//    private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
 //
-//        boolean flag = ((BlockStairsInterface)arg).createOuterCorners(blockView,i,j,k);
-//        arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-//        this.renderBlock(arg, i, j, k);
+////            cir.setReturnValue(true); //TODO zamazywacz
 //
-//        if (flag && ((BlockStairsInterface)arg).createInnerCorners(blockView,i,j,k))
-//        {
-//            arg.setBoundingBox((float)arg.minX, (float)arg.minY, (float)arg.minZ, (float)arg.maxX, (float)arg.maxY, (float)arg.maxZ);
-//            this.renderBlock(arg, i, j, k);
-//        }
-
-
-
-//            cir.setReturnValue(true); //TODO zamazywacz
-
-    }
+//    }
 
 //    @Inject(method = "renderFence", at = @At("HEAD"), cancellable = true)
 //    private void injectedFence(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {

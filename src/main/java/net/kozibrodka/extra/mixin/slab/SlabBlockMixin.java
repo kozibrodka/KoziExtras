@@ -1,4 +1,4 @@
-package net.kozibrodka.extra.mixin;
+package net.kozibrodka.extra.mixin.slab;
 
 import net.kozibrodka.extra.mixin_interface.BlockSlabInterface;
 import net.kozibrodka.extra.mixin_interface.INeedsStateForBoxUpdate;
@@ -10,12 +10,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.state.StateManager;
-import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import net.modificationstation.stationapi.api.state.property.Properties;
 import net.modificationstation.stationapi.api.world.BlockStateView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -30,8 +28,6 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface, INeedsS
 
     @Shadow private boolean doubleSlab;
 
-//    @Unique
-//    private static final BooleanProperty UPPER = BooleanProperty.of("upper");
 
     @Override
     public void appendProperties(StateManager.Builder<Block, BlockState> builder){
@@ -56,7 +52,6 @@ public class SlabBlockMixin extends Block implements BlockSlabInterface, INeedsS
         /// on ItemBlock use
         BlockState currentState = world.getBlockState(i, j, k);
         world.setBlockStateWithoutNotifyingNeighbors(i, j, k, currentState.with(Properties.BOTTOM, bottom), oldMeta);
-//        world.setBlockMetaWithoutNotifyingNeighbors(i, j, k, oldMeta);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package net.kozibrodka.extra.mixin;
+package net.kozibrodka.extra.mixin.slab;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,7 +11,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SlabBlockItem;
 import net.minecraft.world.World;
-import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import net.modificationstation.stationapi.api.state.property.Properties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -45,13 +44,13 @@ public class SlabBlockItemMixin extends BlockItem implements BlockItemExtraPlace
                 if(level.canSpawnEntity(Block.DOUBLE_SLAB.getCollisionShape(level, x, y, z)) && level.setBlock(x, y, z, Block.DOUBLE_SLAB.id, materialMeta)) {
                     level.playSound((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, Block.DOUBLE_SLAB.soundGroup.getSound(), (Block.DOUBLE_SLAB.soundGroup.getVolume() + 1.0F) / 2.0F, Block.DOUBLE_SLAB.soundGroup.getPitch() * 0.8F);
                     --itemstack.count;
+                    return true;
                 }
-
-                return true;
             } else {
                 return attemptDoubleSlabPlaceWithOffset(itemstack, playerbase, level, x, y, z, site) || useOnBlockSuper(itemstack, playerbase, level, x, y, z, site, offSetX, offSetY, offSetZ);
             }
         }
+        return false;
     }
 
     private static boolean attemptDoubleSlabPlaceWithOffset(ItemStack itemstack, PlayerEntity playerbase, World level, int x, int y, int z, int side) {
@@ -135,10 +134,10 @@ public class SlabBlockItemMixin extends BlockItem implements BlockItemExtraPlace
 
     @Environment(EnvType.CLIENT)
     @Inject(method = "getTranslationKey", at = @At("HEAD"), cancellable = true)
-    public void preventCrash(ItemStack stack, CallbackInfoReturnable<String> cir) { //TODO uniTwerks possible conflict
+    public void preventCrash(ItemStack stack, CallbackInfoReturnable<String> cir) {
         if (stack.getDamage() >= SlabBlock.names.length) {
-//            cir.setReturnValue(null);
-            cir.setReturnValue(super.getTranslationKey() + ".crash");
+            cir.setReturnValue(super.getTranslationKey() + ".transmutation");
+//            cir.setReturnValue(super.getTranslationKey() + ".crash");
         }
     }
 

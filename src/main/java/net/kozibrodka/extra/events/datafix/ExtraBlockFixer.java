@@ -23,17 +23,17 @@ public class ExtraBlockFixer {
 
             /// PRZYKŁAD 1: Chcesz ustawić coś na podstawie metadanych Slauba (np. rodzaj materiału)
             if (false && state.getBlock() == Block.SLAB) {
-                int meta = section.getMeta(dx, dy, dz); // Pobierasz starą vanillową metadaną (0-3)
-
-                /// Warunek skipFix: upewniamy się, że modyfikujemy tylko "świeżo załadowany" domyślny blok
-                if (state == state.getBlock().getDefaultState()) {
-                    /// Twoja teoretyczna logika, np:
-                    /// Jeśli stary świat zapisał metadaną 2 (Sandstone), ustawiasz dedykowany stan w swoim modzie
-                    if (meta == 1) { //todo przykłąd tylko meta 1
-                        BlockState fixedState = state.with(BooleanProperty.of("upper"), true); // Przykład użycia ///TODO do wyjebanie to jest "TEST"
-                        section.setBlockState(dx, dy, dz, fixedState);
-                    }
-                }
+//                int meta = section.getMeta(dx, dy, dz); // Pobierasz starą vanillową metadaną (0-3)
+//
+//                /// Warunek skipFix: upewniamy się, że modyfikujemy tylko "świeżo załadowany" domyślny blok
+//                if (state == state.getBlock().getDefaultState()) {
+//                    /// Twoja teoretyczna logika, np:
+//                    /// Jeśli stary świat zapisał metadaną 2 (Sandstone), ustawiasz dedykowany stan w swoim modzie
+//                    if (meta == 1) { //todo przykłąd tylko meta 1
+//                        BlockState fixedState = state.with(BooleanProperty.of("upper"), true); // Przykład użycia ///TODO do wyjebanie to jest "TEST"
+//                        section.setBlockState(dx, dy, dz, fixedState);
+//                    }
+//                }
             }
 
             /// STAIRS

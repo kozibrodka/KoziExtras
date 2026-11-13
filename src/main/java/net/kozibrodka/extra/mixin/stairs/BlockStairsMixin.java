@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.BlockView;
@@ -569,6 +570,18 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
             flag = tryUpdateShapeState(world, currentState, currentPos, StairShapeEnum.STRAIGHT, meta);
         }
         return flag;
+    }
+
+    @Inject(method = "dropStacks", at = @At("HEAD"), cancellable = true)
+    public void dropStacks(World world, int x, int y, int z, int meta, float f, CallbackInfo ci) {
+        if (!world.isRemote) {
+            int droppedItemCount = this.getDroppedItemCount(world.random);
+
+            for (int i = 0; i < droppedItemCount; ++i) {
+                this.dropStack(world, x, y, z, new ItemStack(id, 1, this.getDroppedItemMeta(meta)));
+            }
+            ci.cancel();
+        }
     }
 
 }

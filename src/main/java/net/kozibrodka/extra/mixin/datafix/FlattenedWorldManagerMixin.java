@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = FlattenedWorldManager.class, remap = false)
+@Mixin(value = FlattenedWorldManager.class)
 public class FlattenedWorldManagerMixin {
 
     /// same thing that VBE does.
@@ -31,9 +31,9 @@ public class FlattenedWorldManagerMixin {
             target = "Lnet/minecraft/world/World;sectionCoordToIndex(I)I",
             shift = At.Shift.AFTER
     ))
-    private static void extra_fixSlabsWithoutProperties(
+    private static void extra_fixBlocksWithoutProperties(
             World world, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
-            @Local(name = "sectionTag") NbtCompound sectionTag
+            @Local(ordinal = 1) NbtCompound sectionTag
     ) {
 //        /// Przy wchodzeniu na serwa Vanilla to w ogóle nie ODPALA.
 //        if(world.isRemote &&  !((ModdedPacketHandler) ((MultiplayerClientPlayerEntity)KoziClientUtils.minecraft.player).networkHandler).isModded() ){
@@ -55,13 +55,13 @@ public class FlattenedWorldManagerMixin {
             Block block = BlockRegistry.INSTANCE.get(id);
             if (block == null) continue;
 
-            /// Half-Slabs //TODO FULL SLABSY TEŻ POTRZEBUJĄ STATE!!!!!!!!! ustawić defaultowego
-            if (blockName.equals("minecraft:slab")) {
+            /// Half-Slabs & Double-Slabs
+            if (blockName.equals("minecraft:slab") || blockName.equals("minecraft:double_slab")) {
                 NbtCompound propertiesTag = new NbtCompound();
                 tag.put("Properties", propertiesTag);
                 BlockState defaultState = block.getDefaultState();
-                for (Property<?> property : defaultState.getProperties()) {
-                    propertiesTag.putString(property.getName(), defaultState.get(property).toString()); /// Default State Apply
+                for (Property<?> property : defaultState.getProperties()) { /// Default State Apply - dla każdego state.
+                    propertiesTag.putString(property.getName(), defaultState.get(property).toString());
                 }
             }
 
@@ -73,7 +73,7 @@ public class FlattenedWorldManagerMixin {
                 tag.put("Properties", propertiesTag);
                 BlockState defaultState = block.getDefaultState();
                 for (Property<?> property : defaultState.getProperties()) {
-                    propertiesTag.putString(property.getName(), defaultState.get(property).toString()); /// Default State Apply
+                    propertiesTag.putString(property.getName(), defaultState.get(property).toString()); /// Default States Apply
                 }
             }
         }
@@ -83,11 +83,10 @@ public class FlattenedWorldManagerMixin {
     @Inject(method = "loadChunk", at = @At(
             value = "INVOKE",
             target = "Lnet/modificationstation/stationapi/impl/world/chunk/ChunkSection;getLightArray(Lnet/minecraft/world/LightType;)Lnet/modificationstation/stationapi/impl/world/chunk/NibbleArray;",
-            ordinal = 1,
             shift = At.Shift.AFTER
     ))
-    private static void vbe_fixLoadedBlocks(
-            World level, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
+    private static void extra_fixLoadedBlocks(
+            World world, NbtCompound chunkTag, CallbackInfoReturnable<Chunk> info,
             @Local ChunkSection chunkSection
     ) {
         if(extra_stairsNeedsConversion){

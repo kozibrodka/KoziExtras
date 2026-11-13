@@ -5,11 +5,13 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "net.kozibrodka.extra.events.LoadingLogicMixinPlugin",
   "mixins": [
-    "SlabBlockItemMixin",
-    "SlabBlockMixin",
     "datafix.FlattenedWorldManagerMixin",
     "piston.PistonExtensionBlockMixin",
     "placement.PlayerInteractBlockC2SPacketMixin",
+    "slab.DummSlabItemMixin",
+    "slab.DummySlabMixin",
+    "slab.SlabBlockItemMixin",
+    "slab.SlabBlockMixin",
     "stairs.BlockStairsMixin",
     "stairs.DummyStairsMixin"
   ],

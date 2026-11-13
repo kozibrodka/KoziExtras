@@ -27,6 +27,7 @@ public class MinecraftMixin {
     )
     private boolean redirectInteractBlock(InteractionManager instance, PlayerEntity player, World world, ItemStack itemStack, int x, int y, int z, int side) {
 //        return  instance.interactBlock(player, world, itemStack, x, y, z, side);
+        System.out.println("WYSYŁAM INTERAKCJE BLOKU");
         return  ((InteractionManagerExtraInterface)instance).interactBlockExtra(player, world, itemStack, x, y, z, side, this.crosshairTarget.pos);
 
     }

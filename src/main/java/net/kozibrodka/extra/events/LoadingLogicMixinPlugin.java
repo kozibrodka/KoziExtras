@@ -18,12 +18,17 @@ public class LoadingLogicMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 
         if (mixinClassName.equals("net.kozibrodka.extra.mixin.stairs.BlockStairsMixin")) {
-//            return false;
-//            return ConfigListener.exGlass.vanilla_block_enhancements.modern_stairs;
             return isConfigBooleanTrue("modern_stairs");
         } else if(mixinClassName.equals("net.kozibrodka.extra.mixin.stairs.DummyStairsMixin")){
             return !isConfigBooleanTrue("modern_stairs");
-        } else
+        } else if(mixinClassName.equals("net.kozibrodka.extra.mixin.slab.SlabBlockItemMixin") || mixinClassName.equals("net.kozibrodka.extra.mixin.slab.SlabBlockMixin")){
+            return isConfigBooleanTrue("modern_slabs");
+        }else if(mixinClassName.equals("net.kozibrodka.extra.mixin.slab.DummySlabMixin") || mixinClassName.equals("net.kozibrodka.extra.mixin.slab.DummSlabItemMixin")){
+            return !isConfigBooleanTrue("modern_slabs");
+        }else
+//        if(){
+//
+//        }else
         {
             return true;
         }
@@ -63,13 +68,11 @@ public class LoadingLogicMixinPlugin implements IMixinConfigPlugin {
 
 
     private boolean isConfigBooleanTrue(String entryName) {
-        // Dokładna ścieżka widoczna na zrzucie: config/extra/ExtrasCFG.yml
         Path configPath = FabricLoader.getInstance()
                 .getConfigDir()
                 .resolve("extra")
                 .resolve("ExtrasCFG.yml");
 
-        // Jeśli plik jeszcze nie istnieje (pierwsze uruchomienie), zwróć wartość domyślną
         if (!Files.exists(configPath)) {
             return true;
         }
@@ -79,17 +82,15 @@ public class LoadingLogicMixinPlugin implements IMixinConfigPlugin {
             for (String line : lines) {
                 String trimmed = line.trim();
 
-                // Szukamy linii zaczynającej się od "modern_stairs:" (ignorujemy komentarze #)
                 if (trimmed.startsWith(entryName+":")) {
                     String value = trimmed.substring((entryName+":").length()).trim();
                     return Boolean.parseBoolean(value);
                 }
             }
         } catch (Exception e) {
-            System.err.println("[Extra] Nie udało się odczytać pliku ExtrasCFG.yml: " + e.getMessage());
+            System.err.println("[Release Tweaks] Unable to load ExtrasCFG.yml: " + e.getMessage());
         }
 
-        // Wartość awaryjna (domyślna), gdyby klucz nie został znaleziony
         return true;
     }
 

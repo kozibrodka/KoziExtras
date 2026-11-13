@@ -1,14 +1,6 @@
-//TODO list - Kompletnie refactoruje Moda
+//TODO list
 
-dodać dummy warianty, aby zapisywały się kształty oraz przypisanie kierunku GEO od razu aby nie aktywować data-fixera niepotrzebnie
-
-- aktualizacja stapi zobaczyć.
-
-
-
-
-
-
+- placement v2, na osobnym packecie. Po tym mod gotowy na 0.1.0 release.
 
 
 
@@ -16,13 +8,14 @@ dodać dummy warianty, aby zapisywały się kształty oraz przypisanie kierunku 
 
 ----------------------------------
 
-- Niektóre Feature wypadałoby przenieść do osobnego API.
+- Niektóre Feature wypadałoby przenieść do osobnego API:
+    - piston updateBoudingBox (od piston Heada z podanym blockstate)
+    - placement modern data
+    - digging particle json (wysłane)
 
 
 - aktualizacja STAPI.
 Wyjeabć data/c/tags/blocks stairs
-
-// setBlockState --- with METADATA as argument - dla schodów done, zobacz slabsy
 
 - Fajna Minaturka Release Tweaks
 

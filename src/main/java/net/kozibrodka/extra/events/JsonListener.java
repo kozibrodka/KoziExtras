@@ -12,11 +12,10 @@ public class JsonListener {
                     Identifier.of("block/cobblestone"), false);
             TemplateModelRegistry.registerModernVanillaStairsWithInvisibleVariants(Identifier.of("oak_stairs"),
                     Identifier.of("block/oak_planks"), true);
+        }
 
-//            TemplateModelRegistry.registerStairs(Identifier.of("cobblestone_stairs"),
-//                    Identifier.of("block/oak_planks"),
-//                    Identifier.of("block/oak_planks"),
-//                    Identifier.of("block/oak_planks"));
+        if(ConfigListener.exGlass.vanilla_block_enhancements.modern_slabs) {
+            TemplateModelRegistry.registerModernVanillaSlabs(Identifier.of("slab"));
         }
 
 //        TemplateModelRegistry.registerStairs(Identifier.of("cobblestone_stairs"), Identifier.of("oak_planks"));
