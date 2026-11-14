@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Release Tweaks",
-  "description": "Tweaks and Content from early Release versions",
+  "description": "Tweaks and Content from early release versions",
   "authors": [
     "kozibrodka"
   ],
@@ -14,7 +14,7 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/extra/icon.png",
+  "icon": "assets/extra/logo_RT_small.png",
 
   "environment": "*",
   "accessWidener": "koziex.accesswidener",

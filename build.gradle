@@ -194,6 +194,8 @@ modrinth {
 	dependencies {
 		required.project "stationapi"
 		required.project "glass-config-api"
+		optional.project "modmenu-babric"
+		optional.project "always-more-items"
 	}
 }
 

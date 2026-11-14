@@ -7,7 +7,6 @@
   "mixins": [
     "datafix.FlattenedWorldManagerMixin",
     "piston.PistonExtensionBlockMixin",
-    "placement.PlayerInteractBlockC2SPacketMixin",
     "slab.DummSlabItemMixin",
     "slab.DummySlabMixin",
     "slab.SlabBlockItemMixin",
@@ -16,14 +15,11 @@
     "stairs.DummyStairsMixin"
   ],
   "server": [
-    "placement.ServerPlayerInteractionManagerMixin",
-    "placement.ServerPlayNetworkHandlerMixin"
+    "placementv2.ServerNetworkPlacementAPIMixin"
   ],
   "client": [
     "RenderBlocksMixin",
-    "placement.InteractionManagerMixin",
-    "placement.MinecraftMixin",
-    "placement.MultiplayerInteractionManagerMixin",
+    "placementv2.MinecraftPlacementAPIMixin",
     "smp_fixes.CreeperMixin",
     "stapi.ArsenicDiggingParticleMixin"
   ],

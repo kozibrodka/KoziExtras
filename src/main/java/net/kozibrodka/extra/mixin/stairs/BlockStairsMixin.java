@@ -57,26 +57,26 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
         /// on ItemBlock use
         BlockState currentState = world.getBlockState(i, j, k);
         world.setBlockState(i, j, k, currentState.with(Properties.HORIZONTAL_FACING, geoFacing).with(Properties.BOTTOM, bottom), oldMeta); /// tutaj jedyne wywołanie updateNeighbors (bez cichego - WithoutNotifyingNeighbors)
-        this.investigateStairShape(world, i, j, k);
+        this.investigateStairShape(world, i, j, k, false);
     }
 
     @Override
     public void neighborUpdate(World world, int x, int y, int z, int id) {
         if(id == 0 || Block.BLOCKS[id] instanceof StairsBlock){ /// gdyby ID piston-heada przeszło to byłby crash (wiadomo o co chodzi)
-            investigateStairShape(world, x, y, z);
+            investigateStairShape(world, x, y, z, true);
             /// AIR, STAIRS - jedyne odpalają investigation --- ewentualnie dodać black-liste ID's
         }
 //        System.out.println("SĄSIEDNI_UPDATE " + id);
     }
 
     @Unique
-    public void investigateStairShape(World world, int i, int j, int k)
+    public void investigateStairShape(World world, int i, int j, int k, boolean flagUpdateMP)
     {
         int currentMeta = world.getBlockMeta(i, j, k);
         boolean flagS = true;
 
         boolean naroznik_zewnetrzny = false; /// czy narożnik został zmieniony
-//        boolean naroznik_wewnetrzny = false;
+        boolean naroznik_wewnetrzny = false;
 
         int naro_zewn_info = determineOuterShape(world, i, j, k, currentMeta); /// 0 - BRAK KSZTAŁTU,  1 - UTRWALENIE KSZTAŁTU,  2 - NOWY KSZTAŁT
         if(naro_zewn_info > 0){
@@ -88,14 +88,12 @@ public class BlockStairsMixin extends Block implements BlockStairsInterface {
 
         if (!naroznik_zewnetrzny)
         {
-            determineInnerShape(world, i, j, k, flagS, currentMeta); /// false = niestworzony.
-//            naroznik_wewnetrzny = determineInnerShape(world, i, j, k, flagS, currentMeta); /// false = niestworzony.
+            naroznik_wewnetrzny = determineInnerShape(world, i, j, k, flagS, currentMeta); /// false = niestworzony.
         }
 
-//        if(naroznik_wewnetrzny || naroznik_zewnetrzny){ /// Gdy SHAPE został zmieniony.
-//            world.setBlockMetaWithoutNotifyingNeighbors(i, j, k, currentMeta);
-//        }
-
+        if((naroznik_wewnetrzny || naroznik_zewnetrzny) && flagUpdateMP){ /// Gdy SHAPE został zmieniony.
+            world.blockUpdateEvent(i, j, k); /// SMP update.
+        }
     }
 
     public boolean tryUpdateShapeState(World world, BlockState currentState, BlockPos pos, StairShapeEnum newShape, int currentMetaData){ /// TRUE - gdy rzeczywiście potrzeba update.
