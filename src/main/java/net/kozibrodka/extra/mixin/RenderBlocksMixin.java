@@ -41,7 +41,7 @@ public abstract class RenderBlocksMixin {
 //    @Inject(method = "renderStairs", at = @At("HEAD"), cancellable = true)
 //    private void injectedStairs(Block arg, int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
 //
-////            cir.setReturnValue(true); //TODO zamazywacz
+////            cir.setReturnValue(true); // zamazywacz HAHA
 //
 //    }
 

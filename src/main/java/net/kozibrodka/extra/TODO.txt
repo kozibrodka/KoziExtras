@@ -24,11 +24,23 @@ Wyjeabć data/c/tags/blocks stairs
 - ChopTree option!! - add blockState to log. - afterBreak(World world, PlayerEntity playerEntity, int x, int y, int z, int meta) - zabawa z tym, opcjonalne ofc.
 - Textures: LOGS, activated DETECTOR RAIL
 
-
 //  NETWORK-VANILLA-COMP nie wywala z serwera, ale schody maja default state
 - !!! ten debilny check na serwerze, że po stopach nie mogę bić wypierdolić!!
 
 
+
+Stara Lista:
+    //Bloki:
+    // 4 Drewna + Logi;
+    // stonebrick (+mossy), netherbrick, quartz, smoothstone?
+
+    -Add all Stairs
+    -Stairs lightinng bugs (smmoth lightning and non smooth lightinng bugs)
+    -Should stairs drop normal drops?
+    -add all slabs
+    -size of floating item slab.
+    -maybe try doing better slab code for new slabs (make registering like stairs...)
+    -try to remove overritng in mixins where possible
 
 
 

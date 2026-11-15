@@ -179,6 +179,20 @@ publishing {
 	}
 }
 
+tasks.withType(Jar).configureEach {
+	// Wykluczenia z kodu (java)
+	exclude 'net/kozibrodka/extra/xold_*/**'
+	exclude 'net/kozibrodka/extra/TODO.txt'
+
+	// Wykluczenia z zasobów (resources)
+	exclude 'assets/extra/stationapi/*_old/**'
+	exclude 'assets/extra/stationapi/textures/*_old/**'
+
+	// Jeśli chcesz wykluczyć konkretne foldery ręcznie, użyj:
+	// exclude 'assets/extra/stationapi/blockstates_old/**'
+	// exclude 'assets/extra/stationapi/models_old/**'
+}
+
 modrinth {
 	if (project.hasProperty("modrinth_publishing_cave")) {
 		token = project.modrinth_publishing_cave

@@ -15,11 +15,11 @@
     "stairs.DummyStairsMixin"
   ],
   "server": [
-    "placementv2.ServerNetworkPlacementAPIMixin"
+    "placement.ServerNetworkPlacementAPIMixin"
   ],
   "client": [
     "RenderBlocksMixin",
-    "placementv2.MinecraftPlacementAPIMixin",
+    "placement.MinecraftPlacementAPIMixin",
     "smp_fixes.CreeperMixin",
     "stapi.ArsenicDiggingParticleMixin"
   ],

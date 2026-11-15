@@ -1,16 +1,13 @@
 package net.kozibrodka.extra.mixin.datafix;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.kozibrodka.extra.events.datafix.ExtraBlockFixer;
-import net.kozibrodka.extra.utils.KoziClientUtils;
+import net.kozibrodka.extra.data_fixer.ExtraBlockFixer;
 import net.minecraft.block.Block;
-import net.minecraft.client.network.MultiplayerClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.network.ModdedPacketHandler;
 import net.modificationstation.stationapi.api.registry.BlockRegistry;
 import net.modificationstation.stationapi.api.state.property.Property;
 import net.modificationstation.stationapi.api.util.Identifier;

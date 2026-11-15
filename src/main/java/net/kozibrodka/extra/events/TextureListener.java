@@ -32,20 +32,20 @@ public class TextureListener {
 
     @EventListener
     public void registerTextures(TextureRegisterEvent event) {
-        planks_birch = registerBlockTexture("block/wood_birch");
-        planks_spruce = registerBlockTexture("block/wood_spruce");
-        planks_jungle = registerBlockTexture("block/wood_jungle");
-        stone_bricks_beta = registerBlockTexture("block/stone_bricks");
-        log_spruce_top = registerBlockTexture("block/log_spruce_top");
-        log_birch_top = registerBlockTexture("block/log_birch_top");
-        log_jungle_top = registerBlockTexture("block/log_jungle_top");
-        log_jungle_side = registerBlockTexture("block/tree_jungle");
-        stone_brick = registerBlockTexture("block/stonebrick");
-        stone_brick_mossy = registerBlockTexture("block/stonebrick_mossy");
-        nether_brick = registerBlockTexture("block/nether_brick");
-        quartz_top = registerBlockTexture("block/quartz_block_top");
-        quartz_bottom = registerBlockTexture("block/quartz_block_bottom");
-        quartz_side = registerBlockTexture("block/quartz_block_side");
+//        planks_birch = registerBlockTexture("block/wood_birch");
+//        planks_spruce = registerBlockTexture("block/wood_spruce");
+//        planks_jungle = registerBlockTexture("block/wood_jungle");
+//        stone_bricks_beta = registerBlockTexture("block/stone_bricks");
+//        log_spruce_top = registerBlockTexture("block/log_spruce_top");
+//        log_birch_top = registerBlockTexture("block/log_birch_top");
+//        log_jungle_top = registerBlockTexture("block/log_jungle_top");
+//        log_jungle_side = registerBlockTexture("block/tree_jungle");
+//        stone_brick = registerBlockTexture("block/stonebrick");
+//        stone_brick_mossy = registerBlockTexture("block/stonebrick_mossy");
+//        nether_brick = registerBlockTexture("block/nether_brick");
+//        quartz_top = registerBlockTexture("block/quartz_block_top");
+//        quartz_bottom = registerBlockTexture("block/quartz_block_bottom");
+//        quartz_side = registerBlockTexture("block/quartz_block_side");
     }
 
     private int registerBlockTexture(String s) {

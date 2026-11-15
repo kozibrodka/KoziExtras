@@ -16,7 +16,7 @@ public class ColorListener {
     @Entrypoint.Namespace
     public static Namespace MOD_ID = Null.get();
 
-    //TODO wyłączone na razie
+    /// wyłączone na razie
     @EventListener
     public static void colorForMelon(BlockColorsRegisterEvent event) {
 //        event.blockColors.registerColorProvider((state, world, pos, tintIndex) -> {

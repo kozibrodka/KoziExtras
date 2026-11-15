@@ -127,8 +127,8 @@ public class DummSlabItemMixin extends BlockItem {
     @Inject(method = "getTranslationKey", at = @At("HEAD"), cancellable = true)
     public void preventCrash(ItemStack stack, CallbackInfoReturnable<String> cir) {
         if (stack.getDamage() >= SlabBlock.names.length) {
-            cir.setReturnValue(super.getTranslationKey() + ".transmutation");
-//            cir.setReturnValue(super.getTranslationKey() + ".crash");
+//            cir.setReturnValue(super.getTranslationKey() + ".transmutation");
+            cir.setReturnValue(super.getTranslationKey() + ".crash");
         }
     }
 

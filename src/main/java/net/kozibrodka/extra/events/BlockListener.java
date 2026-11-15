@@ -1,17 +1,10 @@
 package net.kozibrodka.extra.events;
 
-import net.glasslauncher.mods.gcapi3.api.ConfigRoot;
-import net.kozibrodka.extra.old_blocksCosmetic.*;
-import net.kozibrodka.extra.old_blocksSimple.*;
-import net.kozibrodka.extra.old_farming.*;
-import net.kozibrodka.extra.glasscfg.ExtrasCFG;
 import net.mine_diver.unsafeevents.listener.EventListener;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.modificationstation.stationapi.api.event.registry.BlockRegistryEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
 import net.modificationstation.stationapi.api.template.item.TemplateSeedsItem;
-import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.template.block.*;
 import net.modificationstation.stationapi.api.util.Namespace;
 import net.modificationstation.stationapi.api.util.Null;
@@ -99,9 +92,7 @@ public class BlockListener {
 //        json_slab = new BlockJsonSlab(Identifier.of(MOD_ID, "json_slab"), Material.GLASS).setTranslationKey(MOD_ID, "json_slab").setHardness(0.2F).setSoundGroup(Block.METAL_SOUND_GROUP);
     }
 
-    //TODO: Bloki:
-    // 4 Drewna + Logi;
-    // stonebrick (+mossy), netherbrick, quartz, smoothstone?
+
 
 
     public static TemplateStairsBlock brickstairs;
